@@ -5,6 +5,7 @@ import ReasonText from '../ReasonText/ReasonText'
 
 export interface ReasonInputProps {
     value: string,
+    unlimited?: boolean,
     onChange: (value: string) => any
 }
 
@@ -16,9 +17,11 @@ function ReasonInput(props: ReasonInputProps) {
 
     const mapInput = (value: string) => {
         scroll()
-        const newString = value.substr(0, 200)
-        setValue(newString)
-        props.onChange(newString)
+        if (!props.unlimited) {
+            value = value.substr(0, 200)
+        }
+        setValue(value)
+        props.onChange(value)
     }
 
     useEffect(() => {
@@ -68,7 +71,8 @@ function ReasonInput(props: ReasonInputProps) {
                    { lang['IssueBadge_linkbtn'] }
                </div>
            </div>
-           <div>{ value ? value.length : 0 }/200</div>
+           { !props.unlimited && <div>{ value ? value.length : 0 }/200</div> }
+
        </div>
     </div>)
 }

@@ -8,7 +8,8 @@ import DialogsContext from '../../provider/DialogProvider/DialogsContext'
 
 export interface IssuesInputProps {
     value: string[],
-    onChange: (value: string[]) => any
+    onChange: (value: string[]) => any,
+    placeholder?: string
 }
 
 function IssuesInput (props: IssuesInputProps) {
@@ -59,7 +60,7 @@ function IssuesInput (props: IssuesInputProps) {
            <div className='issue-input-item' key={index.toString()}>
                <AppInput
                    endEnhancer={ addressListBtn }
-                   placeholder={lang['IssueBadge_IssueesPlaceholder']}
+                   placeholder={props.placeholder || lang['IssueBadge_IssueesPlaceholder']}
                    value={ value }
                    onChange={(e) => { onChange(e.target.value, index)}}
                    key={index.toString()}

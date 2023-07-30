@@ -18,6 +18,7 @@ function useScrollToLoad<T> (props: useScrollToLoadProps<T>) {
 
 
     const query = async (init = false) => {
+        if (page=== 0) return
         const isInit = page === 1
         setLoading(true)
 
@@ -40,6 +41,7 @@ function useScrollToLoad<T> (props: useScrollToLoadProps<T>) {
 
     useEffect(() => {
         if (props.immediate) {
+            setPage(1)
             query(true)
         }
     }, [props.immediate])

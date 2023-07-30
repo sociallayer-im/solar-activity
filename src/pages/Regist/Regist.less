@@ -31,6 +31,27 @@
   }
 
   .regist-page-content {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    position: relative;
+    min-height: 500px;
+
+    .skip-btn {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: var(--text-4-headline, #272928);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 22px; /* 157.143% */
+      z-index: 9;
+      cursor: pointer;
+      padding: 12px 0;
+    }
+
     .title {
       font-weight: 600;
       font-size: 24px;

@@ -144,5 +144,9 @@
 .icon-lens:before {
   content: "\e925";
 }
+.icon-calendar:before {
+  content: "\e926";
+}
+
 
 

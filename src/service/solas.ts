@@ -1,6 +1,5 @@
 import {signInWithEthereum} from './SIWE'
 import fetch from '../utils/fetch'
-import {s} from "msw/lib/glossary-de6278a9";
 
 const api = import.meta.env.VITE_SOLAS_API
 
@@ -82,7 +81,7 @@ export async function getProfile(props: GetProfileProps): Promise<Profile | null
 export async function requestEmailCode(email: string): Promise<void> {
     const res: any = await fetch.post({
         url: `${api}/profile/send_email`,
-        data: { email }
+        data: {email}
     })
     if (res.data.result === 'error') {
         throw new Error(res.data.message || 'Request fail')
@@ -115,7 +114,7 @@ interface SolasRegistProps {
     username: string
 }
 
-export async function regist(props: SolasRegistProps): Promise<{ result: 'ok'}> {
+export async function regist(props: SolasRegistProps): Promise<{ result: 'ok' }> {
     checkAuth(props)
     const res = await fetch.post({
         url: `${api}/profile/create`,
@@ -153,6 +152,7 @@ export interface Badge {
 
 export type NftPass = Badge
 export type NftPassWithBadgelets = BadgeWithBadgelets
+
 export interface NftPasslet extends Badgelet {
 
 }
@@ -289,7 +289,7 @@ export interface QueryBadgeletProps {
     receiver_id?: number,
     page: number,
     show_hidden?: number,
-    badge_id?:number,
+    badge_id?: number,
     badge_type?: BadgeType,
 }
 
@@ -601,7 +601,7 @@ export async function uploadImage(props: UploadImageProps): Promise<string> {
         throw new Error(res.data.message)
     }
 
-    return res.data.result.thumbnailUrl
+    return res.data.result.url
 }
 
 export interface SetAvatarProps {
@@ -637,7 +637,7 @@ export interface CreateBadgeProps {
 
 export async function createBadge(props: CreateBadgeProps): Promise<Badge> {
     checkAuth(props)
-    props.badge_type = props.badge_type ||'badge'
+    props.badge_type = props.badge_type || 'badge'
 
     const res = await fetch.post({
         url: `${api}/badge/create`,
@@ -1370,7 +1370,7 @@ export interface AcceptPointProp {
     auth_token: string
 }
 
-export async function acceptPoint (props: AcceptPointProp) {
+export async function acceptPoint(props: AcceptPointProp) {
     checkAuth(props)
 
     const res: any = await fetch.post({
@@ -1385,7 +1385,7 @@ export async function acceptPoint (props: AcceptPointProp) {
     return res.data.point_item as PointItem
 }
 
-export async function rejectPoint (props: AcceptPointProp) {
+export async function rejectPoint(props: AcceptPointProp) {
     checkAuth(props)
 
     const res: any = await fetch.post({
@@ -1413,7 +1413,7 @@ export interface CheckInSimple {
     memo: null | string
 }
 
-export async function checkIn (props: CheckInProps): Promise<CheckInSimple> {
+export async function checkIn(props: CheckInProps): Promise<CheckInSimple> {
     checkAuth(props)
 
     const res: any = await fetch.post({
@@ -1428,7 +1428,7 @@ export async function checkIn (props: CheckInProps): Promise<CheckInSimple> {
     return res.data.checkin as CheckInSimple
 }
 
-export async function consume (props: CheckInProps): Promise<Badgelet> {
+export async function consume(props: CheckInProps): Promise<Badgelet> {
     checkAuth(props)
 
     const res: any = await fetch.post({
@@ -1445,8 +1445,8 @@ export async function consume (props: CheckInProps): Promise<Badgelet> {
 
 export interface QueryCheckInListProps {
     profile_id?: number,
-    badgelet_id?:number,
-    badge_id?:number
+    badgelet_id?: number,
+    badge_id?: number
 }
 
 export interface CheckIn {
@@ -1458,7 +1458,7 @@ export interface CheckIn {
     profile: ProfileSimple
 }
 
-export async function queryCheckInList (props: QueryCheckInListProps): Promise<CheckIn[]> {
+export async function queryCheckInList(props: QueryCheckInListProps): Promise<CheckIn[]> {
     const res: any = await fetch.get({
         url: `${api}/badgelet/checkin_list`,
         data: props
@@ -1473,8 +1473,157 @@ export async function queryCheckInList (props: QueryCheckInListProps): Promise<C
     }) as CheckIn[]
 }
 
+export interface Event {
+    id: number,
+    title: string,
+    cover: string,
+    content: string,
+    tags: null | string[],
+    start_time: null | string,
+    ending_time: null | string,
+    location_type: 'online' | 'offline' | 'both',
+    location: null | string,
+    max_participants: null | number,
+    min_participants: null | number,
+    guests: null | string,
+    badge_id: null | number,
+    host_info: null | string,
+    online_location: null | string,
+
+    owner_id: number,
+    created_at: string,
+    updated_at: string,
+    category: null | string,
+    status: string,
+}
+
+export interface CreateEventProps extends Partial<Event> {
+    auth_token: string
+}
+
+export async function createEvent(props: CreateEventProps) {
+    checkAuth(props)
+
+    const res: any = await fetch.post({
+        url: `${api}/event/create`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Create event fail')
+    }
+
+    return res.data.event as Event
+}
+
+export async function updateEvent(props: CreateEventProps) {
+    checkAuth(props)
+
+    const res: any = await fetch.post({
+        url: `${api}/event/update`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Create event fail')
+    }
+
+    return res.data.event as Event
+}
+
+export interface QueryEventProps {
+    owner_id?: number,
+    tag?: string,
+    page: number,
+}
+
+
+export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
+    const res: any = await fetch.get({
+        url: `${api}/event/list`,
+        data: {...props}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Query event fail')
+    }
+
+    return res.data.events as Event[]
+}
+
+export interface QueryEventDetailProps {
+    id: number
+}
+
+export async function queryEventDetail(props: QueryEventDetailProps) {
+    const res: any = await fetch.get({
+        url: `${api}/event/get`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Query event fail')
+    }
+
+    return res.data.event as Event
+}
+
+export interface Participants {
+    id: number,
+    check_time: string | null,
+    created_at: string,
+    message: string | null,
+    profile: ProfileSimple,
+    status: string,
+    event: Event,
+}
+
+export interface QueryMyEventProps {
+    auth_token: string,
+    page?: number
+}
+
+export async function queryMyEvent({page=1, ...props}: QueryMyEventProps): Promise<Participants[]> {
+    checkAuth(props)
+
+    const res: any = await fetch.get({
+        url: `${api}/event/my`,
+        data: {...props, page}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Query event fail')
+    }
+
+    return res.data.participants as Participants[]
+}
+
+export interface CancelEventProps {
+    auth_token: string,
+    id: number
+}
+
+export async function cancelEvent(props: CancelEventProps): Promise<Participants[]> {
+    checkAuth(props)
+
+    const res: any = await fetch.post({
+        url: `${api}/event/cancel_event`,
+        data: {...props}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Query event fail')
+    }
+
+    return res.data.participants as Participants[]
+}
+
 
 export default {
+    cancelEvent,
+    queryMyEvent,
+    queryEventDetail,
+    createEvent,
     login,
     getProfile,
     requestEmailCode,

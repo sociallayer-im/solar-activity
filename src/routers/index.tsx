@@ -4,11 +4,15 @@ import { Suspense, lazy } from 'react'
 
 // package
 import RegistGroup from '../pages/RegistGroup'
+
 import Group from '../pages/Group/Group'
 import Home from '../pages/Home'
 import Profile from '../pages/Profile/Profile'
+import EventDetail from '../pages/EventDetail/page'
 import Login from '../pages/Login'
 import Regist from '../pages/Regist'
+import CreateEvent from "../pages/CreateEvent";
+import CreateEventSuccess from "../pages/CreateEventSuccess/CreateEventSuccess";
 
 
 // lazy load
@@ -32,10 +36,12 @@ function AppRouter () {
         <Suspense>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/profile/:username" element={<Profile />}/>
-                <Route path="/group/:groupname" element={<Group />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/regist" element={<Regist />} />
+                <Route path="/event/create" element={<CreateEvent />} />
+                <Route path="/event/edit/:eventId" element={<CreateEvent />} />
+                <Route path="/event/:eventId" element={<EventDetail />} />
+                <Route path="/success/:eventId" element={<CreateEventSuccess />} />
                 <Route path="*" element={<Error />} />
             </Routes>
         </Suspense>

@@ -31,12 +31,23 @@ const Pic = styled('img', () => {
     }
 })
 
+const Pic2 = styled('img', () => {
+    return {
+        maxWidth: '90%',
+        width: 'auto',
+        maxHeight: '210px',
+        display: 'block',
+        cursor: 'pointer',
+    }
+})
+
 export interface UploadImageProps {
     confirm: (url: string) => any
-    imageSelect?: string
+    imageSelect?: string,
+    cropper?: boolean
 }
 
-function UploadImage (props: UploadImageProps) {
+function UploadImage ({cropper=true, ...props}: UploadImageProps) {
     const defaultImg = '/images/upload_default.png'
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -47,14 +58,24 @@ function UploadImage (props: UploadImageProps) {
 
     const showPublicImageDialog = () => {
         const dialog = openDialog({
-            content: (close: any) => <DialogPublicImage handleClose={close} onConfirm={(image) => { props.confirm(image); setImageSelect(image) }} />,
+            content: (close: any) => <DialogPublicImage cropper={cropper} handleClose={close} onConfirm={(image) => { props.confirm(image); setImageSelect(image) }} />,
             position: 'bottom',
             size: [360, 'auto']
         })
     }
 
+    useEffect(() => {
+        if (props.imageSelect) {
+            setImageSelect(props.imageSelect)
+        }
+    }, [props.imageSelect])
+
     return (<Wrapper>
-        <Pic onClick={ () => { showPublicImageDialog() } } src={ imageSelect || defaultImg } alt=""/>
+        { cropper ?
+            <Pic onClick={ () => { showPublicImageDialog() } } src={ imageSelect || defaultImg } alt=""/>
+            : imageSelect ? <Pic2 onClick={ () => { showPublicImageDialog() } } src={ imageSelect  } alt=""/>
+                : <Pic onClick={ () => { showPublicImageDialog() } } src={ defaultImg } alt=""/>
+        }
     </Wrapper>)
 }
 

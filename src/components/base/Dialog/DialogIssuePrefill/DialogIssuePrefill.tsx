@@ -27,6 +27,7 @@ function DialogIssuePrefill(props: DialogIssuePrefillProps) {
 
     const gotoCreateBadge = (type: CreateType) => {
         !!props.onSelect && props.onSelect({type})
+        window.open('https://app.sociallayer.im/create-badge', '_blank')
         props.handleClose()
     }
 
