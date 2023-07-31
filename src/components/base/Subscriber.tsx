@@ -17,21 +17,21 @@ function Subscriber() {
 
     // 实时接受badgelet
     useEffect(() => {
-        if (!pusher) return
-        if (!user.domain) {
-            if (SubscriptionDomain.current) {
-                pusher.unsubscribe(SubscriptionDomain.current)
-            }
-            return
-        }
-
-        const channel = pusher.subscribe(user.domain)
-        SubscriptionDomain.current = user.domain
-        channel.bind('send_badge', async (data: any) => {
-            const badgeletId = data.message
-            const badgelet = await solas.queryBadgeletDetail({id: Number(badgeletId)})
-            showBadgelet(badgelet)
-        })
+        // if (!pusher) return
+        // if (!user.domain) {
+        //     if (SubscriptionDomain.current) {
+        //         pusher.unsubscribe(SubscriptionDomain.current)
+        //     }
+        //     return
+        // }
+        //
+        // const channel = pusher.subscribe(user.domain)
+        // SubscriptionDomain.current = user.domain
+        // channel.bind('send_badge', async (data: any) => {
+        //     const badgeletId = data.message
+        //     const badgelet = await solas.queryBadgeletDetail({id: Number(badgeletId)})
+        //     showBadgelet(badgelet)
+        // })
 
     }, [user.domain])
 

@@ -1,0 +1,233 @@
+.calendar-page {
+  background: #fff;
+  min-height: 100%;
+
+  .center {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .calendar-bar {
+    margin-top: 10px;
+  }
+
+  .calendar-item {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 10px;
+    padding-top: 6px;
+
+    div:nth-child(1) {
+      color: #BCC1CD;
+      text-align: center;
+      font-size: 12px;
+      font-style: normal;
+    }
+
+    div:nth-child(2) {
+      color: #212525;
+      text-align: center;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    div:nth-child(3) {
+      height: 19px;
+    }
+
+    &.current {
+      background: #e6e6e6;
+    }
+
+    &.active {
+      border-radius: 10px;
+      background: var(--primary-color-brand-14, #6CD7B2);
+
+      > div {
+        color: #fff !important;
+      }
+    }
+  }
+
+  .page-title {
+    background: var(--fill-2-medium, #F5F8F6);
+    padding: 24px 0 12px 0;
+
+    .center {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .left {
+      color: var(--text-4-headline, #272928);
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+
+    .right {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+
+      .date {
+        color: #212525;
+        font-size: 29.097px;
+        font-style: normal;
+        font-weight: 500;
+        margin-right: 4px;
+      }
+
+      .other {
+        color: #C1C3C0;
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 18px;
+      }
+    }
+  }
+
+  .label-bar {
+    margin: 0 auto 10px auto;
+
+    .event-label-list {
+      display: flex;
+      flex-flow: row nowrap;
+      overflow: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+
+      .event-label-item {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .calendar-event-list {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 20px;
+
+    .calendar-event-title {
+      display: flex;
+      color: var(--text-4-headline, #272928);
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px;
+      margin-bottom: 20px;
+
+      .col1 {
+        max-width: 50px;
+        min-width: 50px;
+      }
+
+      .col2 {
+        flex: 1;
+        padding-left: 8px;
+      }
+
+      .col3 {
+        max-width: 100px;
+        min-width: 100px;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        svg {
+          margin-right: 4px;
+          path {
+            fill: #e5e5e5;
+          }
+        }
+
+        &.active {
+          svg {
+            path {
+              fill: #6CD7B2!important;
+            }
+          }
+        }
+      }
+    }
+
+    .grouped-events {
+      .grouped-events-item {
+        display: flex;
+        flex-flow: row nowrap;
+
+        .col1 {
+          min-width: 50px;
+          max-width: 50px;
+
+          .start, .ending {
+            color: var(--text-4-headline, #272928);
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 22px;
+          }
+
+          .ending {
+            color: #C3C7C3
+          }
+        }
+
+        .col2 {
+          border-left: 1px dashed #CECED3;
+          padding-left: 8px;
+          flex: 1;
+
+          .event-item {
+            margin-bottom: 8px;
+            border-radius: 4px;
+            background: var(--fill-2-medium, #F5F8F6);
+            border-left: 7px solid #eee;
+            padding: 8px 6px;
+
+            .event-name {
+              color: var(--text-4-headline, #272928);
+              font-size: 14px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 22px;
+              margin-bottom: 6px;
+            }
+
+            .creator {
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center;
+              color: var(--text-3-subtitle, #4F5150);
+              font-size: 12px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 18px;
+
+              img {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                margin-right: 8px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

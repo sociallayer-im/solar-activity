@@ -215,7 +215,7 @@ const langCN: LangConfig = {
   Activity_All_Activity: '全部活动',
   Activity_Btn_Create: '发布活动',
   Activity_Btn_Modify: '修改活动',
-  Activity_Create_title: '发布活动',
+  Activity_Create_title: '+ 发布活动',
   Activity_Setting_title: '修改活动',
   Activity_Create_Done: '完成',
   Activity_Create_Success: '创建成功 🎉',
@@ -252,6 +252,9 @@ const langCN: LangConfig = {
   Activity_Detail_Btn_Joined: '已参加',
   Activity_Detail_Btn_AttendOnline: '线上参与',
   Activity_quantity_Input: '自定义',
+
+  Activity_Calendar_Page_Time: '时间',
+  Activity_Calendar_Page_Name: '活动',
 
   New_Year_1: '将你的新年祝福铸造成数字徽章',
   New_Year_2: '颁发理由 :',

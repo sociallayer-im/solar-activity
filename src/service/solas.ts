@@ -1534,6 +1534,7 @@ export async function updateEvent(props: CreateEventProps) {
 export interface QueryEventProps {
     owner_id?: number,
     tag?: string,
+    date?: string,
     page: number,
 }
 
@@ -1541,6 +1542,23 @@ export interface QueryEventProps {
 export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
     const res: any = await fetch.get({
         url: `${api}/event/list`,
+        data: {...props}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Query event fail')
+    }
+
+    return res.data.events as Event[]
+}
+
+export interface QueryRecommendEventProps {
+    rec: 'latest' | 'soon'
+}
+
+export async function queryRecommendEvent(props: QueryRecommendEventProps): Promise<Event[]> {
+    const res: any = await fetch.get({
+        url: `${api}/event/recommended`,
         data: {...props}
     })
 

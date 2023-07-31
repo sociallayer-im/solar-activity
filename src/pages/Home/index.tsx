@@ -7,7 +7,6 @@ import LangContext from '../../components/provider/LangProvider/LangContext'
 import HomeUserPanel from "../../components/base/HomeUserPanel/HomeUserPanel";
 import AppSubTabs from "../../components/base/AppSubTabs";
 import {Tab} from "baseui/tabs";
-import ListEvent from "../../components/compose/ListEvent/ListEvent";
 import {Event, Participants, queryEvent, queryMyEvent} from "../../service/solas";
 import ListMyAttentedEvent from "../../components/compose/ListMyAttentedEvent/ListMyAttentedEvent";
 import ListMyCreatedEvent from "../../components/compose/ListMyCreatedEvent/ListMyCreatedEvent";
@@ -41,6 +40,10 @@ function Home() {
         myEvent()
     }, [user.authToken])
 
+    const gotoCreateEvent = () => {
+        navigate('/event/create')
+    }
+
     return <Layout>
         <div className='home-page'>
             <HomeUserPanel/>
@@ -57,27 +60,31 @@ function Home() {
                             setTabIndex(activeKey + '')
                         }}>
                             <Tab title={lang['Activity_State_Registered']}>
-                                <ListMyAttentedEvent />
+                                <ListMyAttentedEvent/>
                             </Tab>
                             <Tab title={lang['Activity_State_Created']}>
-                                <ListMyCreatedEvent />
+                                <ListMyCreatedEvent/>
                             </Tab>
                         </AppSubTabs>
                     </div>
                 </>
             }
             {!!user.id &&
-            <div className={'center'}>
-                <div className={'module-title'}>
-                    {'推荐'}
+                <div className={'center'}>
+                    <div className={'module-title'}>
+                        {'推荐'}
+                    </div>
+                    <ListMyCreatedEvent/>
                 </div>
-                <ListMyCreatedEvent />
-            </div>
             }
 
-          <div className={'center'}>
-              <ListEventVertical />
-          </div>
+            <div className={'center'}>
+                <ListEventVertical/>
+            </div>
+
+            <div className={'create-event-btn'} onClick={e => {
+                gotoCreateEvent()
+            }}>{lang['Activity_Create_title']}</div>
         </div>
     </Layout>
 }

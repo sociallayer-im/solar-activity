@@ -13,6 +13,7 @@ import Login from '../pages/Login'
 import Regist from '../pages/Regist'
 import CreateEvent from "../pages/CreateEvent";
 import CreateEventSuccess from "../pages/CreateEventSuccess/CreateEventSuccess";
+import Calendar from "../pages/Calendar/Calendar";
 
 
 // lazy load
@@ -38,6 +39,7 @@ function AppRouter () {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/regist" element={<Regist />} />
+                <Route path="/calendar" element={<Calendar />} />
                 <Route path="/event/create" element={<CreateEvent />} />
                 <Route path="/event/edit/:eventId" element={<CreateEvent />} />
                 <Route path="/event/:eventId" element={<EventDetail />} />

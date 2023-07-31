@@ -215,7 +215,7 @@ const langEN = {
   Activity_All_Activity: 'All Event',
   Activity_Btn_Create: 'Create Event',
   Activity_Btn_Modify: 'Modify Event',
-  Activity_Create_title: 'Create a Event',
+  Activity_Create_title: '+ Create a Event',
   Activity_Setting_title: 'Event Setting',
   Activity_Create_Done: 'Done',
   Activity_Create_Success: 'Create Successfully 🎉',
@@ -252,6 +252,9 @@ const langEN = {
   Activity_Detail_Btn_End: 'Event has ended',
   Activity_Detail_Btn_AttendOnline: 'Attend online',
   Activity_quantity_Input: 'custom',
+
+  Activity_Calendar_Page_Time: 'Time',
+  Activity_Calendar_Page_Name: 'Event',
 
   New_Year_1: 'Cast your New Year wishes into a digital badge.',
   New_Year_2: 'Reason for issuing :',
