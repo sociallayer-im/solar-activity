@@ -14,6 +14,8 @@ import Regist from '../pages/Regist'
 import CreateEvent from "../pages/CreateEvent";
 import CreateEventSuccess from "../pages/CreateEventSuccess/CreateEventSuccess";
 import Calendar from "../pages/Calendar/Calendar";
+import EventCheckIn from "../pages/EventCheckIn/EventCheckIn";
+import Search from "../pages/Search";
 
 
 // lazy load
@@ -42,7 +44,9 @@ function AppRouter () {
                 <Route path="/calendar" element={<Calendar />} />
                 <Route path="/event/create" element={<CreateEvent />} />
                 <Route path="/event/edit/:eventId" element={<CreateEvent />} />
+                <Route path="/checkin/:eventId" element={<EventCheckIn />} />
                 <Route path="/event/:eventId" element={<EventDetail />} />
+                <Route path="/search/:keyword" element={<Search />} />
                 <Route path="/success/:eventId" element={<CreateEventSuccess />} />
                 <Route path="*" element={<Error />} />
             </Routes>

@@ -4,11 +4,13 @@ import './Calendar.less'
 import Layout from "../../components/Layout/Layout";
 import langContext from "../../components/provider/LangProvider/LangContext";
 import AppSwiper from "../../components/base/AppSwiper/AppSwiper";
-import {Event, getProfile, Profile, queryEvent, queryMyEvent} from "../../service/solas";
+import {Event, getHotTags, getProfile, Profile, queryEvent, queryMyEvent} from "../../service/solas";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import usePicture from "../../hooks/pictrue";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import Empty from "../../components/base/Empty";
+import EventLabels from "../../components/base/EventLabels/EventLabels";
+import {getLabelColor} from "../../hooks/labelColor";
 
 interface EventWithProfile extends Event {
     profile: Profile | null
@@ -21,7 +23,6 @@ interface DateItem {
     monthName: string,
 }
 
-const labels = ['预设1', '预设2', '预设3', '预设4', '预设5', '预设6', '预设7', '预设8']
 const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MonthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const colorList = [
@@ -45,6 +46,7 @@ function Calendar() {
     const [MyEvent, setMyEvent] = useState<Event[]>([])
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
+    const [labels, setLabels] = useState<string[]>([])
 
     const now = new Date()
 
@@ -61,6 +63,9 @@ function Calendar() {
             if (user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken!})
                 setMyEvent(res.map(item => item.event))
+
+                const labels = await getHotTags()
+                setLabels(labels)
             } else {
                 setMyEvent([])
             }
@@ -206,7 +211,11 @@ function Calendar() {
 
             <div className={'calendar-event-list'}>
                 <div className={'label-bar'}>
-
+                    <EventLabels single data={labels} value={selectedLabel} onChange={
+                        (value) => {
+                            setSelectedLabel(value)
+                        }
+                    }/>
                 </div>
                 <div className={'calendar-event-title'}>
                     <div className={'col1'}>{lang['Activity_Calendar_Page_Time']}</div>
@@ -252,6 +261,13 @@ function Calendar() {
                                                                  gotoEventDetail(item.id)
                                                              }}
                                                              style={{borderColor: color}}>
+                                                            <div className={'label-color'}>
+                                                                {
+                                                                   item.tags?.map((tag, index) => {
+                                                                       return <span key={index} style={{background: getLabelColor(tag)}} />
+                                                                   })
+                                                                }
+                                                            </div>
                                                             <div className={'event-name'}>{item.title}</div>
                                                             <div className={'creator'}>
                                                                 <img

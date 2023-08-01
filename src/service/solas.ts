@@ -1,5 +1,6 @@
 import {signInWithEthereum} from './SIWE'
 import fetch from '../utils/fetch'
+import {n} from "msw/lib/glossary-de6278a9";
 
 const api = import.meta.env.VITE_SOLAS_API
 
@@ -1473,6 +1474,23 @@ export async function queryCheckInList(props: QueryCheckInListProps): Promise<Ch
     }) as CheckIn[]
 }
 
+export interface EventCheckInProps {
+    id: number,
+    auth_token: string
+}
+
+export async function eventCheckIn (props: EventCheckInProps) {
+    checkAuth(props)
+    const res: any = await fetch.post({
+        url: `${api}/event/check`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Check in fail')
+    }
+}
+
 export interface Event {
     id: number,
     title: string,
@@ -1483,18 +1501,22 @@ export interface Event {
     ending_time: null | string,
     location_type: 'online' | 'offline' | 'both',
     location: null | string,
-    max_participants: null | number,
-    min_participants: null | number,
+    max_participant: null | number,
+    min_participant: null | number,
     guests: null | string,
     badge_id: null | number,
     host_info: null | string,
     online_location: null | string,
+    event_site_id?: null | number,
+    event_site?: EventSites,
 
     owner_id: number,
     created_at: string,
     updated_at: string,
     category: null | string,
     status: string,
+
+    participants: null | Participants[],
 }
 
 export interface CreateEventProps extends Partial<Event> {
@@ -1536,6 +1558,7 @@ export interface QueryEventProps {
     tag?: string,
     date?: string,
     page: number,
+    event_site_id?: number,
 }
 
 
@@ -1636,8 +1659,86 @@ export async function cancelEvent(props: CancelEventProps): Promise<Participants
     return res.data.participants as Participants[]
 }
 
+export async function getHotTags(): Promise<string[]> {
+    const res: any = await fetch.get({
+        url: `${api}/event/hot_tags`,
+        data: {}
+    })
+
+    return res.data.tags
+}
+
+export interface EventSites {
+    "id": number,
+    "title": string,
+    "location": string,
+    "about": string,
+    "group_id": number,
+    "owner_id": number,
+    "created_at": string
+}
+
+export async function getEventSide(props: {group_id?: number}): Promise<EventSites[]> {
+    const res: any = await fetch.get({
+        url: `${api}/event/event_sites`,
+        data: props
+    })
+
+    return res.data.event_sites as EventSites[]
+}
+
+export interface JoinEventProps {
+    id: number,
+    auth_token: string,
+}
+
+export async function joinEvent (props: JoinEventProps) {
+    checkAuth(props)
+    const res: any = await fetch.post({
+        url: `${api}/event/join`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Join event fail')
+    }
+
+    return res.data.participant as Participants
+}
+
+export async function unJoinEvent (props: JoinEventProps) {
+    checkAuth(props)
+    const res: any = await fetch.post({
+        url: `${api}/event/cancel`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Join event fail')
+    }
+
+    return res.data.participant as Participants
+}
+
+export async function searchEvent (keyword: string) {
+    const res: any = await fetch.get({
+        url: `${api}/event/search`,
+        data: {title: keyword }
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Join event fail')
+    }
+
+    return res.data.events as Event[]
+}
+
 
 export default {
+    searchEvent,
+    joinEvent,
+    getHotTags,
+    getEventSide,
     cancelEvent,
     queryMyEvent,
     queryEventDetail,

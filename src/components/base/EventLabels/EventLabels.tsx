@@ -1,4 +1,5 @@
 import './EventLabels.less'
+import {getLabelColor} from "../../../hooks/labelColor";
 
 export interface EventLabelsProps {
     data: string[]
@@ -8,23 +9,12 @@ export interface EventLabelsProps {
     single?: boolean,
 }
 
-const colorList = [
-    '#B7D453',
-    '#75D4F0',
-    '#FD8CE2',
-    '#8080FF',
-    '#15CB82',
-    '#FAC699',
-    '#FE6CAB',
-    '#7A88FF',
-]
-
 function EventLabels(props: EventLabelsProps) {
     return (<div className={props.disabled ? 'event-label-list disabled': 'event-label-list'}>
         {
             props.data.map((item, index) => {
                 const isSelected = props.value.includes(item)
-                const color = index < (colorList.length - 1) ? colorList[index] : colorList[index % colorList.length]
+                const color = getLabelColor(item)
                 const style_1 = isSelected ? {
                         color: color,
                         borderColor: color,

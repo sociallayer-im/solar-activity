@@ -147,6 +147,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        cursor: pointer;
 
         svg {
           margin-right: 4px;
@@ -196,8 +197,24 @@
             margin-bottom: 8px;
             border-radius: 4px;
             background: var(--fill-2-medium, #F5F8F6);
-            border-left: 7px solid #eee;
-            padding: 8px 6px;
+            padding: 8px 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+
+            .label-color {
+              position: absolute;
+              left: 0;
+              top:0;
+              bottom: 0;
+              width: 7px;
+              display: flex;
+              flex-flow: column nowrap;
+
+              span {
+                flex: 1;
+              }
+            }
 
             .event-name {
               color: var(--text-4-headline, #272928);

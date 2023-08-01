@@ -21,21 +21,8 @@ function PageHeader () {
         <header className="pager-header">
             <PageLogo />
             <div className='pager-header-right-menu'>
-
-                { showSearch &&
-                    <div className="header-search">
-                        <HeaderSearch onClose={() => { setShowSearch(false) }} />
-                    </div>
-                }
-
                 { !showSearch &&
                     <>
-                        <div className="header-search">
-                            <i className='icon-search' onClick={() => { setShowSearch(true) } }></i>
-                        </div>
-
-                        <div className='split'></div>
-
                         <LangSwitch />
 
                         <div className='split'></div>

@@ -8,6 +8,7 @@ import { Select, StyledControlContainer } from 'baseui/select'
 import usePicture from '../../../hooks/pictrue'
 
 interface SelectCreatorProp {
+    groupFirst?: boolean
     value: Profile | Group | null
     onChange: (res: (Profile | Group)) => any
 }
@@ -96,7 +97,11 @@ function SelectCreator(props: SelectCreatorProp) {
             if (!profile) return
 
             const groups = await solas.queryGroupsUserCreated({ profile_id: user.id!})
-            setList([profile!, ...groups])
+            if (props.groupFirst) {
+                setList([...groups, profile!])
+            } else  {
+                setList([profile!, ...groups])
+            }
 
             const groupSenderDomain = searchParams.get('group')
             if (groupSenderDomain) {
@@ -110,7 +115,12 @@ function SelectCreator(props: SelectCreatorProp) {
             }
 
             if (!props.value) {
-                props.onChange(profile)
+                if (props.groupFirst) {
+                    props.onChange(groups[0])
+                } else  {
+                    props.onChange(profile)
+                }
+
             }
         }
         getList()

@@ -1,39 +1,71 @@
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 import {useStyletron} from 'baseui'
-import {useState, useContext, useEffect} from 'react'
-import { useParams } from 'react-router-dom'
-import AppTabs from '../../components/base/AppTabs'
-import { Tab } from 'baseui/tabs'
+import {useContext, useEffect, useState} from 'react'
 import LangContext from '../../components/provider/LangProvider/LangContext'
 import Layout from '../../components/Layout/Layout'
 import './Search.less'
-import ListSearchResultDomain from '../../components/compose/ListSearchResultDomain'
-import ListSearchResultBadgelet from '../../components/compose/ListSearchResultBadgelet'
-import ListSearchResultBadge from '../../components/compose/ListSearchResultBadge'
-
+import PageBack from "../../components/base/PageBack";
+import AppInput from "../../components/base/AppInput";
+import CardEvent from "../../components/base/Cards/CardEvent/CardEvent";
+import {searchEvent, Event} from "../../service/solas";
+import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
+import Empty from "../../components/base/Empty";
 
 
 function SearchPage() {
     const [css] = useStyletron()
     const navigate = useNavigate()
-    const { keyword } = useParams()
-    const { lang } = useContext(LangContext)
+    const {keyword} = useParams()
+    const {lang} = useContext(LangContext)
+    const [keywordState, setKeywordState] = useState<string>('')
+    const {showLoading} = useContext(DialogsContext)
+    const [result, setResult] = useState<Event[]>([])
+
+    const handleSearch = async (keyword: string) => {
+        const unload = showLoading()
+        try {
+            const res = await searchEvent(keyword)
+            unload()
+            setResult(res)
+            navigate('/search/' + keyword)
+        } catch (e: any) {
+            console.error(e)
+            unload()
+        }
+    }
+
+    useEffect(() => {
+        if (keyword) {
+            setKeywordState(keyword)
+            handleSearch(keyword)
+        }
+    }, [keyword])
 
     return (<Layout>
-            <div className='search-result-page'>
-                <AppTabs initialState={ { activeKey: 'domain' } }>
-                    <Tab key='domain' title={ lang['Search_Tab_Domain'] }>
-                        <ListSearchResultDomain keyword={ keyword || '' }></ListSearchResultDomain>
-                    </Tab>
-                    <Tab key='badge' title={ lang['Search_Tab_Badge'] }>
-                        <ListSearchResultBadge keyword={ keyword || '' }/>
-                    </Tab>
-                    <Tab key='event' title={ lang['Search_Tab_Event'] }>
-                        <ListSearchResultBadgelet keyword={ keyword  || '' } />
-                    </Tab>
-                </AppTabs>
+        <div className='search-result-page'>
+            <div className={'center'}>
+                <PageBack onClose={() => {
+                    navigate('/')
+                }}></PageBack>
+                <div className={'event-search'}>
+                    <AppInput
+                        onKeyUp={e => { if (e.key === 'Enter') handleSearch(keywordState) }}
+                        startEnhancer={() => <i className={'iconfont icon-search'}></i>}
+                        value={keywordState}
+                        onChange={e => {
+                            setKeywordState(e.target.value)
+                        }}/>
+                </div>
+                <div className={'result'}>
+                    { !result.length && <Empty />}
+                    {result.map((item, index) => {
+                        return <CardEvent key={index} event={item}></CardEvent>
+                    })
+                    }
+                </div>
             </div>
-        </Layout>)
+        </div>
+    </Layout>)
 }
 
 export default SearchPage

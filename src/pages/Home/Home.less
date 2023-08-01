@@ -3,6 +3,8 @@
   position: relative;
   background: #fff;
   min-height: 100%;
+  padding-bottom: 100px;
+  box-sizing: border-box;
 
   .center {
     max-width: 450px;
@@ -20,12 +22,12 @@
     margin-left: 20px;
 
     &:before {
-        content: url('/images/title.png');
-        position: absolute;
-        left: 0;
-        top: 0;
-        margin-left: -12px;
-        margin-top: -4px;
+      content: url('/images/title.png');
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin-left: -12px;
+      margin-top: -4px;
     }
   }
 
@@ -40,7 +42,7 @@
       align-items: center;
       height: 68px;
 
-      >div {
+      > div {
         transition: font-size 0.1s;
       }
 
@@ -84,7 +86,8 @@
     }
 
     .tab-contains {
-       padding:12px 20px;
+      padding: 12px 20px;
+      min-height: 247px;
 
       .event-card {
         width: auto;
@@ -101,11 +104,11 @@
     display: flex;
     width: 326px;
     height: 56px;
-    padding: 14px 0px;
+    padding: 14px 0;
     justify-content: center;
     align-items: center;
     border-radius: 16px;
-    background: var(--primary-color-brand-16, #9EFEDD);
+    background: linear-gradient(88.02deg, rgb(186, 255, 173) -2.09%, rgb(161, 244, 230) 62.09%, rgb(128, 248, 192) 97.29%);
     position: fixed;
     z-index: 999;
     bottom: 20px;

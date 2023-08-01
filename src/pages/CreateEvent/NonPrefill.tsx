@@ -8,18 +8,28 @@ import UploadImage from '../../components/compose/UploadImage/UploadImage'
 import AppInput from '../../components/base/AppInput'
 import UserContext from '../../components/provider/UserProvider/UserContext'
 import AppButton, {BTN_KIND} from '../../components/base/AppButton/AppButton'
-import solas, {Badge, CreateEventProps, Group, Profile, updateEvent} from '../../service/solas'
+import solas, {
+    Badge,
+    CreateEventProps,
+    getEventSide,
+    getHotTags,
+    Group,
+    Profile,
+    queryEvent,
+    updateEvent
+} from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
 import SelectCreator from '../../components/compose/SelectCreator/SelectCreator'
 import AppDateInput from "../../components/base/AppDateInput/AppDateInput";
-import {CheckIndeterminate, Delete, Plus} from "baseui/icon";
+import {Delete} from "baseui/icon";
 import {Select} from "baseui/select";
 import Toggle from "../../components/base/Toggle/Toggle";
 import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
+import {useLocation} from "react-router-dom";
 
 interface CreateEventPageProps {
     eventId?: number
@@ -37,10 +47,10 @@ function CreateEvent(props: CreateEventPageProps) {
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [start, setStart] = useState(new Date().toISOString())
-    const [ending, setEnding] = useState(new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString())
+    const [ending, setEnding] = useState(new Date(new Date().getTime() + 60 * 60 * 1000).toISOString())
     const [locationType, setLocationType] = useState<'online' | 'offline' | 'both'>('offline')
     const [onlineUrl, setOnlineUrl] = useState('')
-    const [location, setLocation] = useState<any>([])
+    const [eventSite, setEventSite] = useState<any>([])
     const [maxParticipants, setMaxParticipants] = useState<number>(10) // default 10
     const [minParticipants, setMinParticipants] = useState<number>(3) // default 3
     const [guests, setGuests] = useState<string[]>([''])
@@ -50,17 +60,13 @@ function CreateEvent(props: CreateEventPageProps) {
     const [enableMaxParticipants, setEnableMaxParticipants] = useState(true)
     const [enableMinParticipants, setEnableMinParticipants] = useState(false)
     const [enableGuest, setEnableGuest] = useState(true)
-    const [hasDuration, setHasDuration] = useState(false)
+    const [hasDuration, setHasDuration] = useState(true)
     const [badgeDetail, setBadgeDetail] = useState<Badge | null>(null)
+    const [labels, setLabels] = useState<string[]>([])
+    const [presetLocations, setPresetLocations] = useState<{ label: string, id: number }[]>([])
     const isEditMode = !!props.eventId
-
-    // 预设
-    const presetLocations = [
-        {label: '预设1', id: '预设1'},
-        {label: '预设2', id: '预设2'},
-        {label: '预设3', id: '预设3'},
-    ]
-    const labels = ['预设1', '预设2', '预设3', '预设4', '预设5', '预设6', '预设7', '预设8']
+    const [siteOccupied, setSiteOccupied] = useState(false)
+    const location = useLocation()
 
     const toNumber = (value: string, set: any) => {
         if (!value) {
@@ -85,7 +91,6 @@ function CreateEvent(props: CreateEventPageProps) {
         fetchBadgeDetail()
     }, [badgeId])
 
-
     useEffect(() => {
         async function fetchEventDetail() {
             if (isEditMode) {
@@ -109,13 +114,13 @@ function CreateEvent(props: CreateEventPageProps) {
                     }
                     setLocationType(event.location_type)
                     setOnlineUrl(event.online_location || '')
-                    setLocation(event.location ? [{label: event.location, id: event.location}] : [])
-                    if (event.max_participants) {
-                        setMaxParticipants(event.max_participants)
+                    setEventSite(event.event_site ? [{label: event.event_site.title, id: event.event_site.id}] : [])
+                    if (event.max_participant) {
+                        setMaxParticipants(event.max_participant)
                         setEnableMaxParticipants(true)
                     }
-                    if (event.min_participants) {
-                        setMinParticipants(event.min_participants)
+                    if (event.min_participant) {
+                        setMinParticipants(event.min_participant)
                         setEnableMinParticipants(true)
                     }
                     if (event.guests) {
@@ -131,8 +136,54 @@ function CreateEvent(props: CreateEventPageProps) {
             }
         }
 
+        async function fetchTags() {
+            const tags = await getHotTags()
+            setLabels(tags)
+        }
+
+
+        fetchTags()
         fetchEventDetail()
     }, [])
+
+    useEffect(() => {
+        async function fetchLocation() {
+            if (creator?.is_group) {
+                const location = await getEventSide({group_id: creator.id})
+                setPresetLocations(location.map((l) => ({label: l.title, id: l.id})))
+            }
+        }
+
+        fetchLocation()
+    }, [creator?.is_group])
+
+    // 检查event_site在设置的event.start_time和event.ending_time否可用
+    useEffect(() => {
+        async function getEventBySiteAndDate() {
+            if (eventSite[0] && start && ending) {
+                const startDate = new Date(start).getFullYear() + '-' + (new Date(start).getMonth() + 1) + '-' + new Date(start).getDate()
+                const endDate = new Date(ending).getFullYear() + '-' + (new Date(ending).getMonth() + 1) + '-' + new Date(ending).getDate()
+                console.log('eventSite', eventSite[0])
+                let events = await queryEvent({
+                    event_site_id: eventSite[0].id,
+                    date: startDate,
+                    page: 1
+                })
+                console.log('eventseventsevents', events)
+
+                // 排除自己
+                events = events.filter((e) => e.id !== props.eventId)
+
+                const occupied = events.some((e) => {
+                    return new Date(start).getTime() >= new Date(e.start_time!).getTime() || new Date(ending).getTime() <= new Date(e.ending_time!).getTime()
+                })
+
+                setSiteOccupied(occupied)
+            }
+        }
+
+        getEventBySiteAndDate()
+    }, [start, ending, eventSite])
 
     const showBadges = async () => {
         const props = creator?.is_group ? {
@@ -162,6 +213,17 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleCreate = async () => {
+        if (siteOccupied) {
+            showToast(lang['Activity_Detail_site_Occupied'])
+            window.location.href= location.pathname + '#SiteError'
+            return
+        }
+
+        if (new Date(start) > new Date(ending)) {
+            showToast('start time should be earlier than ending time')
+            return
+        }
+
         if (!cover) {
             showToast('please upload cover')
             return
@@ -180,13 +242,13 @@ function CreateEvent(props: CreateEventPageProps) {
             start_time: start,
             ending_time: hasDuration ? ending : null,
             location_type: locationType,
-            location: location[0] ? location[0].id : null,
-            max_participants: enableMaxParticipants ? maxParticipants : null,
-            min_participants: enableMinParticipants ? minParticipants : null,
+            max_participant: enableMaxParticipants ? maxParticipants : null,
+            min_participant: enableMinParticipants ? minParticipants : null,
             guests: enableGuest ? guests.filter(item => !!item).join(',') : null,
             badge_id: badgeId,
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
+            event_site_id: eventSite[0] ? eventSite[0].id : null,
 
 
             auth_token: user.authToken || ''
@@ -206,6 +268,17 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleSave = async () => {
+        if (siteOccupied) {
+            showToast(lang['Activity_Detail_site_Occupied'])
+            window.location.href= location.pathname + '#SiteError'
+            return
+        }
+
+        if (new Date(start) > new Date(ending)) {
+            showToast('start time should be earlier than ending time')
+            return
+        }
+
         if (!cover) {
             showToast('please upload cover')
             return
@@ -223,16 +296,15 @@ function CreateEvent(props: CreateEventPageProps) {
             content,
             tags: label,
             start_time: start,
-            ending_time: hasDuration ? ending : null,
             location_type: locationType,
-            location: location[0] ? location[0].id : null,
-            max_participants: enableMaxParticipants ? maxParticipants : null,
-            min_participants: enableMinParticipants ? minParticipants : null,
+            ending_time: hasDuration ? ending : null,
+            event_site_id: eventSite[0] ? eventSite[0].id : null,
+            max_participant: enableMaxParticipants ? maxParticipants : null,
+            min_participant: enableMinParticipants ? minParticipants : null,
             guests: enableGuest ? guests.filter(item => !!item).join(',') : null,
             badge_id: badgeId,
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
-
             auth_token: user.authToken || ''
         }
 
@@ -304,22 +376,6 @@ function CreateEvent(props: CreateEventPageProps) {
                             </div>
                         }
 
-                        {hasDuration ?
-                            <div className={'event-duration'} onClick={e => {
-                                setHasDuration(false)
-                            }}>
-                                {lang['Activity_Form_Duration_Cancel']}
-                                <CheckIndeterminate size={12}></CheckIndeterminate>
-                            </div>
-                            :
-                            <div className={'event-duration'} onClick={e => {
-                                setHasDuration(true)
-                            }}>
-                                {lang['Activity_Form_Duration']}
-                                <Plus size={12}></Plus>
-                            </div>
-                        }
-
                         <div className='input-area'>
                             <div className='input-area-title'>{lang['Activity_Form_Where']}</div>
                             <div className={'take-place'}>
@@ -350,14 +406,16 @@ function CreateEvent(props: CreateEventPageProps) {
                                 <i className={'icon-Outline'}/>
                                 <Select
                                     clearable
-                                    creatable
                                     options={presetLocations}
-                                    value={location}
+                                    value={eventSite}
                                     onChange={(params) => {
-                                        setLocation(params.value)
+                                        setEventSite(params.value)
                                     }}
                                 ></Select>
                             </div>
+                            { siteOccupied && <div id='SiteError' className={'event-size-error'}>
+                                {lang['Activity_Detail_site_Occupied']}
+                            </div> }
                         </div>
 
                         <div className={'input-area'}>
@@ -429,7 +487,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         <div className='input-area'>
                             <div className='input-area-title'>{lang['BadgeDialog_Label_Creator']}</div>
-                            <SelectCreator value={creator} onChange={(res) => {
+                            <SelectCreator groupFirst value={creator} onChange={(res) => {
                                 console.log('resres', res);
                                 setCreator(res)
                             }}/>

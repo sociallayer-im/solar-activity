@@ -2,7 +2,18 @@ import {Link, useNavigate, useParams} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
-import {Event, getProfile, Group, Participants, Profile, queryEventDetail, queryMyEvent, cancelEvent} from "../../service/solas";
+import {
+    cancelEvent,
+    Event,
+    getProfile,
+    Group,
+    joinEvent,
+    Participants,
+    Profile, ProfileSimple,
+    queryEventDetail,
+    queryMyEvent,
+    unJoinEvent
+} from "../../service/solas";
 import './EventDetail.less'
 import LangContext from "../../components/provider/LangProvider/LangContext";
 import useTime from "../../hooks/formatTime";
@@ -33,12 +44,14 @@ function EventDetail() {
     const [outOfDate, setOutOfDate] = useState(false)
     const [inProgress, setInProgress] = useState(false)
     const [notStart, setNotStart] = useState(false)
+    const [participants, setParticipants] = useState<ProfileSimple[]>([])
 
     useEffect(() => {
         async function fetchData() {
             if (eventId) {
                 const res = await queryEventDetail({id: Number(eventId)})
                 setEvent(res)
+                setParticipants(res.participants?.map((item: Participants) => item.profile) || [])
                 setCanceled(res.status === 'cancel')
 
                 const now = new Date().getTime()
@@ -95,7 +108,7 @@ function EventDetail() {
         async function checkJoined() {
             if (hoster && user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken || ''})
-                const joined = res.find((item: Participants) => item.event.id === event?.id)
+                const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel')
                 setIsJoined(!!joined)
             }
         }
@@ -121,6 +134,42 @@ function EventDetail() {
         navigate(`/event/edit/${event?.id}`)
     }
 
+    const handleJoin = async () => {
+        const unload = showLoading()
+        try {
+            const join = await joinEvent({id: Number(eventId), auth_token: user.authToken || ''})
+            unload()
+            showToast('Join success')
+            setIsJoined(true)
+        } catch (e: any) {
+            console.error(e)
+            unload()
+            showToast(e.message)
+        }
+    }
+
+    const handleUnJoin = async () => {
+        const unload = showLoading()
+        try {
+            const join = await unJoinEvent({id: Number(eventId), auth_token: user.authToken || ''})
+            unload()
+            showToast('Cancel success')
+            setIsJoined(false)
+        } catch (e: any) {
+            console.error(e)
+            unload()
+            showToast(e.message)
+        }
+    }
+
+    const handleHostCheckIn = async () => {
+        navigate(`/checkin/${event!.id}`)
+    }
+
+    const handleUserCheckIn = async () => {
+        navigate(`/checkin/${event!.id}`)
+    }
+
     return (<Layout>
         {
             !!event &&
@@ -144,10 +193,14 @@ function EventDetail() {
                                 }
                             </div>
                         }
-                        {event.location &&
+                        {(event.event_site || event.location) &&
                             <div className={'detail-item'}>
                                 <i className={'icon-Outline'}/>
-                                <div>{event.location}</div>
+                                <div>{
+                                    event.event_site
+                                        ? event.event_site.title
+                                        : event.location
+                                }</div>
                             </div>
                         }
                         {event.online_location &&
@@ -186,7 +239,7 @@ function EventDetail() {
                                 <div className={tab === 2 ? 'tab-title active' : 'tab-title'}
                                      onClick={e => {
                                          setTab(2)
-                                     }}>{lang['Activity_Participants']}</div>
+                                     }}>{lang['Activity_Participants']}({participants.length})</div>
                             </div>
                         </div>
 
@@ -201,8 +254,11 @@ function EventDetail() {
                             {tab === 2 &&
                                 <div className={'tab-contain'}>
                                     <div className={'center'}>
+                                        {!!event.min_participant &&
+                                            <div className={'min-participants-alert'}>{lang['Activity_Detail_min_participants_Alert']([event.min_participant])}</div>
+                                        }
                                         {!!hoster &&
-                                            <AddressList data={[hoster, hoster]}/>
+                                            <AddressList data={participants as Profile[]} />
                                         }
                                     </div>
                                 </div>}
@@ -211,30 +267,64 @@ function EventDetail() {
                         <div className={'event-action'}>
                             <div className={'center'}>
                                 {canceled &&
-                                    <AppButton disabled>{lang['Activity_Detail_Btn_Canceled']}</AppButton>
+                                    <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
+                                }
+
+                                {isHoster && !canceled && notStart &&
+                                    <AppButton onClick={e => {
+                                        cancel()
+                                    }}>{lang['Activity_Detail_Btn_Cancel']}</AppButton>
                                 }
 
                                 {isHoster && !canceled &&
-                                    <>
-                                        <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
-                                        <AppButton  onClick={e => {cancel()}}>{lang['Activity_Detail_Btn_Cancel']}</AppButton>
-                                    </>
+                                    <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
                                 }
 
-                                { !isJoined && notStart && !canceled &&
-                                    <AppButton>{lang['Activity_Detail_Btn_Attend']}</AppButton>
+                                {!isJoined && notStart && !canceled && !outOfDate && !isHoster &&
+                                    <AppButton special onClick={e => {
+                                        handleJoin()
+                                    }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
                                 }
 
-                                { isJoined && inProgress && !canceled &&
-                                    <AppButton>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                {isJoined && notStart && !canceled &&
+                                    <AppButton onClick={e => {
+                                        handleUnJoin()
+                                    }}>{lang['Activity_Detail_Btn_unjoin']}</AppButton>
                                 }
 
-                                { !isJoined && inProgress && !isHoster && !canceled &&
+                                {!isJoined && inProgress && !isHoster && !canceled &&
                                     <AppButton disabled>{lang['Activity_Detail_Btn_Attend']}</AppButton>
                                 }
 
-                                { outOfDate && !canceled &&
+                                {outOfDate && !canceled &&
                                     <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
+                                }
+
+
+                                {!canceled && isHoster && inProgress &&
+                                    <AppButton
+                                        special
+                                        onClick={e => {
+                                            handleHostCheckIn()
+                                        }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                }
+
+                                {!canceled && isJoined && inProgress &&
+                                    <>
+                                        { (event.location || event.event_site) &&
+                                            <AppButton
+                                                onClick={e => {
+                                                    handleUserCheckIn()
+                                                }}
+                                                special>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                        }
+                                        {!!event.online_location && <AppButton
+                                            onClick={e => {
+                                                window.open(event.online_location!, '_blank')
+                                            }}
+                                            special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
+                                        }
+                                    </>
                                 }
                             </div>
                         </div>

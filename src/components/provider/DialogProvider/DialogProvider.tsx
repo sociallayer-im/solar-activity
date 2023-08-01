@@ -34,6 +34,7 @@ import DetailGift from "../../compose/Detail/DetailGift/DetailGift";
 import DialogGiftCheckIn from "../../base/Dialog/DialogGiftCheckIn/DialogGiftCheckIn";
 import DetailGiftItem from "../../compose/Detail/DetailGiftItem/DetailGiftItem";
 import {useNavigate, useLocation} from "react-router-dom";
+import DialogEventCheckIn from "../../base/Dialog/DialogEventCheckIn/DialogEventCheckIn";
 
 export interface DialogProviderProps {
     children: ReactNode
@@ -674,6 +675,32 @@ function DialogProvider (props: DialogProviderProps) {
         setDialogsGroup({ ...dialogsGroup })
     }
 
+    const showEventCheckIn = (eventId: number) => {
+        const id = genID()
+        const width = window.innerWidth
+        dialogsGroup.dialogs.push({
+            id,
+            content: () => {
+                const close = () => {
+                    closeDialogByID(id)
+                }
+
+                const dialogProps = {
+                    key: id.toString(),
+                    size: width < 768 ?  ['100%', '100%'] :  [500, 'auto'],
+                    handleClose: close
+                }
+
+                return (
+                    <Dialog { ...dialogProps } >
+                        { (close) => <DialogEventCheckIn eventId={eventId} handleClose={close} /> }
+                    </Dialog>
+                )
+            }
+        })
+        setDialogsGroup({ ...dialogsGroup })
+    }
+
     const showGiftCheckIn = (giftId: number) => {
         const id = genID()
         const width = window.innerWidth
@@ -702,6 +729,7 @@ function DialogProvider (props: DialogProviderProps) {
 
     const contextValue: DialogsContextType = {
         dialogsCount,
+        showEventCheckIn,
         openConnectWalletDialog,
         showLoading,
         showToast,

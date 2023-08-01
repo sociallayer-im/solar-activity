@@ -72,7 +72,7 @@ function Home() {
             {!!user.id &&
                 <div className={'center'}>
                     <div className={'module-title'}>
-                        {'推荐'}
+                        {lang['Activity_Commended']}
                     </div>
                     <ListMyCreatedEvent/>
                 </div>
@@ -84,7 +84,7 @@ function Home() {
 
             <div className={'create-event-btn'} onClick={e => {
                 gotoCreateEvent()
-            }}>{lang['Activity_Create_title']}</div>
+            }}>+ {lang['Activity_Create_title']}</div>
         </div>
     </Layout>
 }

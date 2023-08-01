@@ -47,6 +47,7 @@ const RootWithStyle = withStyle(StyledRoot, (props) => {
 
 interface AppInputProps  {
     onChange?: (...rest: any[]) => any
+    onKeyUp?: (...rest: any[]) => any
     error?: boolean,
     errorMsg?: string,
     value: string,
@@ -96,6 +97,7 @@ export default function AppInput(props: AppInputProps) {
     return (
         <>
             <Input
+                onKeyUp={ (e) => { if (props.onKeyUp) { props.onKeyUp(e) } } }
                 value={ props.value }
                 maxLength={ props.maxLength }
                 readOnly={ props.readOnly || false }
