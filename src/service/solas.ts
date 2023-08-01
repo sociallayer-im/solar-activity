@@ -1576,7 +1576,8 @@ export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
 }
 
 export interface QueryRecommendEventProps {
-    rec: 'latest' | 'soon'
+    rec?: 'latest' | 'soon'
+    page: number
 }
 
 export async function queryRecommendEvent(props: QueryRecommendEventProps): Promise<Event[]> {

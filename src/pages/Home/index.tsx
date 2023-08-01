@@ -55,7 +55,6 @@ function Home() {
                         </div>
                     </div>
                     <div className={'center'}>
-
                         <AppSubTabs activeKey={tabIndex} renderAll onChange={({activeKey}) => {
                             setTabIndex(activeKey + '')
                         }}>

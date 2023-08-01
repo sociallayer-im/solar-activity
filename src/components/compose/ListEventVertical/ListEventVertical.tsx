@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {Event, getHotTags, queryEvent} from "../../../service/solas";
+import {Event, getHotTags, queryEvent, queryRecommendEvent} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
@@ -15,11 +15,10 @@ function ListEventVertical() {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
-    const [tab2Index, setTab2Index] = useState('0')
+    const [tab2Index, setTab2Index] = useState<'latest' | 'soon'>('latest')
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
 
-    const [events, setEvents] = useState<Event[]>([])
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [labels, setLabels] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
@@ -27,8 +26,12 @@ function ListEventVertical() {
     const getEvent = async (page: number) => {
         const unload = showLoading()
         try {
-            const res = await queryEvent({page, tag: selectTag[0] || undefined})
-            setEvents(res)
+            let res = await queryRecommendEvent({page, rec: tab2Index})
+            if (selectTag[0]) {
+                res = res.filter(item => {
+                    return item.tags?.includes(selectTag[0])
+                })
+            }
             unload()
             return res
         } catch (e: any) {
@@ -46,7 +49,7 @@ function ListEventVertical() {
 
     useEffect(() => {
         refresh()
-    }, [selectTag])
+    }, [selectTag, tab2Index])
 
     useEffect(() => {
         const getLabels = async () => {
@@ -59,16 +62,16 @@ function ListEventVertical() {
     return (
         <div className={'module-tabs'}>
             <div className={'tab-titles'}>
-                <div onClick={() => setTab2Index('0')}
-                     className={tab2Index === '0' ? 'module-title' : 'tab-title'}>
+                <div onClick={() => setTab2Index('latest')}
+                     className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_latest']}
                 </div>
-                <div onClick={() => setTab2Index('1')}
-                     className={tab2Index === '1' ? 'module-title' : 'tab-title'}>
+                <div onClick={() => setTab2Index('latest')}  style={{display: 'none'}}
+                     className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Popular']}
                 </div>
-                <div onClick={() => setTab2Index('2')}
-                     className={tab2Index === '2' ? 'module-title' : 'tab-title'}>
+                <div onClick={() => setTab2Index('soon')}
+                     className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Coming']}
                 </div>
             </div>
