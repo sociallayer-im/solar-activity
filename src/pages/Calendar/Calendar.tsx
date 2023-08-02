@@ -24,7 +24,6 @@ interface DateItem {
 }
 
 const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const MonthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const colorList = [
     '#B7D453',
     '#75D4F0',
@@ -38,7 +37,7 @@ const colorList = [
 
 function Calendar() {
     const navigate = useNavigate()
-    const {lang} = useContext(langContext)
+    const {lang, langType} = useContext(langContext)
     const [selectedLabel, setSelectedLabel] = useState<string[]>([])
     const {showLoading, showToast} = useContext(DialogsContext)
     const [eventList, setEventList] = useState<EventWithProfile[]>([])
@@ -48,13 +47,17 @@ function Calendar() {
     const {user} = useContext(userContext)
     const [labels, setLabels] = useState<string[]>([])
 
+    const monthName = langType === 'en'
+        ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月']
+
     const now = new Date()
 
     const [selectedDate, setSelectedDate] = useState<DateItem>({
         value: now.toISOString(),
         date: now.getDate(),
         day: dayName[now.getDay()],
-        monthName: MonthName[now.getMonth()],
+        monthName: monthName[now.getMonth()],
 
     })
 
@@ -81,7 +84,7 @@ function Calendar() {
             value: date.toISOString(),
             date: date.getDate(),
             day: dayName[date.getDay()],
-            monthName: MonthName[date.getMonth()],
+            monthName: monthName[date.getMonth()],
         }
     })
 
@@ -89,13 +92,13 @@ function Calendar() {
     const items = dateList.map((item, index) => {
         const showMonth = index === 0 || item.monthName !== dateList[index - 1].monthName
         let className = 'calendar-item'
-        if (item.monthName === MonthName[now.getMonth()] && item.date === now.getDate()) {
+        if (item.monthName === monthName[now.getMonth()] && item.date === now.getDate()) {
             className = className + ' current'
             initIndex = index
         }
 
         const selected = new Date(selectedDate.value)
-        if (item.monthName === MonthName[selected.getMonth()] && item.date === selected.getDate()) {
+        if (item.monthName === monthName[selected.getMonth()] && item.date === selected.getDate()) {
             className = className + ' active'
         }
 

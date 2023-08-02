@@ -1,7 +1,7 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
-import {Event, Participants} from "../../../../service/solas";
+import {Event, Participants, queryEventDetail} from "../../../../service/solas";
 import './CardEvent.less'
 import useTime from "../../../../hooks/formatTime";
 import langContext from "../../../provider/LangProvider/LangContext";
@@ -13,7 +13,7 @@ export interface CardEventProps {
 function CardEvent(props:CardEventProps) {
     const [css] = useStyletron()
     const navigate = useNavigate()
-    const [a, seta] = useState('')
+    const [eventDetail, setEventDetail] = useState(props.event)
     const formatTime = useTime()
     const {lang} = useContext(langContext)
 
@@ -23,39 +23,48 @@ function CardEvent(props:CardEventProps) {
         window.open(`/event/${props.event.id}`, '_blank')
     }
 
+    useEffect(() => {
+        if (!props.event.event_site) {
+            const event = queryEventDetail({id: props.event.id})
+                .then(res => {
+                    setEventDetail(res)
+                })
+        }
+    }, [])
+
     return (<div className={'event-card'} onClick={e => {gotoDetail()}}>
         <div className={'markers'}>
             {!!hasRegistered && <div className={'marker'}>{lang['Activity_State_Registered']}</div>}
         </div>
         <div className={'info'}>
             <div className={'left'}>
-                <div className={'title'}>{props.event.title}</div>
+                <div className={'title'}>{eventDetail.title}</div>
 
-                {!!props.event.start_time &&
+                {!!eventDetail.start_time &&
                     <div className={'detail'}>
                         <i className={'icon-calendar'}/>
-                        <span>{formatTime(props.event.start_time)}</span>
+                        <span>{formatTime(eventDetail.start_time)}</span>
                     </div>
                 }
 
-                {!!props.event.location &&
+                {!!eventDetail.location &&
                     <div className={'detail'}>
                         <i className={'icon-Outline'}/>
-                        <span>{props.event.location}</span>
+                        <span>{eventDetail.location}</span>
                     </div>
                 }
 
-                {!!props.event.event_site &&
+                {!!eventDetail.event_site &&
                     <div className={'detail'}>
                         <i className={'icon-Outline'}/>
-                        <span>{props.event.event_site.title}</span>
+                        <span>{eventDetail.event_site.title}</span>
                     </div>
                 }
 
-                {!!props.event.online_location &&
+                {!!eventDetail.online_location &&
                     <div className={'detail'}>
                         <i className={'icon-link'}/>
-                        <span>{props.event.online_location}</span>
+                        <span>{eventDetail.online_location}</span>
                     </div>
                 }
 
