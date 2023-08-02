@@ -24,6 +24,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-src/main.tsx
 /coverage/
 stats.html
