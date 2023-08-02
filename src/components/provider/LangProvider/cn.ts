@@ -206,7 +206,7 @@ const langCN: LangConfig = {
   Activity_no_activity: '当前没有活动～',
   Activity_latest: '最新活动',
   Activity_Popular: '最受欢迎',
-  Activity_Commended: 'Commended',
+  Activity_Commended: '推荐',
   Activity_Coming: '即将开始',
   Activity_Greeting_Morning: '早上好',
   Activity_Greeting_Afternoon: '下午好',

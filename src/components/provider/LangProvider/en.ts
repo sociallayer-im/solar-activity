@@ -205,7 +205,7 @@ const langEN = {
   Activity_search_placeholder: 'Search events…',
   Activity_no_activity: 'No activity yet～',
   Activity_latest: 'Latest',
-  Activity_Commended: 'Commended',
+  Activity_Commended: 'Recommended',
   Activity_Popular: 'Popular',
   Activity_Coming: 'Coming',
   Activity_Greeting_Morning: 'Good Morning',
