@@ -18,15 +18,15 @@ import './styles/index.less'
 
 const engine = new Styletron();
 
-const walletconnect = new WalletConnectConnector({
-    chains: [mainnet, moonbeam],
-    options: {
-        qrcode: true,
-        qrcodeModalOptions: {
-            registryUrl: '/wallets/wallets.json'
-        }
-    },
-})
+// const walletconnect = new WalletConnectConnector({
+//     chains: [mainnet, moonbeam],
+//     options: {
+//         qrcode: true,
+//         qrcodeModalOptions: {
+//             registryUrl: '/wallets/wallets.json'
+//         }
+//     },
+// })
 
 const inject = new InjectedConnector({
     chains: [mainnet, moonbeam],
@@ -39,7 +39,7 @@ const {chains, provider} = configureChains(
 
 const wagmiClient = createClient({
     autoConnect: true,
-    connectors: [inject, walletconnect],
+    connectors: [inject],
     provider,
 })
 

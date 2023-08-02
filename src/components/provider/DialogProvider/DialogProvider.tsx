@@ -143,7 +143,7 @@ function DialogProvider (props: DialogProviderProps) {
 
                 const props = {
                     key: id.toString(),
-                    size: [320, 450],
+                    size: [320, 'auto'],
                     handleClose: close,
                     position: 'bottom' as const
                 }
