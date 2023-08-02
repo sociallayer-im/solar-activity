@@ -169,7 +169,10 @@ function Calendar() {
 
     // start_time 和 end_time 相同的为同一组, 并且按照是否是自己的事件分组
     let groupedEvent: EventWithProfile[][] = []
-    let list = eventList
+    let list = eventList.sort((a, b) => {
+        return new Date(a.start_time!).getTime() - new Date(b.start_time!).getTime()
+    })
+
     if (onlyShowMyEvent) {
         list = eventList.filter(item => {
             return MyEvent.find(event => event.id === item.id)
