@@ -32,7 +32,7 @@ function CreateEventSuccess() {
         <div className={'create-event-success-page'}>
             <Link className={'done'} to={`/event/${eventId}`}>Done</Link>
             <div className={'title'}>{lang['Activity_Create_Success']}</div>
-            { event && <div className={'event-card'} >
+            { event && <div className={'event-share-card '} >
                 <img src={event.cover} className={'cover'} alt=""/>
                 <div className={'name'}>{event.title}</div>
                 { event.start_time &&
@@ -50,14 +50,14 @@ function CreateEventSuccess() {
                 }
 
                 {
-                    event.location &&  <div className={'time'}>
+                    event.event_site &&  <div className={'time'}>
                         <i className={'icon-Outline'} />
-                        <div>{event.location}</div>
+                        <div>{event.event_site.title}</div>
                     </div>
                 }
 
                 {
-                    event.location &&  <div className={'time'}>
+                    event.online_location &&  <div className={'time'}>
                         <i className={'icon-link'} />
                         <div>{event.online_location}</div>
                     </div>
