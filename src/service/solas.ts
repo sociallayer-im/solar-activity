@@ -1503,7 +1503,7 @@ export interface Event {
     location: null | string,
     max_participant: null | number,
     min_participant: null | number,
-    guests: null | string,
+    guests: null | string[],
     badge_id: null | number,
     host_info: null | string,
     online_location: null | string,
@@ -1618,6 +1618,7 @@ export interface Participants {
     profile: ProfileSimple,
     status: string,
     event: Event,
+    role: string,
 }
 
 export interface QueryMyEventProps {
@@ -1666,7 +1667,7 @@ export async function getHotTags(): Promise<string[]> {
         data: {}
     })
 
-    return res.data.tags
+    return [...res.data.tags, 'Recommended']
 }
 
 export interface EventSites {
@@ -1732,6 +1733,45 @@ export async function searchEvent (keyword: string) {
     }
 
     return res.data.events as Event[]
+}
+
+interface InviteGuestProp {
+    id: number,
+    domains: string[],
+    auth_token: string,
+}
+
+export async function inviteGuest (props: InviteGuestProp) {
+    checkAuth(props)
+
+    const task = props.domains.map(item => {
+        return getProfile({domain: item})
+    })
+
+    const profiles = await Promise.all(task).catch(e => {
+        throw e
+    })
+
+    const ids = profiles.map((item, index) => {
+        if (!item) throw new Error('Profile not found: ' + props.domains[index])
+
+        return item.id
+    })
+
+    const task2 = ids.map(id => {
+        return fetch.post({
+            url: `${api}/event/invite_guest`,
+            data: {
+                target_id: id,
+                auth_token: props.auth_token,
+                id: props.id
+            }
+        })
+    })
+
+    const res = await Promise.all(task2).catch(e => {
+        throw e
+    })
 }
 
 

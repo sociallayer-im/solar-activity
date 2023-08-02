@@ -236,7 +236,7 @@ const langCN: LangConfig = {
   Activity_Form_Where: '活动地点',
   Activity_Form_participants: '最大参与人数',
   Activity_Form_participants_Min: '最小参与人数',
-  Activity_Form_Guest: '出席嘉宾',
+  Activity_Form_Guest: '嘉宾',
   Activity_Form_Duration: '设置活动持续时间',
   Activity_Form_Duration_Cancel: '取消设置活动持续时间',
   Activity_Form_Hoster: '发起人',
@@ -255,9 +255,10 @@ const langCN: LangConfig = {
   Activity_Detail_Btn_has_Cancel: '活动已取消',
   Activity_Detail_Btn_Joined: '已参加',
   Activity_Detail_Btn_AttendOnline: '线上参与',
+  Activity_Detail_Badge: '报名参加活动，结束可获得 POAP*1',
+  Activity_Detail_Guest: '嘉宾',
   Activity_Detail_min_participants_Alert: slotLang('报名人数少于 {1} 人时，活动可能会被取消'),
   Activity_quantity_Input: '自定义',
-
   Activity_Calendar_Page_Time: '时间',
   Activity_Calendar_Page_Name: '活动',
 

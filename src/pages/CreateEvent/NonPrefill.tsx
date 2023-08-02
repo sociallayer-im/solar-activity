@@ -1,4 +1,4 @@
-import {useNavigate, useSearchParams} from 'react-router-dom'
+import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
 import {useContext, useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
 import PageBack from '../../components/base/PageBack'
@@ -14,6 +14,7 @@ import solas, {
     getEventSide,
     getHotTags,
     Group,
+    inviteGuest,
     Profile,
     queryEvent,
     updateEvent
@@ -29,7 +30,6 @@ import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
-import {useLocation} from "react-router-dom";
 
 interface CreateEventPageProps {
     eventId?: number
@@ -123,10 +123,15 @@ function CreateEvent(props: CreateEventPageProps) {
                         setMinParticipants(event.min_participant)
                         setEnableMinParticipants(true)
                     }
-                    if (event.guests) {
-                        setGuests(event.guests.split(','))
+
+                    if (event.participants) {
+                        const gustList = event.participants
+                            .filter(p => p.role === 'guest')
+                            .map((p) => p.profile.domain!)
                         setEnableGuest(true)
+                        setGuests([...gustList, ''])
                     }
+
                     setLabel(event.tags ? event.tags : [])
                     setBadgeId(event.badge_id)
                 } catch (e: any) {
@@ -215,7 +220,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const handleCreate = async () => {
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
-            window.location.href= location.pathname + '#SiteError'
+            window.location.href = location.pathname + '#SiteError'
             return
         }
 
@@ -244,7 +249,6 @@ function CreateEvent(props: CreateEventPageProps) {
             location_type: locationType,
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
-            guests: enableGuest ? guests.filter(item => !!item).join(',') : null,
             badge_id: badgeId,
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
@@ -257,6 +261,16 @@ function CreateEvent(props: CreateEventPageProps) {
         const unloading = showLoading(true)
         try {
             const newEvent = await solas.createEvent(props)
+            if (guests.length) {
+                const domains = guests.filter((g) => !!g)
+                if (domains.length) {
+                    const invite = await inviteGuest({
+                        id: newEvent.id,
+                        domains,
+                        auth_token: user.authToken || ''
+                    })
+                }
+            }
             unloading()
             showToast('create success')
             navigate(`/success/${newEvent.id}`)
@@ -270,7 +284,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const handleSave = async () => {
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
-            window.location.href= location.pathname + '#SiteError'
+            window.location.href = location.pathname + '#SiteError'
             return
         }
 
@@ -301,7 +315,6 @@ function CreateEvent(props: CreateEventPageProps) {
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
-            guests: enableGuest ? guests.filter(item => !!item).join(',') : null,
             badge_id: badgeId,
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
@@ -311,6 +324,16 @@ function CreateEvent(props: CreateEventPageProps) {
         const unloading = showLoading(true)
         try {
             const newEvent = await updateEvent(saveProps)
+            if (guests.length) {
+                const domains = guests.filter((g) => !!g)
+                if (domains.length) {
+                    const invite = await inviteGuest({
+                        id: newEvent.id,
+                        domains,
+                        auth_token: user.authToken || ''
+                    })
+                }
+            }
             unloading()
             showToast('update success')
             navigate(`/event/${newEvent.id}`)
@@ -413,9 +436,9 @@ function CreateEvent(props: CreateEventPageProps) {
                                     }}
                                 ></Select>
                             </div>
-                            { siteOccupied && <div id='SiteError' className={'event-size-error'}>
+                            {siteOccupied && <div id='SiteError' className={'event-size-error'}>
                                 {lang['Activity_Detail_site_Occupied']}
-                            </div> }
+                            </div>}
                         </div>
 
                         <div className={'input-area'}>

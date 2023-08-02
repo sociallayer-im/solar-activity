@@ -3,13 +3,16 @@ import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
 import {
+    Badge,
     cancelEvent,
     Event,
     getProfile,
     Group,
     joinEvent,
     Participants,
-    Profile, ProfileSimple,
+    Profile,
+    ProfileSimple,
+    queryBadgeDetail,
     queryEventDetail,
     queryMyEvent,
     unJoinEvent
@@ -45,6 +48,9 @@ function EventDetail() {
     const [inProgress, setInProgress] = useState(false)
     const [notStart, setNotStart] = useState(false)
     const [participants, setParticipants] = useState<ProfileSimple[]>([])
+    const [guests, setGuests] = useState<ProfileSimple[]>([])
+    const [badge, setBadge] = useState<Badge | null>(null)
+
 
     useEffect(() => {
         async function fetchData() {
@@ -93,6 +99,15 @@ function EventDetail() {
                     }
                 }
 
+                if (res?.badge_id) {
+                    const badge = await queryBadgeDetail({id: res.badge_id})
+                    setBadge(badge)
+                }
+
+                if (res.participants) {
+                    const guests = res.participants.filter((item: Participants) => item.role === 'guest')
+                    setGuests(guests.map((item: Participants) => item.profile))
+                }
             } else {
                 navigate('/error')
             }
@@ -108,7 +123,7 @@ function EventDetail() {
         async function checkJoined() {
             if (hoster && user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken || ''})
-                const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel')
+                const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel' && item.role !== 'guest')
                 setIsJoined(!!joined)
             }
         }
@@ -220,12 +235,38 @@ function EventDetail() {
                     {!!hoster &&
                         <div className={'hoster'}>
                             <div className={'center'}>
-                                <img src={hoster.image_url || defaultAvatar(hoster.id)} alt=""/>
-                                <div>
-                                    <div className={'host-name'}>{hoster.nickname || hoster.username}</div>
-                                    <div>{lang['Activity_Form_Hoster']}</div>
+                                <div className={'host-item'}>
+                                    <img src={hoster.image_url || defaultAvatar(hoster.id)} alt=""/>
+                                    <div>
+                                        <div className={'host-name'}>{hoster.nickname || hoster.username}</div>
+                                        <div>{lang['Activity_Form_Hoster']}</div>
+                                    </div>
                                 </div>
+                                {!!guests && !!guests.length &&
+                                    <>
+                                        {
+                                            guests.map((item: ProfileSimple) => {
+                                                return <div className={'host-item'}>
+                                                    <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
+                                                    <div>
+                                                        <div className={'host-name'}>{item.domain?.split('.')[0]}</div>
+                                                        <div>{lang['Activity_Form_Guest']}</div>
+                                                    </div>
+                                                </div>
+                                            })
+                                        }
+                                    </>
+                                }
                             </div>
+                            {
+                                !!badge && <div className={'center'}>
+                                    <div className={'event-badge'}>
+                                        <div>{lang['Activity_Detail_Badge']}</div>
+                                        <img src={badge.image_url} alt=""/>
+                                    </div>
+                                </div>
+                            }
+
                         </div>
                     }
 
@@ -239,7 +280,8 @@ function EventDetail() {
                                 <div className={tab === 2 ? 'tab-title active' : 'tab-title'}
                                      onClick={e => {
                                          setTab(2)
-                                     }}>{lang['Activity_Participants']}({participants.length})</div>
+                                     }}>{lang['Activity_Participants']}({participants.length})
+                                </div>
                             </div>
                         </div>
 
@@ -255,10 +297,11 @@ function EventDetail() {
                                 <div className={'tab-contain'}>
                                     <div className={'center'}>
                                         {!!event.min_participant &&
-                                            <div className={'min-participants-alert'}>{lang['Activity_Detail_min_participants_Alert']([event.min_participant])}</div>
+                                            <div
+                                                className={'min-participants-alert'}>{lang['Activity_Detail_min_participants_Alert']([event.min_participant])}</div>
                                         }
                                         {!!hoster &&
-                                            <AddressList data={participants as Profile[]} />
+                                            <AddressList data={participants as Profile[]}/>
                                         }
                                     </div>
                                 </div>}
@@ -311,7 +354,7 @@ function EventDetail() {
 
                                 {!canceled && isJoined && inProgress &&
                                     <>
-                                        { (event.location || event.event_site) &&
+                                        {(event.location || event.event_site) &&
                                             <AppButton
                                                 onClick={e => {
                                                     handleUserCheckIn()

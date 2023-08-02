@@ -11,6 +11,7 @@ import {Event, Participants, queryEvent, queryMyEvent} from "../../service/solas
 import ListMyAttentedEvent from "../../components/compose/ListMyAttentedEvent/ListMyAttentedEvent";
 import ListMyCreatedEvent from "../../components/compose/ListMyCreatedEvent/ListMyCreatedEvent";
 import ListEventVertical from "../../components/compose/ListEventVertical/ListEventVertical";
+import ListRecommendedEvent from "../../components/compose/ListRecommendedEvent/ListRecommendedEvent";
 
 function Home() {
     const {user} = useContext(UserContext)
@@ -73,7 +74,7 @@ function Home() {
                     <div className={'module-title'}>
                         {lang['Activity_Commended']}
                     </div>
-                    <ListMyCreatedEvent/>
+                    <ListRecommendedEvent />
                 </div>
             }
 
