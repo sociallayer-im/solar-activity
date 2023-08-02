@@ -246,7 +246,7 @@ function EventDetail() {
                                     <>
                                         {
                                             guests.map((item: ProfileSimple) => {
-                                                return <div className={'host-item'}>
+                                                return <div className={'host-item'} key={item.domain}>
                                                     <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
                                                     <div>
                                                         <div className={'host-name'}>{item.domain?.split('.')[0]}</div>

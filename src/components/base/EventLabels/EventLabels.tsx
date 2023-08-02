@@ -7,12 +7,19 @@ export interface EventLabelsProps {
     onChange?: (value: string[]) => any,
     disabled?: boolean,
     single?: boolean,
+    showRecommend?: boolean,
 }
 
 function EventLabels(props: EventLabelsProps) {
+    let list = props.data
+
+    if (!props.showRecommend) {
+        list = list.filter(item => item !== 'Recommended')
+    }
+
     return (<div className={props.disabled ? 'event-label-list disabled': 'event-label-list'}>
         {
-            props.data.map((item, index) => {
+            list.map((item, index) => {
                 const isSelected = props.value.includes(item)
                 const color = getLabelColor(item)
                 const style_1 = isSelected ? {

@@ -45,6 +45,13 @@ function CardEvent(props:CardEventProps) {
                     </div>
                 }
 
+                {!!props.event.event_site &&
+                    <div className={'detail'}>
+                        <i className={'icon-Outline'}/>
+                        <span>{props.event.event_site.title}</span>
+                    </div>
+                }
+
                 {!!props.event.online_location &&
                     <div className={'detail'}>
                         <i className={'icon-link'}/>

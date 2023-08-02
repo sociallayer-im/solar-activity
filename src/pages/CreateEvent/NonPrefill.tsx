@@ -518,7 +518,9 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         <div className={'input-area'}>
                             <div className={'input-area-title'}>{lang['Activity_Form_Label']}</div>
-                            <EventLabels data={labels} onChange={e => {
+                            <EventLabels
+                                showRecommend
+                                data={labels} onChange={e => {
                                 setLabel(e)
                             }} value={label}/>
                         </div>

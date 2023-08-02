@@ -60,12 +60,11 @@ function Calendar() {
 
     useEffect(() => {
         async function fetchData() {
+            const labels = await getHotTags()
+            setLabels(labels)
             if (user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken!})
                 setMyEvent(res.map(item => item.event))
-
-                const labels = await getHotTags()
-                setLabels(labels)
             } else {
                 setMyEvent([])
             }
