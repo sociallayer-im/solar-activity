@@ -11,6 +11,7 @@ import userContext from "../../components/provider/UserProvider/UserContext";
 import Empty from "../../components/base/Empty";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import {getLabelColor} from "../../hooks/labelColor";
+import PageBack from "../../components/base/PageBack";
 
 interface EventWithProfile extends Event {
     profile: Profile | null
@@ -54,6 +55,14 @@ function Calendar() {
     const now = new Date()
 
     const [selectedDate, setSelectedDate] = useState<DateItem>({
+        value: now.toISOString(),
+        date: now.getDate(),
+        day: dayName[now.getDay()],
+        monthName: monthName[now.getMonth()],
+
+    })
+
+    const [currDate, _] = useState<DateItem>({
         value: now.toISOString(),
         date: now.getDate(),
         day: dayName[now.getDay()],
@@ -105,9 +114,11 @@ function Calendar() {
         return <div className={className} onClick={e => {
             setSelectedDate(item)
         }}>
-            <div>{item.day}</div>
-            <div>{item.date}</div>
             <div>{showMonth ? item.monthName : ''}</div>
+            <div className={'inside'}>
+                <div>{item.day}</div>
+                <div>{item.date}</div>
+            </div>
         </div>
     })
 
@@ -199,12 +210,15 @@ function Calendar() {
         <div className={'calendar-page'}>
             <div className={'page-title'}>
                 <div className={'center'}>
+                    <PageBack />
+                </div>
+                <div className={'center'}>
                     <div className={'left'}>{lang['Activity_Calendar']}</div>
                     <div className={'right'}>
-                        <div className={'date'}>{selectedDate.date}</div>
+                        <div className={'date'}>{currDate.date}</div>
                         <div className={'other'}>
-                            <div className={'item'}>{selectedDate.day}</div>
-                            <div className={'item'}>{selectedDate.monthName} {now.getFullYear()}</div>
+                            <div className={'item'}>{currDate.day}</div>
+                            <div className={'item'}>{currDate.monthName} {now.getFullYear()}</div>
                         </div>
                     </div>
                 </div>
@@ -248,11 +262,11 @@ function Calendar() {
                                     return <div className={'grouped-events-item'} key={index}>
                                         <div className={'col1'}>
                                             <div
-                                                className={'start'}>{group[0].start_time!.split('T')[1].split(':')[0]} : {group[0].start_time!.split('T')[1].split(':')[1]}</div>
+                                                className={'start'}>{(new Date(group[0].start_time!).getHours() + '').padStart(2, '0')} : {(new Date(group[0].start_time!).getMinutes() + '').padStart(2, '0')}</div>
                                             {
                                                 group[0].ending_time &&
                                                 <div
-                                                    className={'ending'}>{group[0].ending_time!.split('T')[1].split(':')[0]} : {group[0].ending_time!.split('T')[1].split(':')[1]}</div>
+                                                    className={'ending'}>{(new Date(group[0].ending_time!).getHours() + '').padStart(2, '0')} : {(new Date(group[0].ending_time!).getMinutes() + '').padStart(2, '0')}</div>
                                             }
                                         </div>
                                         <div className={'col2'}>
@@ -261,7 +275,7 @@ function Calendar() {
                                                     const color = colorList[Math.floor(item.id % colorList.length)]
                                                     return (
                                                         <div className={'event-item'}
-                                                             key={item.title}
+                                                             key={item.id}
                                                              onClick={e => {
                                                                  gotoEventDetail(item.id)
                                                              }}

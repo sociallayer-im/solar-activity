@@ -1,6 +1,7 @@
 import { styled, useStyletron } from 'baseui'
+import {Link} from "react-router-dom";
 
-const Logo = styled('a', ({ $theme }) => ({
+const Logo = styled(Link, ({ $theme }) => ({
     width: '102px',
     height: '32px',
     display: 'inline-flex',
@@ -18,7 +19,7 @@ function PageLogo () {
         marginRight: '8px',
     }
 
-    return (<Logo href='/'>
+    return (<Logo to='/'>
             <img className={css(imgStyle)} src="/images/logo.svg" alt=""/>
             <div>Event</div>
         </Logo>)

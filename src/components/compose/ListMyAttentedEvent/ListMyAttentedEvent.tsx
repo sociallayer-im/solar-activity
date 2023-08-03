@@ -8,7 +8,7 @@ import userContext from "../../provider/UserProvider/UserContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
 
 
-function ListMyAttentedEvent() {
+function ListMyAttentedEvent(props: {emptyCallBack?: () => any}) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -20,8 +20,13 @@ function ListMyAttentedEvent() {
     const getMyEvent = async (page: number) => {
         if (user.authToken) {
             const res = await queryMyEvent({auth_token: user.authToken, page})
-            return res.map((item: Participants) => item.event)
+            const list =  res.map((item: Participants) => item.event)
+            if (page === 1 && list.length === 0) {
+                !!props.emptyCallBack && props.emptyCallBack()
+            }
+            return list
         } return []
+        // return []
     }
 
     const {page, ref, list, isEmpty} = scrollToLoad({

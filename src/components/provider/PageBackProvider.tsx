@@ -19,6 +19,7 @@ function PageBacProvider(props: PageBacProviderProps) {
     useEffect(() => {
         if (history.current[history.current.length - 1] !== location.pathname) {
             history.current.push(location.pathname)
+            console.log('location.pathname', location.pathname )
         }
     }, [location])
 

@@ -200,7 +200,9 @@ function CreateEvent(props: CreateEventPageProps) {
                 page: 1
             }
 
+        const unload = showLoading()
         const badges = await solas.queryBadge(props)
+        unload()
 
         openDialog({
             content: (close: any) => <DialogIssuePrefill

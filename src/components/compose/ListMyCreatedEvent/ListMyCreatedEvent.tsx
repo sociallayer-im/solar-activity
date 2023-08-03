@@ -8,7 +8,7 @@ import userContext from "../../provider/UserProvider/UserContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
 
 
-function ListMyCreatedEvent() {
+function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -20,6 +20,9 @@ function ListMyCreatedEvent() {
     const getMyEvent = async (page: number) => {
         if (user.id) {
             const res = await queryEvent({owner_id: user.id, page})
+            if (page === 1 && res.length === 0) {
+                !!props.emptyCallBack && props.emptyCallBack()
+            }
             return res
         } return []
     }

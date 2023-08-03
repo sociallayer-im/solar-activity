@@ -21,6 +21,8 @@ function Home() {
     const [tabIndex, setTabIndex] = useState('0')
     const [registered, setRegistered] = useState<Event[]>([])
     const [created, setCreated] = useState<Event[]>([])
+    const [showMyCreate, setShowMyCreate] = useState(true)
+    const [showMyAttend, setShowMyAttend] = useState(true)
 
 
     const start = async () => {
@@ -41,32 +43,61 @@ function Home() {
         myEvent()
     }, [user.authToken])
 
+    useEffect(() => {
+        if (!showMyCreate) {
+            setTabIndex('0')
+        }
+    }, [showMyCreate])
+
+    useEffect(() => {
+        if (!showMyAttend) {
+            setTabIndex('1')
+        }
+    }, [showMyAttend])
+
     const gotoCreateEvent = () => {
         navigate('/event/create')
     }
+
 
     return <Layout>
         <div className='home-page'>
             <HomeUserPanel/>
             {!!user.id &&
                 <>
-                    <div className={'center'}>
-                        <div className={'module-title'}>
-                            {lang['Activity_My_Event']}
-                        </div>
-                    </div>
-                    <div className={'center'}>
-                        <AppSubTabs activeKey={tabIndex} renderAll onChange={({activeKey}) => {
-                            setTabIndex(activeKey + '')
-                        }}>
-                            <Tab title={lang['Activity_State_Registered']}>
-                                <ListMyAttentedEvent/>
-                            </Tab>
-                            <Tab title={lang['Activity_State_Created']}>
-                                <ListMyCreatedEvent/>
-                            </Tab>
-                        </AppSubTabs>
-                    </div>
+                    {(showMyCreate || showMyAttend) &&
+                        <>
+                            <div className={'center'}>
+                                <div className={'module-title'}>
+                                    {lang['Activity_My_Event']}
+                                </div>
+                            </div>
+                            <div className={'center'}>
+
+                                <AppSubTabs activeKey={tabIndex} renderAll onChange={({activeKey}) => {
+                                    alert(activeKey)
+                                    setTabIndex(activeKey + '')
+                                }}>
+                                    {showMyAttend ? <Tab title={lang['Activity_State_Registered']}>
+                                        <ListMyAttentedEvent emptyCallBack={() => {
+                                            setShowMyAttend(false)
+                                            setTabIndex('1')
+                                        }}/>
+                                    </Tab>: <></>}
+
+                                    { showMyCreate ?
+                                        <Tab title={lang['Activity_State_Created']}>
+                                            <ListMyCreatedEvent emptyCallBack={() => {
+                                                setShowMyCreate(false)
+                                                setTabIndex('0')
+                                            }} />
+                                        </Tab>: <></>
+                                    }
+                                </AppSubTabs>
+
+                            </div>
+                        </>
+                    }
                 </>
             }
             {!!user.id &&

@@ -1667,7 +1667,7 @@ export async function getHotTags(): Promise<string[]> {
         data: {}
     })
 
-    return [...res.data.tags, 'Recommended']
+    return res.data.tags
 }
 
 export interface EventSites {

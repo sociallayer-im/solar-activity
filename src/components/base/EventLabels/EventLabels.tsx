@@ -27,7 +27,7 @@ function EventLabels(props: EventLabelsProps) {
                         borderColor: color,
                     } :
                     {
-                        color: '#c4c4c4',
+                        color: '#1B2028',
                         borderColor: '#EDEDED',
                     }
                 const style_2 = {background: isSelected ? color : '#c4c4c4'}
@@ -45,7 +45,9 @@ function EventLabels(props: EventLabelsProps) {
                     }}
                     className={'event-label-item'}
                     key={index.toString()}>
-                    <i style={style_2}/>
+                    {
+                        isSelected && <i style={style_2}/>
+                    }
                     <span>{item}</span>
                 </div>
             })

@@ -22,14 +22,14 @@
     border-radius: 10px;
     padding-top: 6px;
 
-    div:nth-child(1) {
+    div:nth-child(2) {
       color: #BCC1CD;
       text-align: center;
       font-size: 12px;
       font-style: normal;
     }
 
-    div:nth-child(2) {
+    div:nth-child(3) {
       color: #212525;
       text-align: center;
       font-size: 16px;
@@ -37,33 +37,43 @@
       font-weight: 600;
     }
 
-    div:nth-child(3) {
+    div:nth-child(1) {
       height: 19px;
     }
 
+    .inside {
+      padding: 8px 0;
+      width: 100%;
+    }
+
     &.current {
-      background: #e6e6e6;
+      .inside {
+        border-radius: 10px;
+        background: #e6e6e6;
+      }
     }
 
     &.active {
-      border-radius: 10px;
-      background: var(--primary-color-brand-14, #6CD7B2);
-
-      > div {
-        color: #fff !important;
+      .inside {
+        border-radius: 10px;
+        background: var(--primary-color-brand-14, #6CD7B2);
+        > div {
+          color: #fff !important;
+        }
       }
     }
   }
 
   .page-title {
     background: var(--fill-2-medium, #F5F8F6);
-    padding: 24px 0 12px 0;
+    padding: 0 0 12px 0 ;
 
     .center {
       display: flex;
       flex-flow: row nowrap;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
     }
 
     .left {
@@ -172,8 +182,12 @@
         flex-flow: row nowrap;
 
         .col1 {
-          min-width: 50px;
-          max-width: 50px;
+          min-width: 70px;
+          white-space: nowrap;
+          max-width: 70px;
+          text-align: right;
+          padding-right: 20px;
+          box-sizing: border-box;
 
           .start, .ending {
             color: var(--text-4-headline, #272928);

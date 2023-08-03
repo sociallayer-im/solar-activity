@@ -11,9 +11,6 @@ interface AppDateInputProps {
 }
 
 function AppDateInput(props: AppDateInputProps) {
-    const [css] = useStyletron()
-    const navigate = useNavigate()
-    const [a, seta] = useState('')
     const [date, setDate] = useState(new Date(props.value))
     const [time, setTime] = useState(new Date(props.value))
 
@@ -39,7 +36,7 @@ function AppDateInput(props: AppDateInputProps) {
             setDate(Array.isArray(date) ? date : [date][0] as any)
         } />
         <TimePicker
-            step={60}
+            step={60 * 15}
             value={time}
             creatable
             format={'24'}
