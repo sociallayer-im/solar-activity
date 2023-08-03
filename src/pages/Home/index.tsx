@@ -12,11 +12,13 @@ import ListMyAttentedEvent from "../../components/compose/ListMyAttentedEvent/Li
 import ListMyCreatedEvent from "../../components/compose/ListMyCreatedEvent/ListMyCreatedEvent";
 import ListEventVertical from "../../components/compose/ListEventVertical/ListEventVertical";
 import ListRecommendedEvent from "../../components/compose/ListRecommendedEvent/ListRecommendedEvent";
+import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 
 function Home() {
     const {user} = useContext(UserContext)
     const navigate = useNavigate()
     const {lang} = useContext(LangContext)
+    const {showToast} = useContext(DialogsContext)
 
     const [tabIndex, setTabIndex] = useState('0')
     const [registered, setRegistered] = useState<Event[]>([])
@@ -56,6 +58,11 @@ function Home() {
     }, [showMyAttend])
 
     const gotoCreateEvent = () => {
+        if (!user.authToken) {
+            showToast('Please Login to continue')
+            return
+        }
+
         navigate('/event/create')
     }
 
@@ -94,7 +101,6 @@ function Home() {
                                         </Tab>: <></>
                                     }
                                 </AppSubTabs>
-
                             </div>
                         </>
                     }
