@@ -17,7 +17,8 @@ import solas, {
     inviteGuest,
     Profile,
     queryEvent,
-    updateEvent
+    updateEvent,
+    getProfile,
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -134,6 +135,15 @@ function CreateEvent(props: CreateEventPageProps) {
 
                     setLabel(event.tags ? event.tags : [])
                     setBadgeId(event.badge_id)
+
+                    if (event.host_info) {
+                        const profile = await getProfile({id: Number(event.host_info)})
+                        setCreator(profile)
+                    } else {
+                        const profile = await getProfile({id:event.owner_id})
+                        setCreator(profile)
+                    }
+
                 } catch (e: any) {
                     showToast(e.message)
                     navigate('/error')
@@ -142,6 +152,11 @@ function CreateEvent(props: CreateEventPageProps) {
         }
 
         async function fetchTags() {
+            const tags = await getHotTags()
+            setLabels(tags)
+        }
+
+        async function fetchCreator() {
             const tags = await getHotTags()
             setLabels(tags)
         }
@@ -511,9 +526,11 @@ function CreateEvent(props: CreateEventPageProps) {
                         </div>
 
                         <div className='input-area'>
-                            <div className='input-area-title'>{lang['BadgeDialog_Label_Creator']}</div>
-                            <SelectCreator groupFirst value={creator} onChange={(res) => {
-                                console.log('resres', res);
+                            <div className='input-area-title'>{lang['Activity_originators']}</div>
+                            <SelectCreator
+                                autoSet={!isEditMode}
+                                groupFirst value={creator}
+                                onChange={(res) => {
                                 setCreator(res)
                             }}/>
                         </div>

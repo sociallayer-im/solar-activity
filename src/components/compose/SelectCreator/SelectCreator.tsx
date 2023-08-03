@@ -11,6 +11,7 @@ interface SelectCreatorProp {
     groupFirst?: boolean
     value: Profile | Group | null
     onChange: (res: (Profile | Group)) => any
+    autoSet?: boolean
 }
 
 const WithStyledControlContainer = withStyle(StyledControlContainer, (props) => {
@@ -63,11 +64,12 @@ const GroupMark = styled('div', ({$theme}) => ({
     color: ' #7B7C7B'
 }))
 
-function SelectCreator(props: SelectCreatorProp) {
+function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
     const [css] = useStyletron()
     const [list, setList] = useState<(Profile | Group)[]>([])
     const { user } = useContext(UserContext)
     const [searchParams, _] = useSearchParams()
+    const [selected, setSelected] = useState(props.value ? [props.value] : [])
     const { defaultAvatar } = usePicture()
 
     const overrides = {
@@ -114,8 +116,8 @@ function SelectCreator(props: SelectCreatorProp) {
                 }
             }
 
-            if (!props.value) {
-                if (props.groupFirst) {
+            if (!selected.length && autoSet) {
+                if (props.groupFirst && groups.length) {
                     props.onChange(groups[0])
                 } else  {
                     props.onChange(profile)
@@ -126,12 +128,18 @@ function SelectCreator(props: SelectCreatorProp) {
         getList()
     }, [user.id])
 
+    useEffect(() => {
+        if (props.value) {
+            setSelected([props.value])
+        }
+    }, [props.value])
+
     return (<div>
         { !!props.value &&
             <Select
                 overrides={ overrides }
                 options={ list }
-                value={ [props.value] }
+                value={ selected }
                 labelKey="username"
                 valueKey="id"
                 searchable={false}

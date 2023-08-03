@@ -82,7 +82,6 @@ function Home() {
                             <div className={'center'}>
 
                                 <AppSubTabs activeKey={tabIndex} renderAll onChange={({activeKey}) => {
-                                    alert(activeKey)
                                     setTabIndex(activeKey + '')
                                 }}>
                                     {showMyAttend ? <Tab title={lang['Activity_State_Registered']}>

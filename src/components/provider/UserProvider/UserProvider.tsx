@@ -151,7 +151,7 @@ function UserProvider (props: UserProviderProps) {
         console.log('Login type: ', loginType)
         console.log('Login wallet: ', address)
 
-        let authToken = AuthStorage.getAuth(address)
+        let authToken = AuthStorage.getAuth()?.authToken
         if (!authToken) {
             const unloading = showLoading()
             try {
@@ -172,14 +172,36 @@ function UserProvider (props: UserProviderProps) {
         await setProfile({ address: address, authToken: authToken })
     }
 
-    useEffect(() => {
-        emailLogin()
-        return () => {}
-    }, [])
+    const login = async () => {
+        const loginType = AuthStorage.getLastLoginType()
+        if (!loginType) return
+
+        console.log('Login ...')
+        console.log('Login type: ', loginType)
+
+        let auth = AuthStorage.getAuth()
+        if (!auth) return
+
+        const authToken = auth.authToken
+        const account = auth.account
+
+        console.log('Login account: ', account)
+        console.log('Storage token: ', authToken)
+
+        if (loginType === 'wallet') {
+            await setProfile({ address: account, authToken })
+        } else if (loginType === 'email') {
+            await setProfile({ email: account, authToken })
+        }
+    }
 
     useEffect(() => {
-        walletLogin()
-    }, [data, address])
+        login()
+    }, [])
+
+    // useEffect(() => {
+    //     walletLogin()
+    // }, [data, address])
 
     // update profile from event
     useEffect(() => {
@@ -194,7 +216,7 @@ function UserProvider (props: UserProviderProps) {
     }, [newProfile])
 
     return (
-        <UserContext.Provider value={{ user: userInfo, setUser, logOut, emailLogin, walletLogin}}>
+        <UserContext.Provider value={{ user: userInfo, setUser, logOut, emailLogin, walletLogin, setProfile}}>
             { props.children }
         </UserContext.Provider>
     )

@@ -16,6 +16,7 @@ import CreateEventSuccess from "../pages/CreateEventSuccess/CreateEventSuccess";
 import Calendar from "../pages/Calendar/Calendar";
 import EventCheckIn from "../pages/EventCheckIn/EventCheckIn";
 import Search from "../pages/Search";
+import PlatformLogin from "../pages/platformLogin/platformLogin";
 
 
 // lazy load
@@ -48,6 +49,8 @@ function AppRouter () {
                 <Route path="/event/:eventId" element={<EventDetail />} />
                 <Route path="/search/:keyword" element={<Search />} />
                 <Route path="/success/:eventId" element={<CreateEventSuccess />} />
+
+                <Route path="/platform/login" element={<PlatformLogin />} />
                 <Route path="*" element={<Error />} />
             </Routes>
         </Suspense>

@@ -19,7 +19,7 @@ export function setAuth (key: string, authToken: string) {
   }
 }
 
-export function getAuth (key: string) {
+export function getAuth () {
   const authStorage = window.localStorage.getItem('wa') || ''
   if (!authStorage) {
     return null
@@ -27,11 +27,9 @@ export function getAuth (key: string) {
 
   try {
     const jsonStorage: [string, string][] = JSON.parse(authStorage)
-    const target = jsonStorage.find((item) => {
-      return key === item[0]
-    })
+    const target = jsonStorage[0]
 
-    return target? target[1] : null
+    return target? { account: target[0], authToken: target[1] } : null
   } catch (e) {
     return null
   }
