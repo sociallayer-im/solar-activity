@@ -35,7 +35,7 @@ function PageLogo () {
     const home = import.meta.env.VITE_SOLAS_HOME
     const navigate = useNavigate()
     return (<Logo>
-            <a href={home} target={'_blank'}><img className={css(imgStyle)} src="/images/logo.svg" alt=""/></a>
+            <a href={home}><img className={css(imgStyle)} src="/images/logo.svg" alt=""/></a>
             <div className={css(splitStyle)}></div>
         <svg onClick={e => {navigate('/')}}
             className={css(svgStyle)} xmlns="http://www.w3.org/2000/svg" width="39" height="12" viewBox="0 0 39 12" fill="none">
