@@ -114,7 +114,7 @@ function EventCheckIn() {
                             </div>
                         }
 
-                        {isJoin &&
+                        {isJoin && !isHoster &&
                             <div className={'checkin-checkin-btn'}>
                                 <AppButton special onClick={e => {
                                     showEventCheckIn(event.id)
