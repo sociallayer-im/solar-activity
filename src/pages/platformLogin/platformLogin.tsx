@@ -41,6 +41,8 @@ function platformLogin() {
             if (loginFallback) {
                 window.localStorage.removeItem('loginFallback')
                 window.location.href = loginFallback
+            } else {
+                navigate('/')
             }
         }
 
