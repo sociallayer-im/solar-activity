@@ -191,9 +191,11 @@ function Calendar() {
             return MyEvent.find(event => event.id === item.id)
         })
     }
+
     if (list.length > 0) {
-        eventList.forEach(item => {
-            const group = groupedEvent.find(group => group[0].start_time === item.start_time && group[0].ending_time === item.ending_time)
+        list.forEach(item => {
+            const group = groupedEvent
+                .find(group => group[0].start_time === item.start_time && group[0].ending_time === item.ending_time)
             if (group) {
                 group.push(item)
             } else {
