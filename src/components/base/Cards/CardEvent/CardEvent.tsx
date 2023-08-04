@@ -20,7 +20,7 @@ function CardEvent(props:CardEventProps) {
     const hasRegistered = props.participants?.find(item => item.event.id === props.event.id)
 
     const gotoDetail = () => {
-        window.open(`/event/${props.event.id}`, '_blank')
+        navigate(`/event/${props.event.id}`)
     }
 
     useEffect(() => {

@@ -92,7 +92,7 @@ function EventCheckIn() {
 
     const goToProfile = (username: string) => {
         const homeUrl = import.meta.env.VITE_SOLAS_HOME
-        window.open(`${homeUrl}/profile/${username}`, '_blank')
+        window.location.href=`${homeUrl}/profile/${username}`
     }
 
     return (<Layout>

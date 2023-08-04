@@ -49,6 +49,11 @@ function PageBack(props: PageBackProp) {
     const location = useLocation()
 
     const handleBack = () => {
+        if (hideBackBtn) {
+            navigate('/')
+            return
+        }
+
         if (props.to) {
             // 指定了to属性，就跳转到指定的页面,而且清除当前页面的历史记录，防止用户点击返回按钮返回到当前页面
             cleanCurrentHistory()
@@ -80,13 +85,10 @@ function PageBack(props: PageBackProp) {
 
     return (
         <Wrapper>
-            {hideBackBtn ?
-                <div/>
-                : <BackBtn onClick={handleBack}>
-                    {!props.backBtnLabel && <ArrowLeft size={18}/>}
-                    {props.backBtnLabel ? props.backBtnLabel : lang['Page_Back']}
-                </BackBtn>
-            }
+            <BackBtn onClick={handleBack}>
+                {!props.backBtnLabel && <ArrowLeft size={18}/>}
+                {props.backBtnLabel ? props.backBtnLabel : lang['Page_Back']}
+            </BackBtn>
             <Title>{props.title}</Title>
             {!!props.menu && props.menu()}
         </Wrapper>

@@ -205,7 +205,7 @@ function Calendar() {
     }
 
     const gotoEventDetail = (id: number) => {
-        window.open(`/event/${id}`)
+        window.location.href=`/event/${id}`
     }
 
     return (<Layout>

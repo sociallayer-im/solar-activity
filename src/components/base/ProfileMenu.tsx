@@ -19,7 +19,7 @@ function ProfileMenu () {
     }
 
     const toProfile = () => {
-        window.open(`https://app.sociallayer.im/profile/${user.userName}`)
+       window.location.href=`https://app.sociallayer.im/profile/${user.userName}`
     }
 
     const menuContent = (close: any) => <>

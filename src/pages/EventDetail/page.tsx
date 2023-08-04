@@ -27,6 +27,7 @@ import AddressList from "../../components/base/AddressList/AddressList";
 import AppButton from "../../components/base/AppButton/AppButton";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
+import PageBack from "../../components/base/PageBack";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -150,7 +151,7 @@ function EventDetail() {
 
     const goToProfile = (username: string, isGroup?: boolean) => {
         const homeUrl = import.meta.env.VITE_SOLAS_HOME
-        window.open(`${homeUrl}/${isGroup ? 'group' : 'profile'}/${username}`, '_blank')
+        window.location.href=`${homeUrl}/${isGroup ? 'group' : 'profile'}/${username}`
     }
 
     const handleJoin = async () => {
@@ -195,6 +196,8 @@ function EventDetail() {
         {
             !!event &&
             <div className={'event-detail'}>
+                <PageBack />
+
                 <div className={'cover'}>
                     <img src={event.cover} alt=""/>
                 </div>
