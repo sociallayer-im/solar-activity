@@ -52,82 +52,81 @@ function EventDetail() {
     const [badge, setBadge] = useState<Badge | null>(null)
 
 
-    useEffect(() => {
-        async function fetchData() {
-            if (eventId) {
-                const res = await queryEventDetail({id: Number(eventId)})
-                setEvent(res)
-                setParticipants(res.participants?.map((item: Participants) => item.profile) || [])
-                setCanceled(res.status === 'cancel')
+    async function fetchData() {
+        if (eventId) {
+            const res = await queryEventDetail({id: Number(eventId)})
+            setEvent(res)
+            setParticipants(res.participants?.filter(item => item.status !== 'cancel')
+                .map((item: Participants) => item.profile) || [])
+            setCanceled(res.status === 'cancel')
 
-                const now = new Date().getTime()
-                if (res.start_time && res.ending_time) {
-                    const start = new Date(res.start_time).getTime()
-                    const end = new Date(res.ending_time).getTime()
-                    if (now < start) {
-                        setNotStart(true)
-                    }
-                    if (now > start && now < end) {
-                        setInProgress(true)
-                    }
-                    if (now > end) {
-                        setOutOfDate(true)
-                    }
+            const now = new Date().getTime()
+            if (res.start_time && res.ending_time) {
+                const start = new Date(res.start_time).getTime()
+                const end = new Date(res.ending_time).getTime()
+                if (now < start) {
+                    setNotStart(true)
                 }
-
-                if (res.start_time && !res.ending_time) {
-                    const start = new Date(res.start_time).getTime()
-                    if (now < start) {
-                        setNotStart(true)
-                    }
-                    if (now > start) {
-                        setInProgress(true)
-                    }
+                if (now > start && now < end) {
+                    setInProgress(true)
                 }
-
-                let profile: Profile | Group | null
-                if (res.host_info) {
-                    const isDomain = res.host_info.indexOf('.') > -1
-                    profile = await getProfile(isDomain ? {domain: res.host_info} : {id: Number(res.host_info)})
-                    if (profile) {
-                        setHoster(profile)
-                    }
-                } else {
-                    profile = await getProfile({id: Number(res.owner_id)})
-                    if (profile) {
-                        setHoster(profile)
-                    }
+                if (now > end) {
+                    setOutOfDate(true)
                 }
+            }
 
-                if (res?.badge_id) {
-                    const badge = await queryBadgeDetail({id: res.badge_id})
-                    setBadge(badge)
+            if (res.start_time && !res.ending_time) {
+                const start = new Date(res.start_time).getTime()
+                if (now < start) {
+                    setNotStart(true)
                 }
+                if (now > start) {
+                    setInProgress(true)
+                }
+            }
 
-                if (res.participants) {
-                    const guests = res.participants.filter((item: Participants) => item.role === 'guest')
-                    setGuests(guests.map((item: Participants) => item.profile))
+            let profile: Profile | Group | null
+            if (res.host_info) {
+                const isDomain = res.host_info.indexOf('.') > -1
+                profile = await getProfile(isDomain ? {domain: res.host_info} : {id: Number(res.host_info)})
+                if (profile) {
+                    setHoster(profile)
                 }
             } else {
-                navigate('/error')
+                profile = await getProfile({id: Number(res.owner_id)})
+                if (profile) {
+                    setHoster(profile)
+                }
             }
+
+            if (res?.badge_id) {
+                const badge = await queryBadgeDetail({id: res.badge_id})
+                setBadge(badge)
+            }
+
+            if (res.participants) {
+                const guests = res.participants.filter((item: Participants) => item.role === 'guest')
+                setGuests(guests.map((item: Participants) => item.profile))
+            }
+        } else {
+            navigate('/error')
         }
+    }
 
+    async function checkJoined() {
+        if (hoster && user.authToken) {
+            const res = await queryMyEvent({auth_token: user.authToken || ''})
+            const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel' && item.role !== 'guest')
+            setIsJoined(!!joined)
+        }
+    }
 
+    useEffect(() => {
         fetchData()
     }, [eventId])
 
     useEffect(() => {
         setIsHoster(hoster?.id === user.id || hoster?.group_owner_id === user.id)
-
-        async function checkJoined() {
-            if (hoster && user.authToken) {
-                const res = await queryMyEvent({auth_token: user.authToken || ''})
-                const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel' && item.role !== 'guest')
-                setIsJoined(!!joined)
-            }
-        }
-
         checkJoined()
     }, [hoster, user.id])
 
@@ -156,6 +155,7 @@ function EventDetail() {
             unload()
             showToast('Join success')
             setIsJoined(true)
+            fetchData()
         } catch (e: any) {
             console.error(e)
             unload()
@@ -168,8 +168,9 @@ function EventDetail() {
         try {
             const join = await unJoinEvent({id: Number(eventId), auth_token: user.authToken || ''})
             unload()
-            showToast('Cancel success')
+            showToast('Canceled')
             setIsJoined(false)
+            fetchData()
         } catch (e: any) {
             console.error(e)
             unload()

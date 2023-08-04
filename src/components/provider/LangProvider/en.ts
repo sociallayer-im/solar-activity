@@ -239,7 +239,7 @@ const langEN = {
   Activity_Form_Guest: 'Invite guests to the event',
   Activity_Form_Duration: 'Set Duration',
   Activity_Form_Duration_Cancel: 'Cancel set Duration',
-  Activity_Form_Hoster: 'Hoster',
+  Activity_Form_Hoster: 'Host',
   Activity_Form_Label: 'Label',
   Activity_Form_Badge: 'Event badge',
   Activity_Form_Badge_Des: 'When an event participant check in, he or she automatically receives a badge at the end of the event.',
