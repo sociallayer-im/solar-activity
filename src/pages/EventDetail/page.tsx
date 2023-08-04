@@ -148,6 +148,11 @@ function EventDetail() {
         navigate(`/event/edit/${event?.id}`)
     }
 
+    const goToProfile = (username: string, isGroup?: boolean) => {
+        const homeUrl = import.meta.env.VITE_SOLAS_HOME
+        window.open(`${homeUrl}/${isGroup ? 'group' : 'profile'}/${username}`, '_blank')
+    }
+
     const handleJoin = async () => {
         const unload = showLoading()
         try {
@@ -236,7 +241,8 @@ function EventDetail() {
                     {!!hoster &&
                         <div className={'hoster'}>
                             <div className={'center'}>
-                                <div className={'host-item'}>
+                                <div className={'host-item'}
+                                     onClick={e => {!!hoster.username && goToProfile(hoster.username, hoster.is_group || undefined)}}>
                                     <img src={hoster.image_url || defaultAvatar(hoster.id)} alt=""/>
                                     <div>
                                         <div className={'host-name'}>{hoster.nickname || hoster.username}</div>
@@ -247,7 +253,8 @@ function EventDetail() {
                                     <>
                                         {
                                             guests.map((item: ProfileSimple) => {
-                                                return <div className={'host-item'} key={item.domain}>
+                                                return <div className={'host-item'} key={item.domain}
+                                                            onClick={e => {goToProfile(item.domain!.split('.')[0])}}>
                                                     <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
                                                     <div>
                                                         <div className={'host-name'}>{item.domain?.split('.')[0]}</div>
@@ -302,7 +309,9 @@ function EventDetail() {
                                                 className={'min-participants-alert'}>{lang['Activity_Detail_min_participants_Alert']([event.min_participant])}</div>
                                         }
                                         {!!hoster &&
-                                            <AddressList data={participants as Profile[]}/>
+                                            <AddressList
+                                                onClick={e => {goToProfile(e.split('.')[0])}}
+                                                data={participants as Profile[]}/>
                                         }
                                     </div>
                                 </div>}

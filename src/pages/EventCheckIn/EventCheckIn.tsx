@@ -90,6 +90,11 @@ function EventCheckIn() {
         }
     }, [user.id, hoster])
 
+    const goToProfile = (username: string) => {
+        const homeUrl = import.meta.env.VITE_SOLAS_HOME
+        window.open(`${homeUrl}/profile/${username}`, '_blank')
+    }
+
     return (<Layout>
         {!!event &&
             <div className={'event-checkin-page'}>
@@ -134,7 +139,9 @@ function EventCheckIn() {
                     <div className={'checkin-list'}>
                         <div className={'title'}>{lang['Activity_Registered_participants']}
                             <span>({hasCheckin.length} / {participants.length})</span></div>
-                        <AddressList data={participants as any} selected={hasCheckin as any}></AddressList>
+                        <AddressList
+                            onClick={e => {goToProfile(e.split('.')[0])}}
+                            data={participants as any} selected={hasCheckin as any} />
                     </div>
                 </div>
             </div>
