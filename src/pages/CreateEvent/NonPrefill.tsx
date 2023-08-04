@@ -83,6 +83,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [badgeDetail, setBadgeDetail] = useState<Badge | null>(null)
     const [labels, setLabels] = useState<string[]>([])
     const [presetLocations, setPresetLocations] = useState<{ label: string, id: number }[]>([])
+    const [onlineUrlError, setOnlineUrlError] = useState('')
     const isEditMode = !!props.eventId
     const [siteOccupied, setSiteOccupied] = useState(false)
     const location = useLocation()
@@ -98,6 +99,23 @@ function CreateEvent(props: CreateEventPageProps) {
             set(number)
         }
     }
+
+    useEffect(() => {
+        const checkUrl = (url: string) => {
+            if (!url) {
+                setOnlineUrlError('')
+                return
+            }
+
+            try {
+                new URL(url)
+                setOnlineUrlError('')
+            } catch (e) {
+                setOnlineUrlError('Invalid Online address')
+            }
+        }
+        checkUrl(onlineUrl)
+    }, [onlineUrl])
 
     useEffect(() => {
         async function fetchBadgeDetail() {
@@ -259,6 +277,11 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
+        if (onlineUrlError) {
+            showToast('Invalid online address')
+            return
+        }
+
         if (new Date(start) > new Date(ending)) {
             showToast('start time should be earlier than ending time')
             return
@@ -320,6 +343,11 @@ function CreateEvent(props: CreateEventPageProps) {
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
             window.location.href = location.pathname + '#SiteError'
+            return
+        }
+
+        if (onlineUrlError) {
+            showToast('Invalid online address')
             return
         }
 
@@ -435,11 +463,11 @@ function CreateEvent(props: CreateEventPageProps) {
                         }
 
                         <div className='input-area'>
-                            <div className='input-area-title'>{'Online address'}</div>
+                            <div className='input-area-title'>{lang['Activity_Detail_Online_address']}</div>
                             <AppInput
                                 clearable
                                 value={onlineUrl}
-                                errorMsg={''}
+                                errorMsg={onlineUrlError}
                                 placeholder={'Url'}
                                 onChange={(e) => {
                                     setOnlineUrl(e.target.value.trim())
@@ -447,7 +475,7 @@ function CreateEvent(props: CreateEventPageProps) {
                         </div>
 
                         <div className={'input-area'}>
-                            <div className='input-area-title'>{'Offline location'}</div>
+                            <div className='input-area-title'>{lang['Activity_Detail_Offline_location']}</div>
                             <div className={'select-location'}>
                                 <i className={'icon-Outline'}/>
                                 <Select

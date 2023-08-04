@@ -257,6 +257,8 @@ const langCN: LangConfig = {
   Activity_Detail_Btn_AttendOnline: '线上参与',
   Activity_Detail_Badge: '报名参加活动，结束可获得 POAP*1',
   Activity_Detail_Guest: '嘉宾',
+  Activity_Detail_Offline_location: '线下场地',
+  Activity_Detail_Online_address: '线上地址',
   Activity_Detail_min_participants_Alert: slotLang('报名人数少于 {1} 人时，活动可能会被取消'),
   Activity_quantity_Input: '自定义',
   Activity_Calendar_Page_Time: '时间',

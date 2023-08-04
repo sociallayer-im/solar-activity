@@ -256,6 +256,8 @@ const langEN = {
   Activity_Detail_Btn_has_Cancel: 'Event has canceled',
   Activity_Detail_Badge: 'Registration for the event, upon completion, will be rewarded with POAP*1',
   Activity_Detail_Guest: 'Guest',
+  Activity_Detail_Offline_location: 'Offline location',
+  Activity_Detail_Online_address: 'Online address',
   Activity_Detail_Btn_AttendOnline: 'Attend online',
   Activity_Detail_min_participants_Alert: slotLang('When the number of participants is less than {1}, the activity may be cancelled.'),
   Activity_quantity_Input: 'custom',
