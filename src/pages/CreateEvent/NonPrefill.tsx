@@ -18,7 +18,7 @@ import solas, {
     Profile,
     queryEvent,
     updateEvent,
-    getProfile, createSite,
+    getProfile, createSite,setEventBadge
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -328,6 +328,13 @@ function CreateEvent(props: CreateEventPageProps) {
                         auth_token: user.authToken || ''
                     })
                 }
+            }
+            if (badgeId) {
+                const setBadge = await setEventBadge({
+                    id: newEvent.id,
+                    badge_id: badgeId,
+                    auth_token: user.authToken || ''
+                })
             }
             unloading()
             showToast('create success')

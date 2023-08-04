@@ -1785,8 +1785,28 @@ export function createSite (authToken: string) {
     })
 }
 
+export interface SetEventBadgeProps {
+    id: number,
+    badge_id: number,
+    auth_token: string,
+}
+
+export async function setEventBadge (props: SetEventBadgeProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/set_badge`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Join event fail')
+    }
+}
+
 
 export default {
+    setEventBadge,
     createSite,
     searchEvent,
     joinEvent,
