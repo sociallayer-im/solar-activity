@@ -18,7 +18,7 @@ import solas, {
     Profile,
     queryEvent,
     updateEvent,
-    getProfile,
+    getProfile, createSite,
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -36,6 +36,23 @@ interface CreateEventPageProps {
     eventId?: number
 }
 
+// 函数，一天24小时分成若干时间时间点，步进为15分钟, 然后找出和当前时间最近的时间点,而且时间点必须大于等于当前时间
+const getNearestTime = () => {
+    const now = new Date()
+    const minutes = now.getMinutes()
+    const minuteRange = [0, 15, 30, 45, 60]
+    const nearestMinute = minuteRange.find((item) => {
+        return item>= minutes
+    })
+
+    const initStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), nearestMinute || 0)
+    const initEndTime = new Date(initStartTime.getTime() + 60 * 60 * 1000)
+
+    return [initStartTime, initEndTime]
+}
+
+const initTime = getNearestTime()
+
 function CreateEvent(props: CreateEventPageProps) {
     const navigate = useNavigate()
     const {user} = useContext(UserContext)
@@ -47,8 +64,6 @@ function CreateEvent(props: CreateEventPageProps) {
     const [cover, setCover] = useState('')
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
-    const [start, setStart] = useState(new Date().toISOString())
-    const [ending, setEnding] = useState(new Date(new Date().getTime() + 60 * 60 * 1000).toISOString())
     const [locationType, setLocationType] = useState<'online' | 'offline' | 'both'>('offline')
     const [onlineUrl, setOnlineUrl] = useState('')
     const [eventSite, setEventSite] = useState<any>([])
@@ -57,6 +72,9 @@ function CreateEvent(props: CreateEventPageProps) {
     const [guests, setGuests] = useState<string[]>([''])
     const [label, setLabel] = useState<string[]>([])
     const [badgeId, setBadgeId] = useState<null | number>(null)
+
+    const [start, setStart] = useState(initTime[0].toISOString())
+    const [ending, setEnding] = useState(initTime[1].toISOString())
 
     const [enableMaxParticipants, setEnableMaxParticipants] = useState(true)
     const [enableMinParticipants, setEnableMinParticipants] = useState(false)
@@ -263,7 +281,7 @@ function CreateEvent(props: CreateEventPageProps) {
             tags: label,
             start_time: start,
             ending_time: hasDuration ? ending : null,
-            location_type: locationType,
+            location_type: 'both',
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
@@ -327,7 +345,7 @@ function CreateEvent(props: CreateEventPageProps) {
             content,
             tags: label,
             start_time: start,
-            location_type: locationType,
+            location_type: 'both',
             ending_time: hasDuration ? ending : null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             max_participant: enableMaxParticipants ? maxParticipants : null,
@@ -417,31 +435,19 @@ function CreateEvent(props: CreateEventPageProps) {
                         }
 
                         <div className='input-area'>
-                            <div className='input-area-title'>{lang['Activity_Form_Where']}</div>
-                            <div className={'take-place'}>
-                                <div className={locationType === 'offline' ? 'item active' : 'item'}
-                                     onClick={(e) => {
-                                         setLocationType('offline')
-                                     }}>
-                                    {'Offline'}
-                                </div>
-                                <div className={locationType === 'online' ? 'item active' : 'item'}
-                                     onClick={(e) => {
-                                         setLocationType('online')
-                                     }}>
-                                    {'Online'}
-                                </div>
-                            </div>
-                            {locationType === 'online' &&
-                                <AppInput
-                                    clearable
-                                    value={onlineUrl}
-                                    errorMsg={''}
-                                    placeholder={'Url'}
-                                    onChange={(e) => {
-                                        setOnlineUrl(e.target.value.trim())
-                                    }}/>
-                            }
+                            <div className='input-area-title'>{'Online address'}</div>
+                            <AppInput
+                                clearable
+                                value={onlineUrl}
+                                errorMsg={''}
+                                placeholder={'Url'}
+                                onChange={(e) => {
+                                    setOnlineUrl(e.target.value.trim())
+                                }}/>
+                        </div>
+
+                        <div className={'input-area'}>
+                            <div className='input-area-title'>{'Offline location'}</div>
                             <div className={'select-location'}>
                                 <i className={'icon-Outline'}/>
                                 <Select
@@ -453,9 +459,6 @@ function CreateEvent(props: CreateEventPageProps) {
                                     }}
                                 ></Select>
                             </div>
-                            {siteOccupied && <div id='SiteError' className={'event-size-error'}>
-                                {lang['Activity_Detail_site_Occupied']}
-                            </div>}
                         </div>
 
                         <div className={'input-area'}>

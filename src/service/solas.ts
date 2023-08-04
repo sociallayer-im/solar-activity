@@ -1774,8 +1774,20 @@ export async function inviteGuest (props: InviteGuestProp) {
     })
 }
 
+export function createSite (authToken: string) {
+    return fetch.post({
+        url: `${api}/event/create_event_site`,
+        data: {
+            auth_token: authToken,
+            group_id: 1202,
+            title: '山海坞会议室_1',
+        }
+    })
+}
+
 
 export default {
+    createSite,
     searchEvent,
     joinEvent,
     getHotTags,
