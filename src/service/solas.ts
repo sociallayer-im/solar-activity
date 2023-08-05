@@ -1758,20 +1758,18 @@ export async function inviteGuest (props: InviteGuestProp) {
         return item.id
     })
 
-    const task2 = ids.map(id => {
-        return fetch.post({
-            url: `${api}/event/invite_guest`,
-            data: {
-                target_id: id,
-                auth_token: props.auth_token,
-                id: props.id
-            }
-        })
+    const res = await fetch.post({
+        url: `${api}/event/invite_guest`,
+        data: {
+            target_id: ids.join(','),
+            auth_token: props.auth_token,
+            id: props.id
+        }
     })
 
-    const res = await Promise.all(task2).catch(e => {
-        throw e
-    })
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Invite fail')
+    }
 }
 
 export function createSite (authToken: string) {
