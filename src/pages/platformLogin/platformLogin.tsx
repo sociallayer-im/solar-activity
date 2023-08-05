@@ -25,6 +25,10 @@ function platformLogin() {
             console.log('account', account)
             console.log('loginType', loginType)
 
+            alert(authToken)
+            alert(account)
+            alert(loginType)
+
             if (!authToken || !account || !loginType) {
                 navigate('/error')
             }
