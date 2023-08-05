@@ -44,6 +44,7 @@ function EventDetail() {
     const [tab, setTab] = useState(1)
     const [isHoster, setIsHoster] = useState(false)
     const [isJoined, setIsJoined] = useState(false)
+    const [isGuest, setIsGuest] = useState(false)
     const [canceled, setCanceled] = useState(false)
     const [outOfDate, setOutOfDate] = useState(false)
     const [inProgress, setInProgress] = useState(false)
@@ -123,6 +124,7 @@ function EventDetail() {
         if (hoster && user.authToken) {
             const res = await queryMyEvent({auth_token: user.authToken || ''})
             const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel')
+            setIsGuest(joined?.role === 'guest')
             setIsJoined(!!joined)
         }
     }
@@ -376,7 +378,7 @@ function EventDetail() {
                                         }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
                                 }
 
-                                {!canceled && isJoined && inCheckinTime && (!!event.event_site || (!event.event_site  && !event.online_location)) &&
+                                {!canceled && (isJoined && !isGuest) && inCheckinTime && (!!event.event_site || (!event.event_site  && !event.online_location)) &&
                                     <AppButton
                                         special
                                         onClick={e => {
