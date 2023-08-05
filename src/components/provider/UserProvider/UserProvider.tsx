@@ -95,7 +95,7 @@ function UserProvider (props: UserProviderProps) {
             // Float Extension Login
             solaExtensionLogin.login(profileInfo.id.toString(), profileInfo.domain,props.authToken, profileInfo.image_url || '')
         } catch (e: any) {
-            console.log('[setProfile]: ', e)
+            console.error('[setProfile]: ', e)
             showToast('Login fail', 3000)
             logOut()
         }
