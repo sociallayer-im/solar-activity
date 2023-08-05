@@ -376,7 +376,7 @@ function EventDetail() {
                                         }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
                                 }
 
-                                {!canceled && isJoined && inCheckinTime && !!event.event_site &&
+                                {!canceled && isJoined && inCheckinTime && (!!event.event_site || (!event.event_site  && !event.online_location)) &&
                                     <AppButton
                                         special
                                         onClick={e => {
