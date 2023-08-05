@@ -122,7 +122,7 @@ function EventDetail() {
     async function checkJoined() {
         if (hoster && user.authToken) {
             const res = await queryMyEvent({auth_token: user.authToken || ''})
-            const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel' && item.role !== 'guest')
+            const joined = res.find((item: Participants) => item.event.id === event?.id && item.status !== 'cancel')
             setIsJoined(!!joined)
         }
     }
