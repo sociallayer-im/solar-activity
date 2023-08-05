@@ -259,7 +259,7 @@ const langEN = {
   Activity_Detail_Offline_location: 'Offline location',
   Activity_Detail_Online_address: 'Online address',
   Activity_Detail_Btn_AttendOnline: 'Attend online',
-  Activity_Detail_min_participants_Alert: slotLang('When the number of participants is less than {1}, the activity may be cancelled.'),
+  Activity_Detail_min_participants_Alert: slotLang('When the number of participants is less than {1}, the activity may be cancelled. Check-in is available half an hour before the start of the event.'),
   Activity_quantity_Input: 'custom',
 
   Activity_Calendar_Page_Time: 'Time',

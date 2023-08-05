@@ -47,6 +47,7 @@ function EventDetail() {
     const [canceled, setCanceled] = useState(false)
     const [outOfDate, setOutOfDate] = useState(false)
     const [inProgress, setInProgress] = useState(false)
+    const [inCheckinTime, setIsCheckTime] = useState(false)
     const [notStart, setNotStart] = useState(false)
     const [participants, setParticipants] = useState<ProfileSimple[]>([])
     const [guests, setGuests] = useState<ProfileSimple[]>([])
@@ -68,11 +69,15 @@ function EventDetail() {
                 if (now < start) {
                     setNotStart(true)
                 }
-                if (now > start && now < end) {
+                if (now >= start && now <= end) {
                     setInProgress(true)
                 }
                 if (now > end) {
                     setOutOfDate(true)
+                }
+
+                if (now >= start - 30 * 60 * 1000 && now <= end) {
+                    setIsCheckTime(true)
                 }
             }
 
@@ -151,7 +156,7 @@ function EventDetail() {
 
     const goToProfile = (username: string, isGroup?: boolean) => {
         const homeUrl = import.meta.env.VITE_SOLAS_HOME
-        window.location.href=`${homeUrl}/${isGroup ? 'group' : 'profile'}/${username}`
+        window.location.href = `${homeUrl}/${isGroup ? 'group' : 'profile'}/${username}`
     }
 
     const handleJoin = async () => {
@@ -196,7 +201,7 @@ function EventDetail() {
         {
             !!event &&
             <div className={'event-detail'}>
-                <PageBack />
+                <PageBack/>
 
                 <div className={'cover'}>
                     <img src={event.cover} alt=""/>
@@ -245,7 +250,9 @@ function EventDetail() {
                         <div className={'hoster'}>
                             <div className={'center'}>
                                 <div className={'host-item'}
-                                     onClick={e => {!!hoster.username && goToProfile(hoster.username, hoster.is_group || undefined)}}>
+                                     onClick={e => {
+                                         !!hoster.username && goToProfile(hoster.username, hoster.is_group || undefined)
+                                     }}>
                                     <img src={hoster.image_url || defaultAvatar(hoster.id)} alt=""/>
                                     <div>
                                         <div className={'host-name'}>{hoster.nickname || hoster.username}</div>
@@ -257,7 +264,9 @@ function EventDetail() {
                                         {
                                             guests.map((item: ProfileSimple) => {
                                                 return <div className={'host-item'} key={item.domain}
-                                                            onClick={e => {goToProfile(item.domain!.split('.')[0])}}>
+                                                            onClick={e => {
+                                                                goToProfile(item.domain!.split('.')[0])
+                                                            }}>
                                                     <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
                                                     <div>
                                                         <div className={'host-name'}>{item.domain?.split('.')[0]}</div>
@@ -313,7 +322,9 @@ function EventDetail() {
                                         }
                                         {!!hoster &&
                                             <AddressList
-                                                onClick={e => {goToProfile(e.split('.')[0])}}
+                                                onClick={e => {
+                                                    goToProfile(e.split('.')[0])
+                                                }}
                                                 data={participants as Profile[]}/>
                                         }
                                     </div>
@@ -357,7 +368,7 @@ function EventDetail() {
                                 }
 
 
-                                {!canceled && isHoster && inProgress &&
+                                {!canceled && isHoster && inCheckinTime && !!event.event_site &&
                                     <AppButton
                                         special
                                         onClick={e => {
@@ -365,22 +376,20 @@ function EventDetail() {
                                         }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
                                 }
 
-                                {!canceled && isJoined && inProgress &&
-                                    <>
-                                        {(event.location || event.event_site) &&
-                                            <AppButton
-                                                onClick={e => {
-                                                    handleUserCheckIn()
-                                                }}
-                                                special>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
-                                        }
-                                        {!!event.online_location && <AppButton
-                                            onClick={e => {
-                                                window.open(event.online_location!, '_blank')
-                                            }}
-                                            special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
-                                        }
-                                    </>
+                                {!canceled && isJoined && inCheckinTime && !!event.event_site &&
+                                    <AppButton
+                                        special
+                                        onClick={e => {
+                                            handleUserCheckIn()
+                                        }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                }
+
+                                {!canceled && isJoined && inProgress && !!event.online_location &&
+                                    <AppButton
+                                        onClick={e => {
+                                            window.open(event.online_location!, '_blank')
+                                        }}
+                                        special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
                                 }
                             </div>
                         </div>
