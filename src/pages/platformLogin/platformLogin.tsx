@@ -4,8 +4,9 @@ import {useState, useContext, useEffect} from 'react'
 import './PlatformLogin.less'
 import { Spinner } from "baseui/spinner";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
-import {useSearchParams, } from "react-router-dom";
+import {useSearchParams } from "react-router-dom";
 import userContext from "../../components/provider/UserProvider/UserContext";
+
 
 function platformLogin() {
     const [css] = useStyletron()
@@ -37,12 +38,10 @@ function platformLogin() {
                 await setProfile({authToken: authToken!, address: account!})
             }
 
-            alert(authToken)
-
             const loginFallback = window.localStorage.getItem('loginFallback')
             if (loginFallback) {
                 window.localStorage.removeItem('loginFallback')
-                window.location.href = loginFallback
+                navigate(loginFallback.replace(window.location.origin, ''))
             } else {
                 navigate('/')
             }
