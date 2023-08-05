@@ -206,7 +206,10 @@ function CreateEvent(props: CreateEventPageProps) {
         async function fetchLocation() {
             if (creator?.is_group) {
                 const location = await getEventSide({group_id: creator.id})
-                setPresetLocations(location.map((l) => ({label: l.title, id: l.id})))
+                setPresetLocations(location.map((l) => ({
+                    label: l.title + (l.location ? `(${l.location})` : ''),
+                    id: l.id
+                })))
             }
         }
 
@@ -235,6 +238,8 @@ function CreateEvent(props: CreateEventPageProps) {
                 })
 
                 setSiteOccupied(occupied)
+            } else {
+                setSiteOccupied(false)
             }
         }
 
@@ -494,6 +499,9 @@ function CreateEvent(props: CreateEventPageProps) {
                                     }}
                                 ></Select>
                             </div>
+                            {siteOccupied && <div id='SiteError' className={'event-size-error'}>
+                                {lang['Activity_Detail_site_Occupied']}
+                            </div>}
                         </div>
 
                         <div className={'input-area'}>
