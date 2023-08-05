@@ -25,10 +25,6 @@ function platformLogin() {
             console.log('account', account)
             console.log('loginType', loginType)
 
-            alert(authToken)
-            alert(account)
-            alert(loginType)
-
             if (!authToken || !account || !loginType) {
                 navigate('/error')
             }
@@ -40,6 +36,8 @@ function platformLogin() {
             } else {
                 await setProfile({authToken: authToken!, address: account!})
             }
+
+            alert(authToken)
 
             const loginFallback = window.localStorage.getItem('loginFallback')
             if (loginFallback) {
