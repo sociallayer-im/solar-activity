@@ -224,7 +224,7 @@ const langEN = {
   Activity_Create_Success_Scan_tips_2: '| Activity',
   Activity_Scan_checkin: 'Scan QR code to Check in',
   Activity_Registered_participants: 'Registered participants',
-  Activity_originators: 'Originators',
+  Activity_originators: 'Host',
   Activity_Des: 'Activity content',
   Activity_Participants: 'Participants',
   Activity_Cancel_registration: 'Cancel Registration',
