@@ -28,6 +28,7 @@ import AppButton from "../../components/base/AppButton/AppButton";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import PageBack from "../../components/base/PageBack";
+import useCopy from "../../hooks/copy";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -40,6 +41,7 @@ function EventDetail() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const {showLoading, showToast} = useContext(DialogsContext)
+    const {copy} = useCopy()
 
     const [tab, setTab] = useState(1)
     const [isHoster, setIsHoster] = useState(false)
@@ -199,11 +201,17 @@ function EventDetail() {
         navigate(`/checkin/${event!.id}`)
     }
 
+    const copyLink = () => {
+        const link = `${window.location.origin}/event/${event?.id}`
+        copy(link)
+        showToast('Copy link successfully')
+    }
+
     return (<Layout>
         {
             !!event &&
             <div className={'event-detail'}>
-                <PageBack/>
+                <PageBack menu={() => <div className={'event-share-btn'} onClick={e => {copyLink()}}><img src="/images/icon_share.svg" alt=""/></div>}/>
 
                 <div className={'cover'}>
                     <img src={event.cover} alt=""/>
@@ -234,6 +242,7 @@ function EventDetail() {
                                 }</div>
                             </div>
                         }
+
                         {event.online_location &&
                             <Link className={'detail-item'} to={event.online_location} target={'_blank'}>
                                 <i className={'icon-link'}/>

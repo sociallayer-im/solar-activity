@@ -8,6 +8,13 @@
   overflow: hidden;
   cursor: pointer;
 
+  .info {
+    margin-top: 18px;
+    &.marker {
+        margin-top: 0;
+    }
+  }
+
   .markers {
     height: 20px;
     margin-bottom: 10px;
@@ -21,9 +28,19 @@
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
-      line-height: 20px;
       display: inline-flex;
-      padding: 0 8px;
+      padding: 1px 8px;
+      margin-right: 4px;
+
+      &.expired {
+        background: var(--secondary-color-brand-41-light, #eaeaea);
+        color: var(--secondary-color-brand-43-normal, #adadad);
+      }
+
+      &.created {
+        background: var(--secondary-color-brand-41-light, #e7f4ff);
+        color: var(--secondary-color-brand-43-normal, #5992ff);
+      }
     }
   }
 
@@ -34,7 +51,6 @@
     bottom: 0;
     right: 0;
     overflow: hidden;
-    margin-bottom: -20px;
     border-radius: 6px;
     border-top-right-radius:0 ;
 
@@ -44,6 +60,10 @@
       object-fit: cover;
       position: absolute;
       top: 0
+    }
+
+    &.marker {
+      margin-bottom: -20px;
     }
   }
 

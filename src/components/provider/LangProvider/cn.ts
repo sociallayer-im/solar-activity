@@ -263,6 +263,8 @@ const langCN: LangConfig = {
   Activity_quantity_Input: '自定义',
   Activity_Calendar_Page_Time: '时间',
   Activity_Calendar_Page_Name: '活动',
+  Activity_Detail_Expired: '已结束',
+  Activity_Detail_Created: '我发起的',
 
   New_Year_1: '将你的新年祝福铸造成数字徽章',
   New_Year_2: '颁发理由 :',

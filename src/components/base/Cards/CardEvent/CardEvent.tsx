@@ -5,23 +5,41 @@ import {Event, Participants, queryEventDetail} from "../../../../service/solas";
 import './CardEvent.less'
 import useTime from "../../../../hooks/formatTime";
 import langContext from "../../../provider/LangProvider/LangContext";
+import userContext from "../../../provider/UserProvider/UserContext";
+import userProvider from "../../../provider/UserProvider/UserProvider";
 
 export interface CardEventProps {
-    event: Event
+    event: Event,
+    fixed?: boolean,
     participants?: Participants[]
 }
-function CardEvent(props:CardEventProps) {
+
+function CardEvent({fixed=true, ...props}: CardEventProps) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [eventDetail, setEventDetail] = useState(props.event)
     const formatTime = useTime()
     const {lang} = useContext(langContext)
+    const [isCreated, setIsCreated] = useState(false)
+    const {user} = useContext(userContext)
 
     const hasRegistered = props.participants?.find(item => item.event.id === props.event.id)
+
+    const now = new Date().getTime()
+    const endTime = new Date(eventDetail.ending_time!).getTime()
+    const isExpired = endTime < now
+
+    useEffect(() => {
+        if (user.id) {
+            setIsCreated(props.event.owner_id === user.id)
+        }
+    }, [user.id])
 
     const gotoDetail = () => {
         navigate(`/event/${props.event.id}`)
     }
+
+    const hasMarker = isExpired || !!hasRegistered || isCreated
 
     useEffect(() => {
         if (!props.event.event_site) {
@@ -32,11 +50,18 @@ function CardEvent(props:CardEventProps) {
         }
     }, [])
 
-    return (<div className={'event-card'} onClick={e => {gotoDetail()}}>
-        <div className={'markers'}>
-            {!!hasRegistered && <div className={'marker'}>{lang['Activity_State_Registered']}</div>}
-        </div>
-        <div className={'info'}>
+    return (<div className={'event-card'} onClick={e => {
+        gotoDetail()
+    }}>
+        {(fixed || hasMarker && !fixed) &&
+            <div className={'markers'}>
+                {isExpired && <div className={'marker expired'}>{lang['Activity_Detail_Expired']}</div>}
+                {!!hasRegistered && <div className={'marker registered'}>{lang['Activity_State_Registered']}</div>}
+                {isCreated && <div className={'marker created'}>{lang['Activity_Detail_Created']}</div>}
+            </div>
+        }
+
+        <div className={(fixed || hasMarker && !fixed) ? 'info marker': 'info'}>
             <div className={'left'}>
                 <div className={'title'}>{eventDetail.title}</div>
 
@@ -69,7 +94,7 @@ function CardEvent(props:CardEventProps) {
                 }
 
             </div>
-            <div className={'post'}>
+            <div className={(fixed || hasMarker && !fixed) ? 'post marker': 'post'}>
                 <img src={props.event.cover} alt={''}/>
             </div>
         </div>

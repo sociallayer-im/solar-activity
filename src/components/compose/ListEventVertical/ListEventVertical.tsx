@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {Event, getHotTags, queryEvent, queryRecommendEvent} from "../../../service/solas";
+import {getHotTags, queryRecommendEvent} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
@@ -103,7 +103,7 @@ function ListEventVertical() {
                     <div className={'list'}>
                         {
                             list.map((item, index) => {
-                                return <CardEvent key={index} event={item}/>
+                                return <CardEvent fixed={false} key={item.title} event={item}/>
                             })
                         }
                         <div ref={ref}></div>
