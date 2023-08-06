@@ -1,37 +1,41 @@
 export const labelColors = [
-    '#75D4F0',
+
     '#1685a9',
     '#5567ff',
-    '#8080FF',
     '#cca4e3',
     '#FFC400',
     '#FF7A45',
-    '#d06833',
     '#9eb636',
-    '#15CB82',
-    '#057748',
     '#439b82',
     '#FAC699',
+    '#75D4F0',
     '#e73f9e',
+    '#15CB82',
     '#FE6CAB',
+    '#d06833',
     '#FD8CE2',
     '#a98175',
+    '#8080FF',
+    '#057748',
 ]
 
-function getUnicodeSum(str: string) {
-    let unicodeArr = [];
-
-    for (let i = 0; i < str.length; i++) {
-        unicodeArr.push(str.charCodeAt(i));
-    }
-
-    return unicodeArr.reduce((a, b) => a + b, 0);
-}
-
+const defaultLabels = [
+    "公益课",
+    "工作坊",
+    "讲座沙龙",
+    "人工智能",
+    "区块链",
+    "创作者经济",
+    "社群与协作",
+    "身心可持续",
+    "坞民日常",
+    "山海讲堂"
+]
 
 export const getLabelColor = (label: string) => {
-    // 获取字符串label的unicode编码数组
-    // 将编码数组的每一项相加， 相加的和对颜色数组的长度取余，得到颜色数组的下标
-    // 返回颜色数组的下标对应的颜色
-    return labelColors[label[0].charCodeAt(0) % labelColors.length]
+    if (defaultLabels.indexOf(label) !== -1) {
+        return labelColors[defaultLabels.indexOf(label)]
+    } else {
+        return labelColors[label[0].charCodeAt(0) % labelColors.length]
+    }
 }
