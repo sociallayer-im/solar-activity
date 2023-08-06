@@ -15,10 +15,18 @@ function AppDateInput(props: AppDateInputProps) {
     const [time, setTime] = useState(new Date(props.value))
 
     useEffect(() => {
-        const dateStr = date.toISOString().split('T')[0]
-        const timeStr = time.toISOString().split('T')[1].split('.')[0]
-        const newDate = `${dateStr}T${timeStr}Z`
-        props.onChange(newDate)
+        const year = date.getFullYear()
+        const mouth = date.getMonth()
+        const day = date.getDate()
+        const hour = time.getHours()
+        const minute = time.getMinutes()
+
+        const newDate = new Date(year, mouth, day, hour, minute)
+
+        // const dateStr = date.toISOString().split('T')[0]
+        // const timeStr = time.toISOString().split('T')[1].split('.')[0]
+        // const newDate = `${dateStr}T${timeStr}Z`
+        props.onChange(newDate.toISOString())
     }, [date, time])
 
     useEffect(() => {
