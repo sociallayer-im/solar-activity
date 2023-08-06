@@ -173,6 +173,7 @@ const langCN: LangConfig = {
 
   Login_Title: '使用邮箱登录',
   Login_alert: '徽章的接收/颁发不会被铸造',
+  Login_solar: '使用 Social Layer 登录',
   Login_continue: '下一步',
   Login_Placeholder: '您的邮箱',
   Login_option: '其他方式',

@@ -6,7 +6,7 @@ import './CardEvent.less'
 import useTime from "../../../../hooks/formatTime";
 import langContext from "../../../provider/LangProvider/LangContext";
 import userContext from "../../../provider/UserProvider/UserContext";
-import userProvider from "../../../provider/UserProvider/UserProvider";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export interface CardEventProps {
     event: Event,
@@ -95,7 +95,10 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
             </div>
             <div className={(fixed || hasMarker && !fixed) ? 'post marker': 'post'}>
-                <img src={props.event.cover} alt={''}/>
+                <LazyLoadImage
+                    src={props.event.cover}
+                    alt={''}
+                />
             </div>
         </div>
     </div>)

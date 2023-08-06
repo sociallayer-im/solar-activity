@@ -137,32 +137,30 @@ function DialogProvider (props: DialogProviderProps) {
             window.localStorage.setItem('loginFallback', window.location.href)
         }
 
-        const loginUrl = import.meta.env.VITE_SOLAS_HOME
-        window.location.href = `${loginUrl}/platform/login?from=${window.location.protocol}//${window.location.host}/platform/login`
-        // const id = genID()
-        // dialogsGroup.dialogs.push({
-        //     id,
-        //     content: () => {
-        //         const close = () => {
-        //             closeDialogByID(id)
-        //         }
-        //
-        //         const props = {
-        //             key: id.toString(),
-        //             size: [320, 'auto'],
-        //             handleClose: close,
-        //             position: 'bottom' as const
-        //         }
-        //
-        //         return (
-        //             <Dialog {...props} >
-        //                 { (close) => <DialogConnectWallet  handleClose={close} />}
-        //             </Dialog>
-        //         )
-        //     }
-        // })
-        //
-        // setDialogsGroup({...dialogsGroup})
+        const id = genID()
+        dialogsGroup.dialogs.push({
+            id,
+            content: () => {
+                const close = () => {
+                    closeDialogByID(id)
+                }
+
+                const props = {
+                    key: id.toString(),
+                    size: [320, 'auto'],
+                    handleClose: close,
+                    position: 'bottom' as const
+                }
+
+                return (
+                    <Dialog {...props} >
+                        { (close) => <DialogConnectWallet  handleClose={close} />}
+                    </Dialog>
+                )
+            }
+        })
+
+        setDialogsGroup({...dialogsGroup})
     }
 
     const showLoading = () => {

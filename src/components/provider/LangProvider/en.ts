@@ -173,6 +173,7 @@ const langEN = {
 
   Login_Title: 'Login with Email',
   Login_alert: 'Badges sent/received will not be minted',
+  Login_solar: 'Login with Social Layer',
   Login_continue: 'Continue',
   Login_Placeholder: 'Your Email',
   Login_option: 'Or more option',

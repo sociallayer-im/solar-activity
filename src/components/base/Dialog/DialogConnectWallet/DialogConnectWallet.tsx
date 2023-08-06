@@ -63,8 +63,18 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
         navigate('/login')
     }
 
+    const loginWithSolar = () => {
+        clean()
+        const loginUrl = import.meta.env.VITE_SOLAS_HOME
+        window.location.href = `${loginUrl}/platform/login?from=${window.location.protocol}//${window.location.host}/platform/login`
+    }
+
     return (
         <div className='dialog-connect-wallet'>
+            <div className='connect-item solar' onClick={ loginWithSolar }>
+                <img src="/images/logo.svg" alt="email"/>
+                <div className='connect-des'>{ lang['Login_solar'] }</div>
+            </div>
             {connectors.map((connector) => (
                 <div className={ !connector.ready ? 'connect-item disable': 'connect-item' }
                     key={connector.id}
