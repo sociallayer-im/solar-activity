@@ -113,6 +113,7 @@ function UserProvider (props: UserProviderProps) {
         }
 
         AuthStorage.setLastLoginType(null)
+        window.localStorage.removeItem('isSolarLogin')
 
         setUserInfo(emptyUser)
     }
@@ -139,6 +140,11 @@ function UserProvider (props: UserProviderProps) {
         const loginType = AuthStorage.getLastLoginType()
         if (!loginType) return
         if (loginType !== 'wallet') return
+
+        const isSolarLogin = window.localStorage.getItem('isSolarLogin') === 'true'
+        if (isSolarLogin) {
+            return
+        }
 
         if (!address) {
             logOut()
@@ -199,9 +205,9 @@ function UserProvider (props: UserProviderProps) {
         login()
     }, [])
 
-    // useEffect(() => {
-    //     walletLogin()
-    // }, [data, address])
+    useEffect(() => {
+        walletLogin()
+    }, [data, address])
 
     // update profile from event
     useEffect(() => {

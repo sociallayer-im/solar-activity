@@ -32,6 +32,7 @@ function platformLogin() {
 
             window.localStorage.setItem('lastLoginType', loginType!)
             window.localStorage.setItem('wa', JSON.stringify([[account, authToken]]))
+            window.localStorage.setItem('isSolarLogin', 'true')
             if (loginType=== 'email') {
                 await setProfile({authToken: authToken!, email: account!})
             } else {
