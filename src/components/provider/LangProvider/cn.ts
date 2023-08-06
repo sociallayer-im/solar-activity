@@ -37,6 +37,7 @@ const langCN: LangConfig = {
 
   Regist_Step_Next: '下一步',
 
+  Regist_Title: '设定一个独一无二的 Social layer 域名身份吧！',
   Domain_Rule: '只能包含字母数字连字符，并且连字符不能在开头和结尾，不能有空格，6个字符以上。',
   Regist_Input_Placeholder: '你的域名',
   Regist_Input_Validate: slotLang('不能超过 {n} 个字符'),

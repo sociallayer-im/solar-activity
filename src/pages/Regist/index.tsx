@@ -16,25 +16,16 @@ function ComponentName () {
     const navigate = useNavigate()
     const location = useLocation()
 
-    // useEffect(() => {
-    //     // 如果用户已经注册过域名，将会跳转到用户的profile页面
-    //     if (user.domain) {
-    //         const fallBack = window.localStorage.getItem('fallback')
-    //         if (fallBack) {
-    //             const path = fallBack.replace(window.location.origin, '')
-    //             window.localStorage.removeItem('fallback')
-    //             navigate(path)
-    //         } else {
-    //             navigate(`/profile/${user.userName}`)
-    //         }
-    //     }
-    //
-    // }, [user.domain])
+    useEffect(() => {
+        // 如果用户已经注册过域名，将会跳转到用户的profile页面
+        if (user.domain) {
+            navigate(`/`)
+        }
+
+    }, [user.domain])
 
     useEffect(() => {
         clean('regist')
-
-
     }, [])
 
     // 如果用户已经登录，离开注册域名页面，将会被强制登出
@@ -49,8 +40,12 @@ function ComponentName () {
             <div className='regist-page'>
                 <div className='regist-page-bg'></div>
                 <div className='regist-page-wrapper'>
-                    <div className='regist-page-back'><PageBack /></div>
+                    <div className='regist-page-back'>
+                        <PageBack onClose={() => { logOut();navigate('/')}} />
+                    </div>
                     <div className='regist-page-content' >
+                        <div className='title'>{ lang['Regist_Title'] }</div>
+                        <div className='des' dangerouslySetInnerHTML={ { __html: lang['Domain_Rule'] } }></div>
                         <RegistForm onConfirm={(domain) => {}} />
                     </div>
                 </div>
