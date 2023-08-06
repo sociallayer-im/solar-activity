@@ -229,7 +229,7 @@ function EventDetail() {
                                 <i className={'icon-Outline'}/>
                                 <div>{
                                     event.event_site
-                                        ? event.event_site.title
+                                        ? event.event_site.title + (event.event_site.location ? `(${event.event_site.location})` : '')
                                         : event.location
                                 }</div>
                             </div>
