@@ -37,6 +37,7 @@ const langEN = {
 
   Regist_Step_Next: 'Next',
 
+  Regist_Title: 'Set a unique Social Layer domain identity',
   Domain_Rule: 'Domains can contain the English-language letters a-z, and the digits 0-9. Hyphens can also be used but it can not be used at the beginning and at the end of a domain name. It should be longer than 6 characters.',
   Regist_Input_Placeholder: 'Your domain',
   Regist_Input_Validate: slotLang('Cannot exceed {n} characters'),
