@@ -1,16 +1,21 @@
 export const labelColors = [
-    '#B7D453',
     '#75D4F0',
-    '#FD8CE2',
-    '#8080FF',
-    '#15CB82',
-    '#FAC699',
-    '#FE6CAB',
+    '#1685a9',
     '#5567ff',
+    '#8080FF',
+    '#cca4e3',
     '#FFC400',
     '#FF7A45',
-    '#FF5C00',
+    '#d06833',
+    '#9eb636',
+    '#15CB82',
+    '#057748',
+    '#439b82',
+    '#FAC699',
     '#e73f9e',
+    '#FE6CAB',
+    '#FD8CE2',
+    '#a98175',
 ]
 
 function getUnicodeSum(str: string) {
@@ -28,7 +33,5 @@ export const getLabelColor = (label: string) => {
     // 获取字符串label的unicode编码数组
     // 将编码数组的每一项相加， 相加的和对颜色数组的长度取余，得到颜色数组的下标
     // 返回颜色数组的下标对应的颜色
-
-    const code = label.split('').map(item => getUnicodeSum(item)).reduce((a, b) => a + b, 0)
-    return labelColors[code % labelColors.length]
+    return labelColors[label[0].charCodeAt(0) % labelColors.length]
 }
