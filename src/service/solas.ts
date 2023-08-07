@@ -1680,7 +1680,7 @@ export interface EventSites {
     "created_at": string
 }
 
-export async function getEventSide(props: {group_id?: number}): Promise<EventSites[]> {
+export async function getEventSide(): Promise<EventSites[]> {
     const res: any = await fetch.get({
         url: `${api}/event/event_sites`,
         data: {}

@@ -204,13 +204,11 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         async function fetchLocation() {
-            if (creator?.is_group) {
-                const location = await getEventSide({group_id: creator.id})
-                setPresetLocations(location.map((l) => ({
-                    label: l.title + (l.location ? `(${l.location})` : ''),
-                    id: l.id
-                })))
-            }
+            const location = await getEventSide()
+            setPresetLocations(location.map((l) => ({
+                label: l.title + (l.location ? `(${l.location})` : ''),
+                id: l.id
+            })))
         }
 
         fetchLocation()
