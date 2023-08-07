@@ -1572,7 +1572,7 @@ export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.events as Event[]
+    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
 }
 
 export interface QueryRecommendEventProps {
@@ -1590,7 +1590,7 @@ export async function queryRecommendEvent(props: QueryRecommendEventProps): Prom
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.events as Event[]
+    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
 }
 
 export interface QueryEventDetailProps {
@@ -1638,7 +1638,7 @@ export async function queryMyEvent({page=1, ...props}: QueryMyEventProps): Promi
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.participants as Participants[]
+    return res.data.participants.filter((item: any) => item.status !=='cancel') as Participants[]
 }
 
 export interface CancelEventProps {
@@ -1732,7 +1732,7 @@ export async function searchEvent (keyword: string) {
         throw new Error(res.data.message || 'Join event fail')
     }
 
-    return res.data.events as Event[]
+    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
 }
 
 interface InviteGuestProp {
