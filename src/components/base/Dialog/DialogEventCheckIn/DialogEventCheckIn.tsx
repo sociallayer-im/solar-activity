@@ -28,7 +28,8 @@ function DialogEventCheckIn(props: DialogNftCheckInProps) {
         try {
             const checkInRes = await eventCheckIn({
                 auth_token: user.authToken || '',
-                id: Number(res)
+                id: Number(res),
+                profile_id: user.id || 0,
             })
             showToast('Checked !')
             props.handleClose()

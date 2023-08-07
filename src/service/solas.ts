@@ -1476,7 +1476,8 @@ export async function queryCheckInList(props: QueryCheckInListProps): Promise<Ch
 
 export interface EventCheckInProps {
     id: number,
-    auth_token: string
+    auth_token: string,
+    profile_id: number,
 }
 
 export async function eventCheckIn (props: EventCheckInProps) {

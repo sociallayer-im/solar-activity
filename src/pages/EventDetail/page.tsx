@@ -358,7 +358,7 @@ function EventDetail() {
                                     <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
                                 }
 
-                                {!isJoined && notStart && !canceled && !outOfDate && !isHoster &&
+                                {!isJoined && !canceled && !outOfDate && !isHoster &&
                                     <AppButton special onClick={e => {
                                         handleJoin()
                                     }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
@@ -370,14 +370,9 @@ function EventDetail() {
                                     }}>{lang['Activity_Detail_Btn_unjoin']}</AppButton>
                                 }
 
-                                {!isJoined && inProgress && !isHoster && !canceled &&
-                                    <AppButton disabled>{lang['Activity_Detail_Btn_Attend']}</AppButton>
-                                }
-
                                 {outOfDate && !canceled &&
                                     <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
                                 }
-
 
                                 {!canceled && isHoster && inCheckinTime && !!event.event_site &&
                                     <AppButton
