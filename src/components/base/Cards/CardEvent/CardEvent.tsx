@@ -95,10 +95,7 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
             </div>
             <div className={(fixed || hasMarker && !fixed) ? 'post marker': 'post'}>
-                <LazyLoadImage
-                    src={props.event.cover}
-                    alt={''}
-                />
+                <img src={props.event.cover} alt=""/>
             </div>
         </div>
     </div>)
