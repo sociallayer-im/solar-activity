@@ -232,9 +232,10 @@ function CreateEvent(props: CreateEventPageProps) {
                 events = events.filter((e) => e.id !== props.eventId)
 
                 const occupied = events.some((e) => {
-                    return new Date(start).getTime() >= new Date(e.start_time!).getTime() || new Date(ending).getTime() <= new Date(e.ending_time!).getTime()
+                    return new Date(start).getTime() >= new Date(e.start_time!).getTime() && new Date(ending).getTime() <= new Date(e.ending_time!).getTime()
                 })
 
+                console.log(events)
                 setSiteOccupied(occupied)
             } else {
                 setSiteOccupied(false)
