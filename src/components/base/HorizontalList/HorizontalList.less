@@ -3,6 +3,7 @@
 
   .right-size-gradient {
     position: absolute;
+    margin-right: -1px;
     top: 0;
     right: 0;
     bottom: 0;
@@ -12,9 +13,9 @@
 
     img {
         position: absolute;
-        top: 50%;
+        top: 55%;
         right: 0;
-        transform: translate(0, -50%);
+        transform: translate(-1px, -50%);
         width: 44px;
         height: 44px;
         cursor: pointer;
@@ -31,16 +32,18 @@
     top: 0;
     left: 0;
     bottom: 0;
+    margin-left: -1px;
     width: 30px;
     z-index: 99;
     transform: rotate(180deg);
+    padding-left: 80px;
     background: linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
 
     img {
       position: absolute;
-      top: 50%;
+      top: 45%;
       right: 0;
-      transform: translate(0, -50%);
+      transform: translate(-1px, -51%);
       width: 44px;
       height: 44px;
       cursor: pointer;
@@ -55,19 +58,19 @@
 
 @media (max-width: 450px) {
   .horizontal-list-swiper-wrapper {
-    .right-size-gradient {
-      padding-right: 12px;
-
-      img {
-        right: 12px;
-      }
-    }
-
     .left-size-gradient {
       padding-left: 12px;
 
       img {
-        transform: translate(-12px, -50%);
+        transform: translate(-12px, -55%);
+      }
+    }
+
+    .right-size-gradient {
+      padding-right: 12px;
+
+      img {
+        transform: translate(-12px, -55%);
       }
     }
   }
