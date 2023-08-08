@@ -25,16 +25,6 @@ interface DateItem {
 }
 
 const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const colorList = [
-    '#B7D453',
-    '#75D4F0',
-    '#FD8CE2',
-    '#8080FF',
-    '#15CB82',
-    '#FAC699',
-    '#FE6CAB',
-    '#7A88FF',
-]
 
 function Calendar() {
     const navigate = useNavigate()
@@ -274,14 +264,12 @@ function Calendar() {
                                         <div className={'col2'}>
                                             {
                                                 group.map(item => {
-                                                    const color = colorList[Math.floor(item.id % colorList.length)]
                                                     return (
                                                         <div className={'event-item'}
                                                              key={item.id}
                                                              onClick={e => {
                                                                  gotoEventDetail(item.id)
-                                                             }}
-                                                             style={{borderColor: color}}>
+                                                             }}>
                                                             <div className={'label-color'}>
                                                                 {
                                                                    item.tags?.map((tag, index) => {
