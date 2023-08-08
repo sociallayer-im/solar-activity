@@ -3,13 +3,6 @@ import UserContext from '../provider/UserProvider/UserContext'
 import DialogsContext from '../provider/DialogProvider/DialogsContext'
 import solas from '../../service/solas'
 
-const Pusher = (window as any).Pusher
-let pusher: any = null
-if (Pusher) {
-    Pusher.logToConsole = true
-    pusher = new Pusher('f88b7452d706ba1a2494', {cluster: 'ap3'})
-}
-
 function Subscriber() {
     const {user} = useContext(UserContext)
     const {showBadgelet, showInvite, showNftpasslet, showGiftItem} = useContext(DialogsContext)

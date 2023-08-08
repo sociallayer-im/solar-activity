@@ -15,6 +15,7 @@ import theme from './theme'
 import Subscriber from './components/base/Subscriber'
 import {BrowserRouter} from 'react-router-dom'
 import './styles/index.less'
+import { Analytics } from '@vercel/analytics/react'
 
 const engine = new Styletron();
 
@@ -66,6 +67,7 @@ function App() {
                     </WagmiConfig>
                 </PageBacProvider>
             </div>
+            <Analytics />
         </BrowserRouter>
     )
 }
