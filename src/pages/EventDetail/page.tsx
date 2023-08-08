@@ -202,9 +202,7 @@ function EventDetail() {
     }
 
     const copyLink = () => {
-        const link = `${window.location.origin}/event/${event?.id}`
-        copy(link)
-        showToast('Copy link successfully')
+        navigate(`/success/${event?.id}`)
     }
 
     return (<Layout>

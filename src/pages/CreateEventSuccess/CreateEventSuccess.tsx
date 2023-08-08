@@ -8,6 +8,8 @@ import useTime from "../../hooks/formatTime";
 import QRcode from "../../components/base/QRcode";
 import AppButton from "../../components/base/AppButton/AppButton";
 import saveCard from "../../utils/html2png";
+import copy from "../../utils/copy";
+import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 
 
 function CreateEventSuccess() {
@@ -17,6 +19,7 @@ function CreateEventSuccess() {
     const {lang} = useContext(LangContext)
     const formatTime = useTime()
     const card = useRef<any>()
+    const {showToast} = useContext(DialogsContext)
 
     useEffect(() => {
         async function fetchData() {
@@ -37,14 +40,21 @@ function CreateEventSuccess() {
 
     const downloadCard = () => {
         if (card.current || event) {
-            saveCard(card.current, event?.title || '', [335, 495])
+            const height = card.current.offsetHeight
+            saveCard(card.current, event?.title || '', [335, height])
         }
+    }
+
+    const copyLink = () => {
+        const link = `${window.location.origin}/event/${event?.id}`
+        copy(link)
+        showToast(lang['Dialog_Copy_Title'])
     }
 
     return (<Layout>
         <div className={'create-event-success-page'}>
             <Link className={'done'} to={`/event/${eventId}`}>Done</Link>
-            <div className={'title'}>{lang['Activity_Create_Success']}</div>
+            <div className={'title'}>{lang['IssueFinish_Title']}</div>
             {event &&
                 <>
                     <div className={'event-share-card'} ref={card}>
@@ -90,6 +100,9 @@ function CreateEventSuccess() {
                         <div className={'center'}>
                             <AppButton special onClick={e => {downloadCard()}}>{lang['Save_Card']}</AppButton>
                         </div> }
+                    <div className={'center'}>
+                        <AppButton onClick={e => {copyLink()}}>{lang['IssueFinish_CopyLink']}</AppButton>
+                    </div>
                 </>
             }
         </div>
