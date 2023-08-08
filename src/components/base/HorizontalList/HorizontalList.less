@@ -55,8 +55,20 @@
 
 @media (max-width: 450px) {
   .horizontal-list-swiper-wrapper {
-    .right-size-gradient, .left-size-gradient {
-      display: none;
+    .right-size-gradient {
+      padding-right: 12px;
+
+      img {
+        right: 12px;
+      }
+    }
+
+    .left-size-gradient {
+      padding-left: 12px;
+
+      img {
+        transform: translate(-12px, -50%);
+      }
     }
   }
 }

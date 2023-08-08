@@ -6,6 +6,8 @@ import './ListMyCreatedEvent.less'
 import ListEvent from "../ListEvent/ListEvent";
 import userContext from "../../provider/UserProvider/UserContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
+import CardEvent from "../../base/Cards/CardEvent/CardEvent";
+import HorizontalList from "../../base/HorizontalList/HorizontalList";
 
 
 function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
@@ -27,13 +29,13 @@ function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
         } return []
     }
 
-    const {page, ref, list, isEmpty} = scrollToLoad({
-        queryFunction: getMyEvent,
-        immediate: true,
-    })
-
     return (<div>
-        <ListEvent data={list} scrollMarkRef={ref} />
+        <HorizontalList
+            queryFunction={ getMyEvent }
+            item={(itemData: Event) => <CardEvent event={itemData} />}
+            space={ 16 }
+            itemWidth={ 300 }
+        />
     </div>)
 }
 
