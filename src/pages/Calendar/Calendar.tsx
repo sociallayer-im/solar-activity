@@ -128,9 +128,11 @@ function Calendar() {
 
         async function fetchData() {
             const unload = showLoading()
+            const selected = new Date(selectedDate.value)
             try {
                 let res = await queryEvent({
-                    date: getDateStr(selectedDate.value),
+                    start_time_from: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0 , 0 ).getTime() / 1000,
+                    start_time_to: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59 ).getTime() / 1000,
                     tag: selectedLabel[0] || undefined,
                     page: 1
                 })

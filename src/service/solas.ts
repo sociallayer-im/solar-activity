@@ -1560,6 +1560,8 @@ export interface QueryEventProps {
     date?: string,
     page: number,
     event_site_id?: number,
+    start_time_from?: number,
+    start_time_to?: number,
 }
 
 
