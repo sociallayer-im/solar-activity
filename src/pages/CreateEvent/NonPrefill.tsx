@@ -1,5 +1,5 @@
 import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
-import {useContext, useEffect, useState} from 'react'
+import {useContext, useEffect, useState, useRef} from 'react'
 import Layout from '../../components/Layout/Layout'
 import PageBack from '../../components/base/PageBack'
 import './CreateBadge.less'
@@ -18,7 +18,8 @@ import solas, {
     Profile,
     queryEvent,
     updateEvent,
-    getProfile, createSite,setEventBadge
+    getProfile, createSite,setEventBadge,
+    Event
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -31,6 +32,25 @@ import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
+
+interface Draft {
+    cover: string,
+    title: string,
+    content: string,
+    location_type: 'online' | 'offline' | 'both',
+    online_location: string,
+    event_site: {babel: string, id: number}[],
+    max_participants: number,
+    min_participants: number,
+    enable_min_participants: boolean,
+    enable_guest: boolean,
+    guests: string[],
+    tags:string[],
+    badge_id: number | null,
+    creator: Group | Profile | null,
+    start_time: string,
+    end_time: string,
+}
 
 interface CreateEventPageProps {
     eventId?: number
@@ -86,6 +106,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [onlineUrlError, setOnlineUrlError] = useState('')
     const isEditMode = !!props.eventId
     const [siteOccupied, setSiteOccupied] = useState(false)
+    const [formReady, setFormReady] = useState(false)
     const location = useLocation()
 
     const toNumber = (value: string, set: any) => {
@@ -97,6 +118,77 @@ function CreateEvent(props: CreateEventPageProps) {
         const number = parseInt(value)
         if (!isNaN(number)) {
             set(number)
+        }
+    }
+
+    async function SaveDraft () {
+        if (!isEditMode && formReady) {
+            const draft: Draft = {
+                cover,
+                title,
+                content,
+                location_type: 'both',
+                online_location: onlineUrl,
+                event_site: eventSite,
+                max_participants: maxParticipants,
+                min_participants: minParticipants,
+                tags: label,
+                badge_id: badgeId,
+                creator: creator,
+                guests: guests,
+                enable_min_participants: enableMinParticipants,
+                enable_guest: enableGuest,
+                start_time: start,
+                end_time: ending,
+            }
+            window.localStorage.setItem('event_draft', JSON.stringify(draft))
+        }
+    }
+
+    async function prefillDraft () {
+        const draftStr = window.localStorage.getItem('event_draft')
+        if (draftStr) {
+            try {
+                const draft = JSON.parse(draftStr) as Draft
+                setCover(draft.cover)
+                setTitle(draft.title)
+                setContent(draft.content)
+
+                setOnlineUrl(draft.online_location || '')
+                if (draft.max_participants) {
+                    setMaxParticipants(draft.max_participants)
+                    setEnableMaxParticipants(true)
+                }
+                if (draft.min_participants) {
+                    setMinParticipants(draft.min_participants)
+                }
+
+                setEnableMinParticipants(!!draft.enable_min_participants)
+
+                if (draft.guests) {
+                    setGuests(draft.guests)
+                }
+
+                setEnableGuest(!!draft.enable_guest)
+
+                setLabel(draft.tags ? draft.tags : [])
+                setBadgeId(draft.badge_id)
+
+                if (draft.creator) {
+                    setCreator(draft.creator)
+                }
+
+                setTimeout(() => {
+                    setStart(draft.start_time)
+                    setEnding(draft.end_time)
+                    setEventSite(draft.event_site || [])
+                    setFormReady(true)
+                }, 500)
+            } catch (e) {
+                console.log(e)
+            }
+        } else {
+            setFormReady(true)
         }
     }
 
@@ -129,7 +221,51 @@ function CreateEvent(props: CreateEventPageProps) {
     }, [badgeId])
 
     useEffect(() => {
+        async function prefillEventDetail(event: Event) {
+            setCover(event.cover)
+            setTitle(event.title)
+            setContent(event.content)
+            if (event.start_time) {
+                setStart(event.start_time)
+            }
+            if (event.ending_time) {
+                setEnding(event.ending_time)
+                setHasDuration(true)
+            }
+            setLocationType(event.location_type)
+            setOnlineUrl(event.online_location || '')
+            setEventSite(event.event_site ? [{label: event.event_site.title, id: event.event_site.id}] : [])
+            if (event.max_participant) {
+                setMaxParticipants(event.max_participant)
+                setEnableMaxParticipants(true)
+            }
+            if (event.min_participant) {
+                setMinParticipants(event.min_participant)
+                setEnableMinParticipants(true)
+            }
+
+            if (event.participants) {
+                const gustList = event.participants
+                    .filter(p => p.role === 'guest')
+                    .map((p) => p.profile.domain!)
+                setEnableGuest(true)
+                setGuests([...gustList, ''])
+            }
+
+            setLabel(event.tags ? event.tags : [])
+            setBadgeId(event.badge_id)
+
+            if (event.host_info) {
+                const profile = await getProfile({id: Number(event.host_info)})
+                setCreator(profile)
+            } else {
+                const profile = await getProfile({id:event.owner_id})
+                setCreator(profile)
+            }
+        }
+
         async function fetchEventDetail() {
+            fetchLocation()
             if (isEditMode) {
                 try {
                     const event = await solas.queryEventDetail({id: props.eventId!})
@@ -138,52 +274,13 @@ function CreateEvent(props: CreateEventPageProps) {
                         navigate('/error')
                         return
                     }
-
-                    setCover(event.cover)
-                    setTitle(event.title)
-                    setContent(event.content)
-                    if (event.start_time) {
-                        setStart(event.start_time)
-                    }
-                    if (event.ending_time) {
-                        setEnding(event.ending_time)
-                        setHasDuration(true)
-                    }
-                    setLocationType(event.location_type)
-                    setOnlineUrl(event.online_location || '')
-                    setEventSite(event.event_site ? [{label: event.event_site.title, id: event.event_site.id}] : [])
-                    if (event.max_participant) {
-                        setMaxParticipants(event.max_participant)
-                        setEnableMaxParticipants(true)
-                    }
-                    if (event.min_participant) {
-                        setMinParticipants(event.min_participant)
-                        setEnableMinParticipants(true)
-                    }
-
-                    if (event.participants) {
-                        const gustList = event.participants
-                            .filter(p => p.role === 'guest')
-                            .map((p) => p.profile.domain!)
-                        setEnableGuest(true)
-                        setGuests([...gustList, ''])
-                    }
-
-                    setLabel(event.tags ? event.tags : [])
-                    setBadgeId(event.badge_id)
-
-                    if (event.host_info) {
-                        const profile = await getProfile({id: Number(event.host_info)})
-                        setCreator(profile)
-                    } else {
-                        const profile = await getProfile({id:event.owner_id})
-                        setCreator(profile)
-                    }
-
+                   await prefillEventDetail(event)
                 } catch (e: any) {
                     showToast(e.message)
                     navigate('/error')
                 }
+            } else {
+                prefillDraft()
             }
         }
 
@@ -192,17 +289,6 @@ function CreateEvent(props: CreateEventPageProps) {
             setLabels(tags)
         }
 
-        async function fetchCreator() {
-            const tags = await getHotTags()
-            setLabels(tags)
-        }
-
-
-        fetchTags()
-        fetchEventDetail()
-    }, [])
-
-    useEffect(() => {
         async function fetchLocation() {
             const location = await getEventSide()
             setPresetLocations(location.map((l) => ({
@@ -212,7 +298,30 @@ function CreateEvent(props: CreateEventPageProps) {
         }
 
         fetchLocation()
-    }, [creator?.is_group])
+        fetchTags()
+        fetchEventDetail()
+    }, [])
+
+    useEffect(() => {
+        SaveDraft()
+    }, [
+        cover,
+        title,
+        content,
+        onlineUrl,
+        eventSite,
+        maxParticipants,
+        minParticipants,
+        guests,
+        label,
+        badgeId,
+        start,
+        ending,
+        creator,
+        enableGuest,
+        enableMinParticipants,
+        formReady
+    ])
 
     // 检查event_site在设置的event.start_time和event.ending_time否可用
     useEffect(() => {
@@ -347,6 +456,7 @@ function CreateEvent(props: CreateEventPageProps) {
             }
             unloading()
             showToast('create success')
+            window.localStorage.removeItem('event_draft')
             navigate(`/success/${newEvent.id}`)
         } catch (e: any) {
             unloading()
@@ -575,15 +685,19 @@ function CreateEvent(props: CreateEventPageProps) {
                             }
                         </div>
 
-                        <div className='input-area'>
-                            <div className='input-area-title'>{lang['Activity_originators']}</div>
-                            <SelectCreator
-                                autoSet={!isEditMode}
-                                groupFirst value={creator}
-                                onChange={(res) => {
-                                setCreator(res)
-                            }}/>
-                        </div>
+                        {
+                            formReady &&
+                            <div className='input-area'>
+                                <div className='input-area-title'>{lang['Activity_originators']}</div>
+                                <SelectCreator
+                                    autoSet={!creator}
+                                    groupFirst
+                                    value={creator}
+                                    onChange={(res) => {
+                                        setCreator(res)
+                                    }}/>
+                            </div>
+                        }
 
                         <div className={'input-area'}>
                             <div className={'input-area-title'}>{lang['Activity_Form_Label']}</div>
