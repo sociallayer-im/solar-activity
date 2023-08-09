@@ -94,6 +94,7 @@ function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
 
     useEffect(() => {
         if (!user.id) return
+        if (list.length) return
         async function getList () {
             const profile = await solas.getProfile({ id: user.id! })
             if (!profile) return
@@ -116,7 +117,7 @@ function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
                 }
             }
 
-            if (!selected.length && autoSet) {
+            if (!selected.length && autoSet && !props.value) {
                 if (props.groupFirst && groups.length) {
                     props.onChange(groups[0])
                 } else  {
@@ -126,7 +127,7 @@ function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
             }
         }
         getList()
-    }, [user.id])
+    }, [user.id, props.value, list])
 
     useEffect(() => {
         if (props.value) {
