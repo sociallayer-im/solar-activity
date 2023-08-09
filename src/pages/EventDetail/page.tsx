@@ -79,7 +79,7 @@ function EventDetail() {
                     setOutOfDate(true)
                 }
 
-                if (now >= start - 30 * 60 * 1000 && now <= end) {
+                if (now >= start - 30 * 60 * 1000) {
                     setIsCheckTime(true)
                 }
             }
