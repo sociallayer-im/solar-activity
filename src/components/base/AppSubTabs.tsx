@@ -49,6 +49,7 @@ function AppSubTabs (props: AppTabsProps) {
     return (
         <Tabs
             { ...rest }
+            renderAll
             overrides={{
                 TabBar: {
                     style: TabBarStyle,

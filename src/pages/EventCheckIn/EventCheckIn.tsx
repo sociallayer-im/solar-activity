@@ -3,7 +3,7 @@ import {useStyletron} from 'baseui'
 import {useContext, useEffect, useRef, useState} from 'react'
 import Layout from "../../components/Layout/Layout";
 import './EventCheckIn.less'
-import {Event, getProfile, Profile, ProfileSimple, queryEventDetail} from "../../service/solas";
+import {Event, getProfile, Participants, Profile, queryEventDetail, sendEventBadge} from "../../service/solas";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import PageBack from "../../components/base/PageBack";
@@ -11,7 +11,7 @@ import useTime from "../../hooks/formatTime";
 import QRcode from "../../components/base/QRcode";
 import langContext from "../../components/provider/LangProvider/LangContext";
 import AppButton from "../../components/base/AppButton/AppButton";
-import AddressList from "../../components/base/AddressList/AddressList";
+import ListCheckinUser from "../../components/compose/ListCheckinUser/ListCheckinUser";
 
 function EventCheckIn() {
     const [css] = useStyletron()
@@ -22,17 +22,18 @@ function EventCheckIn() {
     const [isHoster, setIsHoster] = useState(false)
     const [isJoin, setIsJoin] = useState(false)
     const [hoster, setHoster] = useState<Profile | null>(null)
-    const [participants, setParticipants] = useState<ProfileSimple[]>([])
+    const [participants, setParticipants] = useState<Participants[]>([])
     const [hasCheckin, setHasCheckin] = useState<string[]>([])
 
     const {user} = useContext(userContext)
-    const {showLoading, showEventCheckIn} = useContext(DialogsContext)
+    const {showLoading, showEventCheckIn, showToast} = useContext(DialogsContext)
     const formatTime = useTime()
     const {lang} = useContext(langContext)
     const timeOut = useRef<any>(null)
 
     async function init(needLoading = true) {
-        let unload: any = () => {}
+        let unload: any = () => {
+        }
         if (eventId) {
             if (needLoading) {
                 unload = showLoading()
@@ -41,7 +42,13 @@ function EventCheckIn() {
             try {
                 const eventDetails = await queryEventDetail({id: Number(eventId)})
                 setEvent(eventDetails)
-                setParticipants(eventDetails?.participants?.map(item => item.profile) as any)
+                setParticipants(eventDetails?.participants?.sort((a, b) => {
+                    if (b.status==='checked') {
+                        return 1
+                    } else {
+                        return -1
+                    }
+                }) || [])
                 setHasCheckin(eventDetails?.participants?.filter(item => item.status === 'checked').map(item => item.profile.domain!) || [])
 
                 if (eventDetails.host_info) {
@@ -90,9 +97,21 @@ function EventCheckIn() {
         }
     }, [user.id, hoster])
 
-    const goToProfile = (username: string) => {
-        const homeUrl = import.meta.env.VITE_SOLAS_HOME
-        window.location.href=`${homeUrl}/profile/${username}`
+
+    const handleSendBadge = async () => {
+        const unload = showLoading()
+        try {
+            const send = await sendEventBadge({
+                event_id: Number(eventId),
+                auth_token: user.authToken || ''
+            })
+            unload()
+            showToast('Send successfully')
+        } catch (e: any) {
+            unload()
+            console.error(e)
+            showToast(e.message || 'Send badge failed')
+        }
     }
 
     return (<Layout>
@@ -124,11 +143,11 @@ function EventCheckIn() {
 
                         {!user.id &&
                             <div className={'checkin-checkin-btn'}>
-                                <div>{lang['Activity_login_des']}</div>
+                                <div className={'login-tips'}>{lang['Activity_login_des']}</div>
                             </div>
                         }
 
-                        {user.id && !isJoin && !isHoster &&
+                        {!!user.id && !isJoin && !isHoster &&
                             <div className={'checkin-checkin-btn'}>
                                 <AppButton disabled>{lang['Activity_Scan_checkin']}</AppButton>
                             </div>
@@ -139,11 +158,22 @@ function EventCheckIn() {
                     <div className={'checkin-list'}>
                         <div className={'title'}>{lang['Activity_Registered_participants']}
                             <span>({hasCheckin.length} / {participants.length})</span></div>
-                        <AddressList
-                            onClick={e => {goToProfile(e.split('.')[0])}}
-                            data={participants as any} selected={hasCheckin as any} />
+                        <ListCheckinUser
+                            isHost={isHoster}
+                            eventId={Number(eventId || 0)}
+                            participants={participants}
+                        />
                     </div>
                 </div>
+
+                {isHoster && event.badge_id && <div className={'actions'}>
+                    <div className={'center'}>
+                        <AppButton special onClick={e => {
+                            handleSendBadge()
+                        }}>{lang['Activity_Host_Send']}</AppButton>
+                    </div>
+                </div>
+                }
             </div>
         }
     </Layout>)

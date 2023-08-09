@@ -1805,8 +1805,27 @@ export async function setEventBadge (props: SetEventBadgeProps) {
     }
 }
 
+export interface SendEventBadgeProps {
+    auth_token: string,
+    event_id: number,
+}
+
+export async function sendEventBadge (props: SendEventBadgeProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/badge/send_for_event`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Join event fail')
+    }
+}
+
 
 export default {
+    sendEventBadge,
     setEventBadge,
     createSite,
     searchEvent,

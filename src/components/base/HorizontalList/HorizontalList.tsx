@@ -45,7 +45,7 @@ function HorizontalList<T>(props: HorizontalList<T>) {
 
     return <>
         {isEmpty && !props.preEnhancer && !props.endEnhancer
-            ? <Empty text={props.emptyText || 'No data'}/>
+            ? <></>
             : <div className='horizontal-list-swiper-wrapper'>
                 <Swiper
                     data-testid='HorizontalList'
@@ -55,7 +55,9 @@ function HorizontalList<T>(props: HorizontalList<T>) {
                     style={{paddingLeft: '12px', paddingTop: '10px', height: props.itemHeight ? props.itemHeight + 10 + 'px' : 'auto'}}
                     slidesPerView={'auto'} >
 
-                    <Slider position='left' />
+                    { listData.length > 0 &&
+                        <Slider position='left' />
+                    }
 
                     {
                         !!props.preEnhancer &&
@@ -82,7 +84,9 @@ function HorizontalList<T>(props: HorizontalList<T>) {
                         <div ref={ref}></div>
                     </SwiperSlide>
 
-                    <Slider position='right' />
+                    { listData.length > 0 &&
+                        <Slider position='right' />
+                    }
                 </Swiper>
             </div>
         }

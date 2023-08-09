@@ -378,7 +378,11 @@ function EventDetail() {
                                         special
                                         onClick={e => {
                                             handleHostCheckIn()
-                                        }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                        }}>{
+                                        event.badge_id
+                                            ?lang['Activity_Host_Check_And_Send']
+                                            :lang['Activity_Detail_Btn_Checkin']
+                                    }</AppButton>
                                 }
 
                                 {!canceled && (isJoined && !isGuest) && inCheckinTime &&

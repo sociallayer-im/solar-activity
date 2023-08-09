@@ -268,6 +268,9 @@ const langCN: LangConfig = {
   Activity_Detail_Expired: '已结束',
   Activity_Detail_Created: '我发起的',
 
+  Activity_Host_Check_And_Send: '签到或者发放POAP',
+  Activity_Host_Send: '发放POAP',
+
   New_Year_1: '将你的新年祝福铸造成数字徽章',
   New_Year_2: '颁发理由 :',
   New_Year_3: '送你一枚徽章 扫码领取',

@@ -21,25 +21,30 @@ function Home() {
     const {showToast} = useContext(DialogsContext)
 
     const [tabIndex, setTabIndex] = useState('0')
-    const [registered, setRegistered] = useState<Event[]>([])
-    const [created, setCreated] = useState<Event[]>([])
     const [showMyCreate, setShowMyCreate] = useState(true)
     const [showMyAttend, setShowMyAttend] = useState(true)
-
-
-    const start = async () => {
-
-    }
+    const [ready, setReady] = useState(false)
 
     useEffect(() => {
         const myEvent = async () => {
             if (user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken || ''})
                 const myRegistered = res.map((item: Participants) => item.event)
-                setRegistered(myRegistered)
-
                 const res2 = await queryEvent({owner_id: user.id!, page: 1})
-                setCreated(res2)
+                setShowMyAttend(myRegistered.length > 0)
+                setShowMyCreate(res2.length > 0)
+                if (myRegistered.length > 0) {
+                    setTabIndex('0')
+                }  else {
+                    setTabIndex('1')
+                }
+
+                setTimeout(() => {
+                    setReady(true)
+                }, 100)
+            } else {
+                setShowMyAttend(false)
+                setShowMyCreate(false)
             }
         }
         myEvent()
@@ -72,7 +77,7 @@ function Home() {
             <HomeUserPanel/>
             {!!user.id &&
                 <>
-                    {(showMyCreate || showMyAttend) &&
+                    {
                         <>
                             <div className={'center'}>
                                 <div className={'module-title'}>
@@ -80,23 +85,16 @@ function Home() {
                                 </div>
                             </div>
                             <div className={'center'}>
-
                                 <AppSubTabs activeKey={tabIndex} renderAll onChange={({activeKey}) => {
                                     setTabIndex(activeKey + '')
                                 }}>
                                     {showMyAttend ? <Tab title={lang['Activity_State_Registered']}>
-                                        <ListMyAttentedEvent emptyCallBack={() => {
-                                            setShowMyAttend(false)
-                                            setTabIndex('1')
-                                        }}/>
+                                        <ListMyAttentedEvent />
                                     </Tab>: <></>}
 
                                     { showMyCreate ?
                                         <Tab title={lang['Activity_State_Created']}>
-                                            <ListMyCreatedEvent emptyCallBack={() => {
-                                                setShowMyCreate(false)
-                                                setTabIndex('0')
-                                            }} />
+                                            <ListMyCreatedEvent />
                                         </Tab>: <></>
                                     }
                                 </AppSubTabs>

@@ -269,6 +269,9 @@ const langEN = {
   Activity_Calendar_Page_Time: 'Time',
   Activity_Calendar_Page_Name: 'Event',
 
+  Activity_Host_Check_And_Send: 'Check-in and Send POAP',
+  Activity_Host_Send: 'Send POAP',
+
   New_Year_1: 'Cast your New Year wishes into a digital badge.',
   New_Year_2: 'Reason for issuing :',
   New_Year_3: 'Send you a badge, scan <br> the code to get',

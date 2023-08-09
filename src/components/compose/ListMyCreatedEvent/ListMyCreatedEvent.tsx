@@ -35,6 +35,7 @@ function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
             item={(itemData: Event) => <CardEvent event={itemData} />}
             space={ 16 }
             itemWidth={ 300 }
+            itemHeight={ 164 }
         />
     </div>)
 }
