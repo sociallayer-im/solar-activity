@@ -72,6 +72,7 @@ function EventDetail() {
                 if (now < start) {
                     setNotStart(true)
                 }
+
                 if (now >= start && now <= end) {
                     setInProgress(true)
                 }
@@ -372,7 +373,7 @@ function EventDetail() {
                                     <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
                                 }
 
-                                {!canceled && isHoster && inCheckinTime && !!event.event_site &&
+                                {!canceled && isHoster && inCheckinTime &&
                                     <AppButton
                                         special
                                         onClick={e => {
@@ -380,7 +381,7 @@ function EventDetail() {
                                         }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
                                 }
 
-                                {!canceled && (isJoined && !isGuest) && inCheckinTime && (!!event.event_site || (!event.event_site  && !event.online_location)) &&
+                                {!canceled && (isJoined && !isGuest) && inCheckinTime &&
                                     <AppButton
                                         special
                                         onClick={e => {
