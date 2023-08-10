@@ -1,14 +1,18 @@
 import PageHeader from '../compose/PageHeader'
 
 import { useStyletron, styled } from 'baseui'
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useContext} from 'react'
 import usePageHeight from '../../hooks/pageHeight'
+import userContext from "../provider/UserProvider/UserContext";
+import {useNavigate} from "react-router-dom";
 
 
 
 function Layout(props?: any) {
     const [css] = useStyletron()
     const { windowHeight, heightWithoutNav } = usePageHeight()
+    const { user } = useContext(userContext)
+    const navigate = useNavigate()
 
     const wrapper = {
         width: '100%',
@@ -41,6 +45,13 @@ function Layout(props?: any) {
             window.removeEventListener('orientationchange', watchSoftKeyboard)
         }
     }, [])
+
+    // 如果用户已经登录，离开注册域名页面，将会被强制回到注册页面
+    useEffect(() => {
+        if (!user.domain && user.authToken && !window.location.href.includes('regist')) {
+            navigate('/regist')
+        }
+    })
 
     return (
         <div className={ css(wrapper) }>

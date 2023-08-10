@@ -17,7 +17,7 @@ function ComponentName () {
     const location = useLocation()
 
     useEffect(() => {
-        // 如果用户已经注册过域名，将会跳转到用户的profile页面
+        // 如果用户已经注册过域名，将会跳转到主页
         if (user.domain) {
             navigate(`/`)
         }
@@ -27,13 +27,6 @@ function ComponentName () {
     useEffect(() => {
         clean('regist')
     }, [])
-
-    // 如果用户已经登录，离开注册域名页面，将会被强制登出
-    useEffect(() => {
-        if (user.authToken && !user.domain && location.pathname !== '/regist') {
-            logOut()
-        }
-    },[location.pathname])
 
     return (
         <Layout>
