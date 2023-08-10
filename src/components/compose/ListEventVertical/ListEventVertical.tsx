@@ -4,12 +4,15 @@ import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {getHotTags, queryRecommendEvent} from "../../../service/solas";
+import {getHotTags, queryRecommendEvent, Event} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
+import {Spinner} from "baseui/icon";
+import './ListEventVertical.less'
+
 
 function ListEventVertical() {
     const [css] = useStyletron()
@@ -24,7 +27,6 @@ function ListEventVertical() {
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
 
     const getEvent = async (page: number) => {
-        const unload = showLoading()
         try {
             let res = await queryRecommendEvent({page, rec: tab2Index})
             if (selectTag[0]) {
@@ -32,17 +34,15 @@ function ListEventVertical() {
                     return item.tags?.includes(selectTag[0])
                 })
             }
-            unload()
             return res
         } catch (e: any) {
             console.error(e)
             showToast(e.message)
-            unload()
             return []
         }
     }
 
-    const {list, ref, refresh} = scrollToLoad({
+    const {list, ref, refresh, loading} = scrollToLoad({
         queryFunction: getEvent,
         immediate: true,
     })
@@ -102,11 +102,15 @@ function ListEventVertical() {
                 {!list.length ? <Empty/> :
                     <div className={'list'}>
                         {
-                            list.map((item, index) => {
+                            list.filter((item: Event) => {
+                                const now = new Date().getTime()
+                                return new Date(item.ending_time!).getTime() >= now
+                            }).map((item, index) => {
                                 return <CardEvent fixed={false} key={item.title} event={item}/>
                             })
                         }
-                        <div ref={ref}></div>
+                        { !loading && <div ref={ref}></div>}
+
                     </div>
                 }
             </div>
