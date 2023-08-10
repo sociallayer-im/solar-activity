@@ -1593,7 +1593,11 @@ export async function queryRecommendEvent(props: QueryRecommendEventProps): Prom
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
+    return res.data.events.filter((item: Event) => {
+        const cancel = item.status === 'cancel'
+        const now = new Date().getTime()
+        return new Date(item.ending_time!).getTime() >= now && !cancel
+    }) as Event[]
 }
 
 export interface QueryEventDetailProps {
