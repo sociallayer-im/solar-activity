@@ -338,7 +338,7 @@ function CreateEvent(props: CreateEventPageProps) {
                 console.log('eventseventsevents', events)
 
                 // 排除自己
-                events = events.filter((e) => e.id !== props.eventId)
+                events = events.filter((e) => e.id !== props.eventId && e.status !== 'cancel')
 
                 const occupied = events.some((e) => {
                     const eventStartTime = new Date(e.start_time!).getTime()
