@@ -327,12 +327,13 @@ function CreateEvent(props: CreateEventPageProps) {
     useEffect(() => {
         async function getEventBySiteAndDate() {
             if (eventSite[0] && start && ending) {
-                const startDate = new Date(start).getFullYear() + '-' + (new Date(start).getMonth() + 1) + '-' + new Date(start).getDate()
-                const endDate = new Date(ending).getFullYear() + '-' + (new Date(ending).getMonth() + 1) + '-' + new Date(ending).getDate()
+                const startDate = new Date(new Date(start).getFullYear(), new Date(start).getMonth(), new Date(start).getDate(), 0, 0, 0)
+                const endDate = new Date(new Date(ending).getFullYear(), new Date(ending).getMonth(), new Date(ending).getDate(), 23, 59, 59)
                 console.log('eventSite', eventSite[0])
                 let events = await queryEvent({
                     event_site_id: eventSite[0].id,
-                    date: startDate,
+                    start_time_from: startDate.getTime() / 1000,
+                    start_time_to: endDate.getTime() / 1000,
                     page: 1
                 })
                 console.log('eventseventsevents', events)
@@ -345,9 +346,10 @@ function CreateEvent(props: CreateEventPageProps) {
                     const eventEndTime = new Date(e.ending_time!).getTime()
                     const selectedStartTime = new Date(start).getTime()
                     const selectedEndTime = new Date(ending).getTime()
-                    return (eventStartTime < selectedStartTime && eventEndTime > selectedStartTime) ||
-                        (eventStartTime < selectedEndTime && eventEndTime > selectedEndTime) ||
-                        (eventStartTime > selectedStartTime && eventEndTime < selectedEndTime)
+                    return (selectedStartTime < eventStartTime && selectedEndTime > eventStartTime) ||
+                        (selectedStartTime >= eventStartTime && selectedEndTime <= eventEndTime) ||
+                        (selectedStartTime < eventEndTime && selectedEndTime > eventEndTime)
+
                 })
 
                 setSiteOccupied(occupied)
