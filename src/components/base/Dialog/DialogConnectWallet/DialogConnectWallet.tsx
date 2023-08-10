@@ -71,10 +71,6 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
 
     return (
         <div className='dialog-connect-wallet'>
-            <div className='connect-item solar' onClick={ loginWithSolar }>
-                <img src="/images/logo.svg" alt="email"/>
-                <div className='connect-des'>{ lang['Login_solar'] }</div>
-            </div>
             {connectors.map((connector) => (
                 <div className={ !connector.ready ? 'connect-item disable': 'connect-item' }
                     key={connector.id}
