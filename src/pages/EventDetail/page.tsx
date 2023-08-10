@@ -41,7 +41,6 @@ function EventDetail() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const {showLoading, showToast} = useContext(DialogsContext)
-    const {copy} = useCopy()
 
     const [tab, setTab] = useState(1)
     const [isHoster, setIsHoster] = useState(false)

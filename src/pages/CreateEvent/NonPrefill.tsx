@@ -345,9 +345,9 @@ function CreateEvent(props: CreateEventPageProps) {
                     const eventEndTime = new Date(e.ending_time!).getTime()
                     const selectedStartTime = new Date(start).getTime()
                     const selectedEndTime = new Date(ending).getTime()
-                    return (eventStartTime <= selectedStartTime && eventEndTime >= selectedStartTime) ||
-                        (eventStartTime <= selectedEndTime && eventEndTime >= selectedEndTime) ||
-                        (eventStartTime >= selectedStartTime && eventEndTime <= selectedEndTime)
+                    return (eventStartTime < selectedStartTime && eventEndTime > selectedStartTime) ||
+                        (eventStartTime < selectedEndTime && eventEndTime > selectedEndTime) ||
+                        (eventStartTime > selectedStartTime && eventEndTime < selectedEndTime)
                 })
 
                 setSiteOccupied(occupied)
