@@ -234,7 +234,7 @@ const langCN: LangConfig = {
   Activity_Punch_in_BTN: '打卡',
   Activity_Cancel_registration: '取消参与',
   Activity_Form_Cover: '封面/海报',
-  Activity_Form_Checklog: '作为定点打卡活动',
+  Activity_Form_Checklog: '作为重复打卡活动',
   Activity_Form_Name: '活动名',
   Activity_Form_Details: '内容',
   Activity_Form_Starttime: '活动时间',
