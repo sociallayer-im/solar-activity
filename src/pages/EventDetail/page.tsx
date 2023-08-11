@@ -59,8 +59,6 @@ function EventDetail() {
     const [guests, setGuests] = useState<ProfileSimple[]>([])
     const [badge, setBadge] = useState<Badge | null>(null)
     const [isChecklog, setIsChecklog] = useState(false)
-    const [checklogList, setChecklogList] = useState<any[]>([])
-
 
     async function fetchData() {
         if (eventId) {
@@ -70,11 +68,10 @@ function EventDetail() {
             setParticipants(res.participants?.filter(item => item.status !== 'cancel')
                 .map((item: Participants) => item.profile) || [])
             setCanceled(res.status === 'cancel')
+            // setCanceled(false)
 
             const isCheckLogEvent = res.event_type === 'checklog'
             setIsChecklog(isCheckLogEvent)
-            const checklogs = await getEventCheckLog({event_id: res.id})
-            setChecklogList(checklogs)
 
             const now = new Date().getTime()
             if (res.start_time && res.ending_time) {
@@ -91,7 +88,9 @@ function EventDetail() {
                     setOutOfDate(true)
                 }
 
-                if (now >= start - 30 * 60 * 1000) {
+                // 活动当天及之后都可以报名和签到
+                const startDate = new Date(res.start_time).setHours(0, 0, 0, 0)
+                if (now >= new Date(startDate).getTime()) {
                     setIsCheckTime(true)
                 }
             }
@@ -416,7 +415,7 @@ function EventDetail() {
                                         <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
                                     }
 
-                                    {!isJoined && !canceled && !outOfDate && !isHoster &&
+                                    {!isJoined && !canceled && inCheckinTime &&
                                         <AppButton special onClick={e => {
                                             handleJoin()
                                         }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
@@ -428,7 +427,7 @@ function EventDetail() {
                                         }}>{lang['Activity_Detail_Btn_unjoin']}</AppButton>
                                     }
 
-                                    {outOfDate && !canceled &&
+                                    {false &&
                                         <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
                                     }
 
