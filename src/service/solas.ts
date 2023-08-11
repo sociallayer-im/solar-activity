@@ -1510,6 +1510,7 @@ export interface Event {
     online_location: null | string,
     event_site_id?: null | number,
     event_site?: EventSites,
+    event_type: 'event' | 'checklog'
 
     owner_id: number,
     created_at: string,
@@ -1823,8 +1824,60 @@ export async function sendEventBadge (props: SendEventBadgeProps) {
     }
 }
 
+export interface GetEventCheckLogProps {
+    page?: number
+    event_id: number,
+    profile_id?: number,
+}
+
+export interface CheckLog {
+    id: number,
+    message: string,
+    image_url: string,
+    event_id: number,
+    profile_id: number
+    profile: Profile,
+    created_at: string,
+}
+
+export async function getEventCheckLog (props: GetEventCheckLogProps) {
+
+    const res = await fetch.get({
+        url: `${api}/event/list_checklogs`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.checklogs as CheckLog[]
+}
+
+export interface PunchInProps {
+    auth_token: string,
+    id: number,
+    message?: string,
+    image_url?: string,
+}
+
+export async function punchIn (props: PunchInProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/add_checklog`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+}
+
 
 export default {
+    punchIn,
+    getEventCheckLog,
     sendEventBadge,
     setEventBadge,
     createSite,

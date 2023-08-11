@@ -4,7 +4,7 @@ import LangContext from "../../../provider/LangProvider/LangContext";
 import {useContext, useEffect, useState} from "react";
 import ScanQrcode from "../../ScanQrcode/ScanQrcode";
 import DialogsContext from "../../../provider/DialogProvider/DialogsContext";
-import solas, {CheckIn, eventCheckIn} from '../../../../service/solas'
+import solas, {CheckIn, eventCheckIn, punchIn} from '../../../../service/solas'
 import CheckInRecords from "../../CheckInRecords/CheckInRecords";
 import AppButton from "../../AppButton/AppButton";
 import UserContext from "../../../provider/UserProvider/UserContext";
@@ -12,6 +12,7 @@ import UserContext from "../../../provider/UserProvider/UserContext";
 export interface DialogNftCheckInProps {
     handleClose: () => any
     eventId: number
+    isCheckLog?: boolean
 }
 
 function DialogEventCheckIn(props: DialogNftCheckInProps) {
@@ -25,21 +26,51 @@ function DialogEventCheckIn(props: DialogNftCheckInProps) {
     const handleScanResult = async (res: string) => {
         setCanScan(false)
         console.log('scan', res)
-        try {
-            const checkInRes = await eventCheckIn({
-                auth_token: user.authToken || '',
-                id: Number(res),
-                profile_id: user.id || 0,
-            })
-            showToast('Checked !')
-            props.handleClose()
-        } catch (e: any) {
-            console.error(e)
-            showToast(e.message || 'Check in fail !')
-        } finally {
-            setTimeout(() => {
+        console.log('is Checklog', props.isCheckLog)
+
+        if (props.isCheckLog) {
+            await handlePunchIn()
+        } else {
+            await checkIn()
+        }
+
+        async function handlePunchIn() {
+            try {
+                const punch = await punchIn({
+                    auth_token: user.authToken || '',
+                    id: Number(res)
+                })
+                showToast('Success !')
+                setTimeout(() => {
+                    props.handleClose()
+                } , 1000)
+            } catch (e: any) {
+                console.error(e)
+                showToast(e.message || 'Check in fail !')
+            } finally {
                 setCanScan(true)
-            }, 1000)
+            }
+        }
+
+        async function checkIn() {
+            try {
+                const checkInRes = await eventCheckIn({
+                    auth_token: user.authToken || '',
+                    id: Number(res),
+                    profile_id: user.id || 0,
+                })
+                showToast('Checked !')
+                setTimeout(() => {
+                    props.handleClose()
+                } , 1000)
+            } catch (e: any) {
+                console.error(e)
+                showToast(e.message || 'Check in fail !')
+            } finally {
+                setTimeout(() => {
+                    setCanScan(true)
+                }, 1000)
+            }
         }
     }
 

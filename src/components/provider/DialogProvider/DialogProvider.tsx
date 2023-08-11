@@ -679,7 +679,7 @@ function DialogProvider (props: DialogProviderProps) {
         setDialogsGroup({ ...dialogsGroup })
     }
 
-    const showEventCheckIn = (eventId: number) => {
+    const showEventCheckIn = (eventId: number, isCheckLog: boolean) => {
         const id = genID()
         const width = window.innerWidth
         dialogsGroup.dialogs.push({
@@ -697,7 +697,9 @@ function DialogProvider (props: DialogProviderProps) {
 
                 return (
                     <Dialog { ...dialogProps } >
-                        { (close) => <DialogEventCheckIn eventId={eventId} handleClose={close} /> }
+                        { (close) => <DialogEventCheckIn
+                            isCheckLog={isCheckLog}
+                            eventId={eventId} handleClose={close} /> }
                     </Dialog>
                 )
             }
