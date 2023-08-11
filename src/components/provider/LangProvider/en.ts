@@ -225,12 +225,16 @@ const langEN = {
   Activity_Create_Success_Scan_tips: 'Scan the code <br> and attend the event',
   Activity_Create_Success_Scan_tips_2: '| Activity',
   Activity_Scan_checkin: 'Scan QR code to Check in',
+  Activity_Scan_punch_in: 'Scan QR code to Punch in',
   Activity_Registered_participants: 'Registered participants',
   Activity_originators: 'Host',
   Activity_Des: 'Activity content',
   Activity_Participants: 'Participants',
+  Activity_Punch_Log: 'Punch Log',
+  Activity_Punch_in_BTN: 'Punch in',
   Activity_Cancel_registration: 'Cancel Registration',
   Activity_Form_Cover: 'Cover/Poster',
+  Activity_Form_Checklog : 'Set as a punch in location',
   Activity_Form_Name: 'Event Name',
   Activity_Form_Details: 'Event Description',
   Activity_Form_Starttime: 'When will it happen?',
@@ -271,6 +275,8 @@ const langEN = {
 
   Activity_Host_Check_And_Send: 'Check-in and Send POAP',
   Activity_Host_Send: 'Send POAP',
+
+
 
   New_Year_1: 'Cast your New Year wishes into a digital badge.',
   New_Year_2: 'Reason for issuing :',

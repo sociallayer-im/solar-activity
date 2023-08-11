@@ -1,5 +1,5 @@
 import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
-import {useContext, useEffect, useState, useRef} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
 import PageBack from '../../components/base/PageBack'
 import './CreateBadge.less'
@@ -11,15 +11,16 @@ import AppButton, {BTN_KIND} from '../../components/base/AppButton/AppButton'
 import solas, {
     Badge,
     CreateEventProps,
+    Event,
     getEventSide,
     getHotTags,
+    getProfile,
     Group,
     inviteGuest,
     Profile,
     queryEvent,
-    updateEvent,
-    getProfile, createSite,setEventBadge,
-    Event
+    setEventBadge,
+    updateEvent
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -39,17 +40,18 @@ interface Draft {
     content: string,
     location_type: 'online' | 'offline' | 'both',
     online_location: string,
-    event_site: {babel: string, id: number}[],
+    event_site: { babel: string, id: number }[],
     max_participants: number,
     min_participants: number,
     enable_min_participants: boolean,
     enable_guest: boolean,
     guests: string[],
-    tags:string[],
+    tags: string[],
     badge_id: number | null,
     creator: Group | Profile | null,
     start_time: string,
     end_time: string,
+    event_type: 'event' | 'checklog',
 }
 
 interface CreateEventPageProps {
@@ -62,7 +64,7 @@ const getNearestTime = () => {
     const minutes = now.getMinutes()
     const minuteRange = [0, 15, 30, 45, 60]
     const nearestMinute = minuteRange.find((item) => {
-        return item>= minutes
+        return item >= minutes
     })
 
     const initStartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), nearestMinute || 0)
@@ -95,6 +97,8 @@ function CreateEvent(props: CreateEventPageProps) {
 
     const [start, setStart] = useState(initTime[0].toISOString())
     const [ending, setEnding] = useState(initTime[1].toISOString())
+    const [eventType, setEventType] = useState<'event' | 'checklog'>('event')
+
 
     const [enableMaxParticipants, setEnableMaxParticipants] = useState(true)
     const [enableMinParticipants, setEnableMinParticipants] = useState(false)
@@ -121,7 +125,7 @@ function CreateEvent(props: CreateEventPageProps) {
         }
     }
 
-    async function SaveDraft () {
+    async function SaveDraft() {
         if (!isEditMode && formReady) {
             const draft: Draft = {
                 cover,
@@ -140,12 +144,13 @@ function CreateEvent(props: CreateEventPageProps) {
                 enable_guest: enableGuest,
                 start_time: start,
                 end_time: ending,
+                event_type: eventType,
             }
             window.localStorage.setItem('event_draft', JSON.stringify(draft))
         }
     }
 
-    async function prefillDraft () {
+    async function prefillDraft() {
         const draftStr = window.localStorage.getItem('event_draft')
         if (draftStr) {
             try {
@@ -173,6 +178,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
                 setLabel(draft.tags ? draft.tags : [])
                 setBadgeId(draft.badge_id)
+                setEventType(draft.event_type || 'event')
 
                 if (draft.creator) {
                     setCreator(draft.creator)
@@ -254,12 +260,13 @@ function CreateEvent(props: CreateEventPageProps) {
 
             setLabel(event.tags ? event.tags : [])
             setBadgeId(event.badge_id)
+            setEventType(event.event_type || 'event')
 
             if (event.host_info) {
                 const profile = await getProfile({id: Number(event.host_info)})
                 setCreator(profile)
             } else {
-                const profile = await getProfile({id:event.owner_id})
+                const profile = await getProfile({id: event.owner_id})
                 setCreator(profile)
             }
         }
@@ -274,7 +281,7 @@ function CreateEvent(props: CreateEventPageProps) {
                         navigate('/error')
                         return
                     }
-                   await prefillEventDetail(event)
+                    await prefillEventDetail(event)
                 } catch (e: any) {
                     showToast(e.message)
                     navigate('/error')
@@ -320,7 +327,8 @@ function CreateEvent(props: CreateEventPageProps) {
         creator,
         enableGuest,
         enableMinParticipants,
-        formReady
+        formReady,
+        eventType
     ])
 
     // 检查event_site在设置的event.start_time和event.ending_time否可用
@@ -431,7 +439,7 @@ function CreateEvent(props: CreateEventPageProps) {
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
-
+            event_type: eventType,
 
             auth_token: user.authToken || ''
         }
@@ -509,7 +517,8 @@ function CreateEvent(props: CreateEventPageProps) {
             badge_id: badgeId,
             host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
-            auth_token: user.authToken || ''
+            auth_token: user.authToken || '',
+            event_type: eventType,
         }
 
         const unloading = showLoading(true)
@@ -573,6 +582,17 @@ function CreateEvent(props: CreateEventPageProps) {
                         </div>
 
                         <div className='input-area'>
+                            <div className={'toggle'}>
+                                <div className={'item-title'}>{lang['Activity_Form_Checklog']}</div>
+                                <div className={'item-value'}>
+                                    <Toggle checked={eventType === 'checklog'} onChange={e => {
+                                        setEventType(e.target.checked ? 'checklog' : 'event')
+                                    }}/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='input-area'>
                             <div className='input-area-title'>{lang['Activity_Form_Starttime']}</div>
                             <AppDateInput value={start} onChange={(data) => {
                                 console.log('start', data)
@@ -590,17 +610,19 @@ function CreateEvent(props: CreateEventPageProps) {
                             </div>
                         }
 
-                        <div className='input-area'>
-                            <div className='input-area-title'>{lang['Activity_Detail_Online_address']}</div>
-                            <AppInput
-                                clearable
-                                value={onlineUrl}
-                                errorMsg={onlineUrlError}
-                                placeholder={'Url'}
-                                onChange={(e) => {
-                                    setOnlineUrl(e.target.value.trim())
-                                }}/>
-                        </div>
+                        {eventType === 'event' &&
+                            <div className='input-area'>
+                                <div className='input-area-title'>{lang['Activity_Detail_Online_address']}</div>
+                                <AppInput
+                                    clearable
+                                    value={onlineUrl}
+                                    errorMsg={onlineUrlError}
+                                    placeholder={'Url'}
+                                    onChange={(e) => {
+                                        setOnlineUrl(e.target.value.trim())
+                                    }}/>
+                            </div>
+                        }
 
                         <div className={'input-area'}>
                             <div className='input-area-title'>{lang['Activity_Detail_Offline_location']}</div>
@@ -620,51 +642,55 @@ function CreateEvent(props: CreateEventPageProps) {
                             </div>}
                         </div>
 
-                        <div className={'input-area'}>
-                            <div className={'toggle'}>
-                                <div className={'item-title'}>{lang['Activity_Form_participants']}</div>
-                                <div className={'item-value'}>
-                                    {enableMaxParticipants &&
-                                        <input value={maxParticipants} onChange={
-                                            e => {
-                                                toNumber(e.target.value.trim(), setMaxParticipants)
-                                            }
-                                        }/>
-                                    }
+                        {eventType === 'event' &&
+                            <div className={'input-area'}>
+                                <div className={'toggle'}>
+                                    <div className={'item-title'}>{lang['Activity_Form_participants']}</div>
+                                    <div className={'item-value'}>
+                                        {enableMaxParticipants &&
+                                            <input value={maxParticipants} onChange={
+                                                e => {
+                                                    toNumber(e.target.value.trim(), setMaxParticipants)
+                                                }
+                                            }/>
+                                        }
 
-                                    {!enableMaxParticipants &&
-                                        <div className={'unlimited'}>Unlimited</div>
-                                    }
+                                        {!enableMaxParticipants &&
+                                            <div className={'unlimited'}>Unlimited</div>
+                                        }
 
-                                    <Toggle checked={enableMaxParticipants} onChange={e => {
-                                        setEnableMaxParticipants(!enableMaxParticipants)
-                                    }}/>
+                                        <Toggle checked={enableMaxParticipants} onChange={e => {
+                                            setEnableMaxParticipants(!enableMaxParticipants)
+                                        }}/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
 
-                        <div className={'input-area'}>
-                            <div className={'toggle'}>
-                                <div className={'item-title'}>{lang['Activity_Form_participants_Min']}</div>
-                                <div className={'item-value'}>
-                                    {enableMinParticipants &&
-                                        <input value={minParticipants} onChange={
-                                            e => {
-                                                toNumber(e.target.value.trim(), setMinParticipants)
-                                            }
-                                        }/>
-                                    }
+                        {eventType === 'event' &&
+                            <div className={'input-area'}>
+                                <div className={'toggle'}>
+                                    <div className={'item-title'}>{lang['Activity_Form_participants_Min']}</div>
+                                    <div className={'item-value'}>
+                                        {enableMinParticipants &&
+                                            <input value={minParticipants} onChange={
+                                                e => {
+                                                    toNumber(e.target.value.trim(), setMinParticipants)
+                                                }
+                                            }/>
+                                        }
 
-                                    {!enableMinParticipants &&
-                                        <div className={'unlimited'}>Unlimited</div>
-                                    }
+                                        {!enableMinParticipants &&
+                                            <div className={'unlimited'}>Unlimited</div>
+                                        }
 
-                                    <Toggle checked={enableMinParticipants} onChange={e => {
-                                        setEnableMinParticipants(!enableMinParticipants)
-                                    }}/>
+                                        <Toggle checked={enableMinParticipants} onChange={e => {
+                                            setEnableMinParticipants(!enableMinParticipants)
+                                        }}/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
 
                         <div className={'input-area'}>
                             <div className={'toggle'}>
@@ -709,28 +735,29 @@ function CreateEvent(props: CreateEventPageProps) {
                             }} value={label}/>
                         </div>
 
-                        <div className={'input-area'}>
-                            <div className={'input-area-title'}>{lang['Activity_Form_Badge']}</div>
-                            <div className={'input-area-des'}>{lang['Activity_Form_Badge_Des']}</div>
-                            {!badgeId &&
-                                <div className={'add-badge'} onClick={async () => {
-                                    await showBadges()
-                                }}>{lang['Activity_Form_Badge_Select']}</div>
-                            }
+                        {eventType === 'event' &&
+                            <div className={'input-area'}>
+                                <div className={'input-area-title'}>{lang['Activity_Form_Badge']}</div>
+                                <div className={'input-area-des'}>{lang['Activity_Form_Badge_Des']}</div>
+                                {!badgeId &&
+                                    <div className={'add-badge'} onClick={async () => {
+                                        await showBadges()
+                                    }}>{lang['Activity_Form_Badge_Select']}</div>
+                                }
 
-                            {
-                                !!badgeDetail &&
-                                <div className={'banded-badge'}>
-                                    <Delete size={22} onClick={e => {
-                                        setBadgeId(null)
-                                        setBadgeDetail(null)
-                                    }
-                                    }/>
-                                    <img src={badgeDetail.image_url} alt=""/>
-                                    <div>{badgeDetail.title}</div>
-                                </div>
-                            }
-                        </div>
+                                {
+                                    !!badgeDetail &&
+                                    <div className={'banded-badge'}>
+                                        <Delete size={22} onClick={e => {
+                                            setBadgeId(null)
+                                            setBadgeDetail(null)
+                                        }
+                                        }/>
+                                        <img src={badgeDetail.image_url} alt=""/>
+                                        <div>{badgeDetail.title}</div>
+                                    </div>
+                                }
+                            </div>}
 
                         {isEditMode ?
                             <AppButton kind={BTN_KIND.primary}

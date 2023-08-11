@@ -3,7 +3,16 @@ import {useStyletron} from 'baseui'
 import {useContext, useEffect, useRef, useState} from 'react'
 import Layout from "../../components/Layout/Layout";
 import './EventCheckIn.less'
-import {Event, getProfile, Participants, Profile, queryEventDetail, sendEventBadge} from "../../service/solas";
+import {
+    CheckLog,
+    Event,
+    getEventCheckLog,
+    getProfile,
+    Participants,
+    Profile,
+    queryEventDetail,
+    sendEventBadge
+} from "../../service/solas";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import PageBack from "../../components/base/PageBack";
@@ -12,6 +21,7 @@ import QRcode from "../../components/base/QRcode";
 import langContext from "../../components/provider/LangProvider/LangContext";
 import AppButton from "../../components/base/AppButton/AppButton";
 import ListCheckinUser from "../../components/compose/ListCheckinUser/ListCheckinUser";
+import ListCheckLog from "../../components/compose/ListCheckLog/ListCheckLog";
 
 function EventCheckIn() {
     const [css] = useStyletron()
@@ -23,7 +33,9 @@ function EventCheckIn() {
     const [isJoin, setIsJoin] = useState(false)
     const [hoster, setHoster] = useState<Profile | null>(null)
     const [participants, setParticipants] = useState<Participants[]>([])
+    const [checkLogs, setCheckLogs] = useState<CheckLog[]>([])
     const [hasCheckin, setHasCheckin] = useState<string[]>([])
+    const [isCheckLog, setIsCheckLog] = useState(false)
 
     const {user} = useContext(userContext)
     const {showLoading, showEventCheckIn, showToast} = useContext(DialogsContext)
@@ -42,8 +54,9 @@ function EventCheckIn() {
             try {
                 const eventDetails = await queryEventDetail({id: Number(eventId)})
                 setEvent(eventDetails)
+                setIsCheckLog(eventDetails.event_type === 'checklog')
                 setParticipants(eventDetails?.participants?.sort((a, b) => {
-                    if (b.status==='checked') {
+                    if (b.status === 'checked') {
                         return 1
                     } else {
                         return -1
@@ -63,6 +76,7 @@ function EventCheckIn() {
                         setHoster(profile)
                     }
                 }
+
                 unload()
             } catch (e) {
                 unload()
@@ -76,9 +90,10 @@ function EventCheckIn() {
 
     useEffect(() => {
         init()
-        timeOut.current = setInterval(() => {
-            init(false)
-        }, 3000)
+
+        // timeOut.current = setInterval(() => {
+        //     init(false)
+        // }, 3000)
 
         return () => {
             if (timeOut.current) {
@@ -129,7 +144,11 @@ function EventCheckIn() {
                         {isHoster &&
                             <div className={'checkin-qrcode'}>
                                 <QRcode text={eventId || ''} size={[155, 155]}/>
-                                <div className={'text'}>{lang['Activity_Scan_checkin']}</div>
+                                {
+                                    isCheckLog ?
+                                        <div className={'text'}>{lang['Activity_Scan_punch_in']}</div>
+                                        : <div className={'text'}>{lang['Activity_Scan_checkin']}</div>
+                                }
                             </div>
                         }
 
@@ -147,7 +166,7 @@ function EventCheckIn() {
                             </div>
                         }
 
-                        {!!user.id && !isJoin && !isHoster &&
+                        {!!user.id && !isJoin && !isHoster && !isCheckLog &&
                             <div className={'checkin-checkin-btn'}>
                                 <AppButton disabled>{lang['Activity_Scan_checkin']}</AppButton>
                             </div>
@@ -156,13 +175,23 @@ function EventCheckIn() {
                 </div>
                 <div className={'center'}>
                     <div className={'checkin-list'}>
-                        <div className={'title'}>{lang['Activity_Registered_participants']}
-                            <span>({hasCheckin.length} / {participants.length})</span></div>
-                        <ListCheckinUser
-                            isHost={isHoster}
-                            eventId={Number(eventId || 0)}
-                            participants={participants}
-                        />
+                        {isCheckLog ?
+                            <>
+                                <div className={'title'}>{lang['Activity_Punch_Log']}</div>
+                                <ListCheckLog eventId={Number(eventId)} />
+                            </>
+                            : <>
+                                <div className={'title'}>{
+                                    lang['Activity_Registered_participants']
+                                } <span>({hasCheckin.length} / {participants.length})</span>
+                                </div>
+                                <ListCheckinUser
+                                    isHost={isHoster}
+                                    eventId={Number(eventId || 0)}
+                                    participants={participants}
+                                />
+                            </>
+                        }
                     </div>
                 </div>
 

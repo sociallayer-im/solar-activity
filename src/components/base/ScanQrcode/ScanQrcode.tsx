@@ -32,6 +32,8 @@ function ScanQrcode(props: ScanQrcodeProps) {
 
             codeReader.reset()
 
+            const videoElement = document.getElementById('video') as HTMLVideoElement
+            if (!videoElement) return
             await codeReader.decodeFromVideoDevice(firstDeviceId, 'video', async (result: any, err: any) => {
                 // console.log('props.enable', props.enable)
                 if (result && result.text && props.enable) {
