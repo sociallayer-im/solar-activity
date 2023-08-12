@@ -415,7 +415,7 @@ function EventDetail() {
                                         <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
                                     }
 
-                                    {!isJoined && !canceled && inCheckinTime &&
+                                    {!isJoined && !canceled && (inCheckinTime || notStart) &&
                                         <AppButton special onClick={e => {
                                             handleJoin()
                                         }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
