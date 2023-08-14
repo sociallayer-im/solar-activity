@@ -105,9 +105,6 @@ function Home() {
             }
             {!!user.id &&
                 <div className={'center'}>
-                    <div className={'module-title'}>
-                        {lang['Activity_Commended']}
-                    </div>
                     <ListRecommendedEvent />
                 </div>
             }
