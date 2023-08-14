@@ -77,7 +77,7 @@ function Home() {
             <HomeUserPanel/>
             {!!user.id &&
                 <>
-                    {
+                    { (showMyAttend || showMyCreate) &&
                         <>
                             <div className={'center'}>
                                 <div className={'module-title'}>

@@ -37,7 +37,9 @@ function AppSwiper(props: AppSwiperProps) {
         onSwiper={
             (swiper: SwiperClass) => {
                 if (props.initIndex) {
-                    swiper.slideTo(props.initIndex, 0, false)
+                    const windowWidth = window.innerWidth
+                    const offset = Math.floor(windowWidth / (props.itemWidth + props.space) / 2)
+                    swiper.slideTo(props.initIndex! - (offset - 5), 0, false)
                 }
             }
         }
