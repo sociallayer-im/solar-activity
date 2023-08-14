@@ -41,15 +41,7 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
     const hasMarker = isExpired || !!hasRegistered || isCreated
 
-    useEffect(() => {
-        if (!props.event.event_site) {
-            const event = queryEventDetail({id: props.event.id})
-                .then(res => {
-                    setEventDetail(res)
-                })
-        }
-    }, [])
-
+    
     return (<div className={'event-card'} onClick={e => {
         gotoDetail()
     }}>
