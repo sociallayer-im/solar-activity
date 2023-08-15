@@ -1,0 +1,147 @@
+.divine-beast {
+  width: 326px;
+  height: 470px;
+  position: relative;
+
+  .border {
+    width: 326px;
+    height: 422px;
+    border-radius: 40px;
+    background: red;
+    box-shadow: 0 4px 80px 0 rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:  linear-gradient(#ebe7ce, #659d9a);
+  }
+
+  .window {
+    width: 320px;
+    height: 416px;
+    border-radius: 38px;
+    background: #FCFCF2;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+
+    .post {
+      margin-top: 16px;
+    }
+
+    .options {
+      width: 100%;
+      padding: 0 20px;
+      box-sizing: border-box;
+      margin-top: 12px;
+
+      .des {
+        padding: 12px 0px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+
+
+        .left {
+          text-align: left;
+          .title {
+            color: #848484;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+          }
+
+          .value {
+            color: #121212;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+          }
+        }
+
+        .right {
+          text-align: right;
+
+          .title {
+            color: #848484;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+          }
+
+          .value {
+            color: #121212;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+          }
+        }
+      }
+    }
+
+    .btns {
+      position: absolute;
+      height: 52px;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.beast-item-list {
+  display: flex;
+  flex-flow: row nowrap;
+  user-select: none ;
+
+  .item {
+    width: 72px;
+    height: 70px;
+    border: 2px solid #BFD7DF;
+    border-radius: 5px;
+    margin-right: 16px;
+    cursor: pointer;
+    overflow: hidden;
+
+    .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      width: 100%;
+      background: #F3F8F4 url("/images/merge/bg.png") no-repeat center;
+
+      img{
+        height: 27px;
+        width: auto;
+      }
+    }
+
+    .item-name {
+      background: #DFEBED;
+      height: 22px;
+      text-align: center;
+      line-height: 22px;
+      color: var(--text-4-headline, #272928);
+      font-size: 12px;
+    }
+
+    &.active {
+      border: 2px solid #659D9A;
+
+      .item-name {
+        background: #659D9A;
+        color: #fff
+      }
+    }
+  }
+
+
+}

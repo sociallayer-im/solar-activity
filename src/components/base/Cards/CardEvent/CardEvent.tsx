@@ -41,7 +41,7 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
     const hasMarker = isExpired || !!hasRegistered || isCreated
 
-    
+
     return (<div className={'event-card'} onClick={e => {
         gotoDetail()
     }}>

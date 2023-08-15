@@ -30,6 +30,7 @@ import PlatformLogin from "../pages/platformLogin/platformLogin";
 // const Search = lazy(() => import('../pages/Search'))
 // const Event = lazy(() => import('../pages/Event'))
 const Error = lazy(() => import('../pages/Error'))
+const Merge = lazy(() => import('../pages/Merge/Merge'))
 // const Issue = lazy(() => import('../pages/Issue'))
 // const Invite = lazy(() => import('../pages/Invite'))
 // const IssueSuccess = lazy(() => import('../pages/IssueSuccess'))
@@ -49,6 +50,7 @@ function AppRouter () {
                 <Route path="/event/:eventId" element={<EventDetail />} />
                 <Route path="/search/:keyword" element={<Search />} />
                 <Route path="/success/:eventId" element={<CreateEventSuccess />} />
+                <Route path="/merge" element={<Merge />} />
 
                 <Route path="/platform/login" element={<PlatformLogin />} />
                 <Route path="*" element={<Error />} />
