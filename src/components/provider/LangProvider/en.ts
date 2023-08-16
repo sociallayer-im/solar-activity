@@ -260,6 +260,7 @@ const langEN = {
   Activity_Detail_Btn_Joined: 'Attended',
   Activity_Detail_Btn_End: 'Event has ended',
   Activity_Detail_Btn_has_Cancel: 'Event has canceled',
+  Activity_Detail_Btn_add_Calender: 'Add to calendar',
   Activity_Detail_Badge: 'Registration for the event, upon completion, will be rewarded with POAP*1',
   Activity_Detail_Guest: 'Guest',
   Activity_Detail_Offline_location: 'Offline location',
@@ -275,6 +276,8 @@ const langEN = {
 
   Activity_Host_Check_And_Send: 'Check-in and Send POAP',
   Activity_Host_Send: 'Send POAP',
+
+  Activity_Unjoin_Confirm_title: 'Are you sure to leave this event?',
 
 
 

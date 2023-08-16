@@ -9,7 +9,7 @@ import AppInput from '../../components/base/AppInput'
 import UserContext from '../../components/provider/UserProvider/UserContext'
 import AppButton, {BTN_KIND} from '../../components/base/AppButton/AppButton'
 import solas, {
-    Badge,
+    Badge, cancelEvent,
     CreateEventProps,
     Event,
     getEventSide,
@@ -122,6 +122,20 @@ function CreateEvent(props: CreateEventPageProps) {
         const number = parseInt(value)
         if (!isNaN(number)) {
             set(number)
+        }
+    }
+
+    const cancel = async () => {
+        const unloading = showLoading()
+        try {
+            const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
+            unloading()
+            showToast('Cancel success')
+            navigate(`/`)
+        } catch (e) {
+            unloading()
+            console.error(e)
+            showToast('Cancel failed')
         }
     }
 
@@ -775,6 +789,14 @@ function CreateEvent(props: CreateEventPageProps) {
                                        }}>
                                 {lang['Activity_Btn_Create']}
                             </AppButton>
+                        }
+
+                        {
+                            isEditMode && <div style={{marginTop: '12px'}}>
+                                <AppButton onClick={e => {
+                                    cancel()
+                                }}>{lang['Activity_Detail_Btn_Cancel']}</AppButton>
+                            </div>
                         }
                     </div>
                 </div>

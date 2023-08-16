@@ -17,7 +17,6 @@ import {
     queryBadgeDetail,
     queryEventDetail,
     queryMyEvent,
-    unJoinEvent
 } from "../../service/solas";
 import './EventDetail.less'
 import LangContext from "../../components/provider/LangProvider/LangContext";
@@ -30,8 +29,9 @@ import AppButton from "../../components/base/AppButton/AppButton";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import PageBack from "../../components/base/PageBack";
-import useCopy from "../../hooks/copy";
 import ListCheckLog from "../../components/compose/ListCheckLog/ListCheckLog";
+import useCalender from "../../hooks/addToCalender";
+import ListCheckinUser from "../../components/compose/ListCheckinUser/ListCheckinUser";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -44,7 +44,8 @@ function EventDetail() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const {showLoading, showToast, showEventCheckIn} = useContext(DialogsContext)
-    const {copy} = useCopy()
+    const { addToCalender }  = useCalender()
+
 
     const [tab, setTab] = useState(1)
     const [isHoster, setIsHoster] = useState(false)
@@ -55,7 +56,7 @@ function EventDetail() {
     const [inProgress, setInProgress] = useState(false)
     const [inCheckinTime, setIsCheckTime] = useState(false)
     const [notStart, setNotStart] = useState(false)
-    const [participants, setParticipants] = useState<ProfileSimple[]>([])
+    const [participants, setParticipants] = useState<Participants[]>([])
     const [guests, setGuests] = useState<ProfileSimple[]>([])
     const [badge, setBadge] = useState<Badge | null>(null)
     const [isChecklog, setIsChecklog] = useState(false)
@@ -65,8 +66,7 @@ function EventDetail() {
             const res = await queryEventDetail({id: Number(eventId)})
             setEvent(res)
 
-            setParticipants(res.participants?.filter(item => item.status !== 'cancel')
-                .map((item: Participants) => item.profile) || [])
+            setParticipants(res.participants?.filter(item => item.status !== 'cancel')!)
             setCanceled(res.status === 'cancel')
             // setCanceled(false)
 
@@ -151,20 +151,6 @@ function EventDetail() {
         checkJoined()
     }, [hoster, user.id])
 
-    const cancel = async () => {
-        const unloading = showLoading()
-        try {
-            const cancel = await cancelEvent({id: Number(eventId), auth_token: user.authToken || ''})
-            unloading()
-            showToast('Cancel success')
-            setCanceled(true)
-        } catch (e) {
-            unloading()
-            console.error(e)
-            showToast('Cancel failed')
-        }
-    }
-
     const gotoModify = () => {
         navigate(`/event/edit/${event?.id}`)
     }
@@ -181,21 +167,6 @@ function EventDetail() {
             unload()
             showToast('Join success')
             setIsJoined(true)
-            fetchData()
-        } catch (e: any) {
-            console.error(e)
-            unload()
-            showToast(e.message)
-        }
-    }
-
-    const handleUnJoin = async () => {
-        const unload = showLoading()
-        try {
-            const join = await unJoinEvent({id: Number(eventId), auth_token: user.authToken || ''})
-            unload()
-            showToast('Canceled')
-            setIsJoined(false)
             fetchData()
         } catch (e: any) {
             console.error(e)
@@ -358,11 +329,12 @@ function EventDetail() {
                                                 className={'min-participants-alert'}>{lang['Activity_Detail_min_participants_Alert']([event.min_participant])}</div>
                                         }
                                         {!!hoster &&
-                                            <AddressList
-                                                onClick={e => {
-                                                    goToProfile(e.split('.')[0])
-                                                }}
-                                                data={participants as Profile[]}/>
+                                            <ListCheckinUser
+                                                editable={false}
+                                                participants={participants}
+                                                isHost={isHoster}
+                                                eventId={Number(eventId)}
+                                            />
                                         }
                                     </div>
                                 </div>
@@ -405,10 +377,20 @@ function EventDetail() {
                                         <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
                                     }
 
-                                    {isHoster && !canceled && notStart &&
-                                        <AppButton onClick={e => {
-                                            cancel()
-                                        }}>{lang['Activity_Detail_Btn_Cancel']}</AppButton>
+                                    { !canceled && isJoined && !outOfDate &&
+                                        <AppButton
+                                            onClick={e => {
+                                                addToCalender({
+                                                    name: event.title,
+                                                    startTime: event.start_time!,
+                                                    endTime: event.ending_time!,
+                                                    location: event.event_site?.title || event.location || '',
+                                                    details: event.content,
+                                                    url: window.location.href
+                                                })
+                                            }}>
+                                            <i className="icon-calendar" style={{marginRight: '8px'}}/>
+                                            {lang['Activity_Detail_Btn_add_Calender']}</AppButton>
                                     }
 
                                     {isHoster && !canceled &&
@@ -419,12 +401,6 @@ function EventDetail() {
                                         <AppButton special onClick={e => {
                                             handleJoin()
                                         }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
-                                    }
-
-                                    {isJoined && notStart && !canceled &&
-                                        <AppButton onClick={e => {
-                                            handleUnJoin()
-                                        }}>{lang['Activity_Detail_Btn_unjoin']}</AppButton>
                                     }
 
                                     {false &&
@@ -460,7 +436,6 @@ function EventDetail() {
                                     }
                                 </div>
                             }
-
                         </div>
                     </div>
                 </div>

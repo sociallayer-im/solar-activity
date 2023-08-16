@@ -1,7 +1,7 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
-import {eventCheckIn, Participants} from "../../../service/solas";
+import {eventCheckIn, Participants, unJoinEvent} from "../../../service/solas";
 import './ListCheckinUser.less'
 import usePicture from "../../../hooks/pictrue";
 import LangContext from "../../provider/LangProvider/LangContext";
@@ -13,9 +13,10 @@ interface ListCheckinUserProps {
     onChange?: (selected: Participants[]) => void
     isHost?: boolean
     eventId: number
+    editable?: boolean
 }
 
-function ListCheckinUser(props: ListCheckinUserProps) {
+function ListCheckinUser({editable=true, ...props}: ListCheckinUserProps) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -24,8 +25,9 @@ function ListCheckinUser(props: ListCheckinUserProps) {
     const [participants, setParticipants] = useState<Participants[]>(
         props.participants
     )
+
     const {user} = useContext(UserContext)
-    const {showLoading, showToast} = useContext(DialogsContext)
+    const {showLoading, showToast, openConfirmDialog} = useContext(DialogsContext)
 
     useEffect(() => {
 
@@ -61,11 +63,35 @@ function ListCheckinUser(props: ListCheckinUserProps) {
         window.location.href = `${homeUrl}/profile/${username}`
     }
 
+    const handleUnJoin = async () => {
+        const a = await openConfirmDialog({
+            title: lang['Activity_Unjoin_Confirm_title'],
+            confirmBtnColor: '#F64F4F!important',
+            confirmTextColor: '#fff',
+            confirmText: lang['Group_Member_Manage_Dialog_Confirm_Dialog_Confirm'],
+            cancelText: lang['Group_Member_Manage_Dialog_Confirm_Dialog_Cancel'],
+            onConfirm: async (close: any) => {
+                const unload = showLoading()
+                try {
+                    const join = await unJoinEvent({id: Number(props.eventId), auth_token: user.authToken || ''})
+                    unload()
+                    showToast('Canceled')
+                    setParticipants(participants.filter(item => item.profile.id !== user.id))
+                    !!props.onChange && props.onChange(participants.filter(item => item.profile.id !== user.id))
+                    close()
+                } catch (e: any) {
+                    console.error(e)
+                    unload()
+                    showToast(e.message)
+                }
+            }
+        })
+    }
 
     return (<div className={'checkin-user-list'}>
         {
             participants.map((item, index) => {
-                const checked = item.status === 'checked'
+                const checked = item.status === 'checked' || !editable
                 return <div className={!checked ? 'user-list-item uncheck' : 'user-list-item'}>
                     <div className={'left'}
                          onClick={e => {goToProfile(item.profile.domain?.split('.')[0]!)}}>
@@ -80,6 +106,11 @@ function ListCheckinUser(props: ListCheckinUserProps) {
                                  className={'checkin-by-host'}>
                                 {lang['Activity_Detail_Btn_Checkin']}
                             </div>
+                        }
+
+                        {
+                            user.id === item.profile.id && item.status !== 'cancel' && !editable &&
+                            <div className={'unjoin'} onClick={handleUnJoin}>{lang['Activity_Detail_Btn_unjoin']}</div>
                         }
                     </div>
                 </div>

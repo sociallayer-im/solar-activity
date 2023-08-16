@@ -259,6 +259,7 @@ const langCN: LangConfig = {
   Activity_Detail_Btn_Attend: '参加',
   Activity_Detail_Btn_End: '活动已结束',
   Activity_Detail_Btn_has_Cancel: '活动已取消',
+  Activity_Detail_Btn_add_Calender: '添加到日历',
   Activity_Detail_Btn_Joined: '已参加',
   Activity_Detail_Btn_AttendOnline: '线上参与',
   Activity_Detail_Badge: '报名参加活动，结束可获得 POAP*1',
@@ -274,6 +275,8 @@ const langCN: LangConfig = {
 
   Activity_Host_Check_And_Send: '签到或者发放POAP',
   Activity_Host_Send: '发放POAP',
+
+  Activity_Unjoin_Confirm_title: '确定取消这个参加活动吗？',
 
   New_Year_1: '将你的新年祝福铸造成数字徽章',
   New_Year_2: '颁发理由 :',
