@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from 'react'
 import './DivineBeast.less'
 import useBeastConfig from "./beastConfig";
 import BeastBtn from "./BeastBtn";
+import AppSwiper from "../../../components/base/AppSwiper/AppSwiper";
 
 function DivineBeast() {
     const [css] = useStyletron()
@@ -73,23 +74,30 @@ function DivineBeast() {
                         </div>
                     }
                     {status === 'build' &&
-                        <div className={'beast-item-list'}>
-                            <div className={items.includes('帽子') ? 'item active' : 'item'}
+                        <div className={'beast-item-list swiper-no-swiping'}>
+                            <div className={items.includes('帽子') ? 'beast-item active' : 'beast-item'}
                                  onClick={() => setItem('帽子')}>
                                 <div className={'icon'}>
                                     <img src="/images/merge/items/beast_1_item_1.svg" alt=""/>
                                 </div>
                                 <div className={'item-name'}>帽子</div>
                             </div>
-                            <div className={items.includes('眼镜') ? 'item active' : 'item'}
+                            <div className={items.includes('眼镜') ? 'beast-item active' : 'beast-item'}
                                  onClick={() => setItem('眼镜')}>
                                 <div className={'icon'}>
                                     <img src="/images/merge/items/beast_1_item_2.svg" alt=""/>
                                 </div>
                                 <div className={'item-name'}>眼镜</div>
                             </div>
-                            <div className={items.includes('项链') ? 'item active' : 'item'}
-                                onClick={() => setItem('项链')}>
+                            <div className={items.includes('项链') ? 'beast-item active' : 'beast-item'}
+                                 onClick={() => setItem('项链')}>
+                                <div className={'icon'}>
+                                    <img src="/images/merge/items/beast_1_item_3.svg" alt=""/>
+                                </div>
+                                <div className={'item-name'}>项链</div>
+                            </div>
+                            <div className={items.includes('项链') ? 'beast-item active' : 'beast-item'}
+                                 onClick={() => setItem('项链')}>
                                 <div className={'icon'}>
                                     <img src="/images/merge/items/beast_1_item_3.svg" alt=""/>
                                 </div>

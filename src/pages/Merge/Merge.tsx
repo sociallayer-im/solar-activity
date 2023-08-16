@@ -7,6 +7,10 @@ import usePicture from "../../hooks/pictrue";
 import Panel from "./Panel";
 import DivineBeast from "./DivineBeast/DivineBeast";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
+import AppSwiper from "../../components/base/AppSwiper/AppSwiper";
+import BeastBtn from "./DivineBeast/BeastBtn";
+import {Event, queryEvent} from "../../service/solas";
+import useformatTime from "../../hooks/formatTime";
 
 function Merge() {
     const [css] = useStyletron()
@@ -15,9 +19,21 @@ function Merge() {
     const {user} = useContext(UserContext)
     const {defaultAvatar} = usePicture()
     const {openConnectWalletDialog} = useContext(DialogsContext)
+    const formatTime = useformatTime()
+    const [events, setEvents] = useState<Event[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        async function getEvents() {
+            try {
+                const events = await queryEvent({page: 1})
+                setEvents(events.splice(0, 3))
+            } catch (e: any) {
+                console.error(e)
+            }
+        }
 
+        getEvents()
     }, [])
 
     return (<div>
@@ -121,20 +137,37 @@ function Merge() {
                         </svg>
                     </div>
 
-                    <DivineBeast />
+                    <div className={'beast-swiper'}>
+                        <AppSwiper
+                            items={[ <DivineBeast />,  <DivineBeast />, <DivineBeast />]}
+                            space={8}
+                            itemWidth={326}
+                        />
+                    </div>
 
                     <Panel title={<img className={'panel-title-pic'} src={'/images/merge/panel_1.png'} />}>
-                        <div>qwe</div>
+                        <div className={'text-1'}>发起活动可获得 Host 徽章</div>
+                        <BeastBtn>+ 发起活动</BeastBtn>
                     </Panel>
 
                     <Panel title={<img className={'panel-title-pic'} src={'/images/merge/panel_2.png'} />}>
-                        <div>qwe</div>
-                        <div>qwe</div>
-                        <div>qwe</div>
-                        <div>qwe</div>
-                        <div>qwe</div>
-                        <div>qwe</div>
-                        <div>qwe</div>
+                        <div className={'text-1'}>参与更多活动获得 POAP</div>
+                        <div className={'event-list'}>
+                            {
+                                events.map((event, index) => {
+                                    return <div className={'list-item'} key={index}>
+                                        <img src="/images/merge/poap_cover.png" alt=""/>
+                                        <div>
+                                            <div className={'name'}>{event.title}</div>
+                                            <div className={'detail'}>{formatTime(event.start_time!)}</div>
+                                            <div className={'host'}>
+                                                <img src={event} alt=""/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                })
+                            }
+                        </div>
                     </Panel>
                 </div>
             </div>
