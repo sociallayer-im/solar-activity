@@ -79,7 +79,23 @@ function useBeastConfig() {
             description: '沉厚寡言，游于山林',
             post: Beast02,
             cost: [3, 1],
-            items: []
+            items: [
+                {
+                    name: '帽子',
+                    icon: '/images/merge/items/beast_2_item_1.svg',
+                    position: 1,
+                },
+                {
+                    name: '口罩',
+                    icon: '/images/merge/items/beast_2_item_2.svg',
+                    position: 2,
+                },
+                {
+                    name: '鞋子',
+                    icon: '/images/merge/items/beast_2_item_3.svg',
+                    position: 3,
+                }
+            ]
         }
     ]
 

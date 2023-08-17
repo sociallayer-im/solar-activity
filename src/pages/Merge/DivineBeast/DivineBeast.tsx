@@ -12,7 +12,6 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
     const navigate = useNavigate()
     const [a, seta] = useState('')
     const svgRef = useRef<any>(null)
-    const [items, setItems] = useState<string[]>(props.items || [])
     const [selectedItem, setSelectedItem] = useState<BeastItemInfo[]>([])
     const [status, setStatus] = useState<'hide' | 'build' | 'complete'>(props.status)
     const {beastInfo} = useBeastConfig()
@@ -84,8 +83,8 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
                     }
                     {status === 'build' &&
                         <div className={'beast-item-list swiper-no-swiping'}>
-                            { items.map(item => {
-                                const targetItem = props.info.items.find(i => i.name === item)
+                            { props.info.items.map(item => {
+                                const targetItem = props.info.items.find(i => i.name === item.name)
                                 return <div key={targetItem!.name} className={!!selectedItem.find(i => i.name === targetItem!.name) ? 'beast-item active' : 'beast-item'}
                                              onClick={() => setSelected(targetItem!)}>
                                     <div className={'icon'}>
@@ -104,10 +103,15 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
                         </div>
                     }
                 </div>
-                {
-                    status !== 'complete' &&
+                { status !== 'complete' && status === 'hide' &&
                     <div className={'btns'}>
-                        <BeastBtn background={'#DFC84E'} onClick={e => {draw()}}>合成神兽</BeastBtn>
+                        <BeastBtn background={'#F99351'} onClick={e => {draw()}}>消耗 Host*1 + POAP*3 生成</BeastBtn>
+                    </div>
+                }
+
+                { status !== 'complete' && status === 'build' &&
+                    <div className={'btns'}>
+                        <BeastBtn background={'#F99351'} onClick={e => {draw()}}>消耗 POAP*{selectedItem.length} 合成神兽</BeastBtn>
                     </div>
                 }
             </div>
