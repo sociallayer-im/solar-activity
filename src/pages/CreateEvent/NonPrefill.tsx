@@ -33,6 +33,7 @@ import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
+import {c} from "msw/lib/glossary-de6278a9";
 
 interface Draft {
     cover: string,
@@ -112,6 +113,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [siteOccupied, setSiteOccupied] = useState(false)
     const [formReady, setFormReady] = useState(false)
     const location = useLocation()
+    const [creating, setCreating] = useState(false)
 
     const toNumber = (value: string, set: any) => {
         if (!value) {
@@ -413,6 +415,9 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleCreate = async () => {
+        setCreating(true)
+        const unloading = showLoading(true)
+
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
             window.location.href = location.pathname + '#SiteError'
@@ -458,7 +463,6 @@ function CreateEvent(props: CreateEventPageProps) {
             auth_token: user.authToken || ''
         }
 
-        const unloading = showLoading(true)
         try {
             const newEvent = await solas.createEvent(props)
             if (guests.length) {
@@ -482,10 +486,12 @@ function CreateEvent(props: CreateEventPageProps) {
             showToast('create success')
             window.localStorage.removeItem('event_draft')
             navigate(`/success/${newEvent.id}`)
+            setCreating(false)
         } catch (e: any) {
             unloading()
             console.error(e)
             showToast(e.message)
+            setCreating(false)
         }
     }
 
@@ -783,6 +789,7 @@ function CreateEvent(props: CreateEventPageProps) {
                             </AppButton>
                             :
                             <AppButton kind={BTN_KIND.primary}
+                                       disabled={creating}
                                        special
                                        onClick={() => {
                                            handleCreate()
