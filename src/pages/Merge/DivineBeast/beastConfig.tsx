@@ -166,7 +166,23 @@ function useBeastConfig() {
             description: '游于山川水溪\n常不可寻',
             post: Beast04,
             cost: [3, 1],
-            items: []
+            items: [
+                {
+                    name: '纸',
+                    icon: '/images/merge/items/beast_4_item_1.svg',
+                    position: 1,
+                },
+                {
+                    name: '笔',
+                    icon: '/images/merge/items/beast_4_item_2.svg',
+                    position: 2,
+                },
+                {
+                    name: '马克笔',
+                    icon: '/images/merge/items/beast_4_item_3.svg',
+                    position: 3,
+                }
+            ]
         }
     ]
 

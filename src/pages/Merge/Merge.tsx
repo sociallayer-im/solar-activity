@@ -151,6 +151,7 @@ function Merge() {
                                 <DivineBeast info={beastInfo[0]} status={'hide'}/>,
                                 <DivineBeast info={beastInfo[1]} status={'hide'}/>,
                                 <DivineBeast info={beastInfo[2]} status={'hide'}/>,
+                                <DivineBeast info={beastInfo[3]} status={'hide'}/>,
                             ]}
                             space={8}
                             itemWidth={326}

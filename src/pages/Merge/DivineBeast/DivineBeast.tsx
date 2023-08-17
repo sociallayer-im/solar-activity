@@ -34,7 +34,7 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
     const draw = () => {
         const bgImg = document.createElement('img')
         bgImg.crossOrigin = 'anonymous';
-        bgImg.src = '/images/merge/beast_1_show.webp'
+        bgImg.src = `/images/merge/beast_${props.info.id}_show.webp`
 
         const canvas = document.createElement('canvas')
         canvas.width = 286
