@@ -12,6 +12,14 @@
     align-items: center;
     justify-content: center;
     background:  linear-gradient(#ebe7ce, #659d9a);
+
+    &.border-complete {
+      height: 447px;
+
+      .window {
+        height: 440px;
+      }
+    }
   }
 
   .window {
@@ -22,6 +30,11 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+
+    .complete-title {
+      width: 112px;
+      margin-top: 12px;
+    }
 
     .post {
       margin-top: 16px;
@@ -91,6 +104,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+  }
+
+  .complete {
+    .beast-name {
+      text-align: center;
+      color: var(--text-4-headline, #272928);
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      margin-bottom: 8px;
     }
   }
 }

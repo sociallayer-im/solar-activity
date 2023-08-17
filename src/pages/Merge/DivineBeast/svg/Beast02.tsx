@@ -8,7 +8,7 @@ export interface BeastProps {
 function Beast01(props: BeastProps, ref: any) {
 
     return (<div className={'beast-svg-wrapper'}>
-        { props.status === 'hide' &&  <img src={'/images/merge/beast_1_hide.webp'} alt=""/> }
+        { props.status === 'hide' &&  <img src={'/images/merge/beast_2_hide.webp'} alt=""/> }
         { props.status !== 'hide' &&  <img src={'/images/merge/beast_1_show.webp'} alt=""/> }
         { props.status !== 'hide' &&
             <svg ref={ref} width="286" height="272" viewBox="0 0 286 272" fill="none" xmlns="http://www.w3.org/2000/svg">

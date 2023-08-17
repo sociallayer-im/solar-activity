@@ -9,8 +9,10 @@ import DivineBeast from "./DivineBeast/DivineBeast";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import AppSwiper from "../../components/base/AppSwiper/AppSwiper";
 import BeastBtn from "./DivineBeast/BeastBtn";
-import {Event, queryEvent} from "../../service/solas";
+import {Event, queryRecommendEvent} from "../../service/solas";
 import useformatTime from "../../hooks/formatTime";
+import useBeastConfig from "./DivineBeast/beastConfig";
+import {ChevronDown} from "baseui/icon";
 
 function Merge() {
     const [css] = useStyletron()
@@ -22,11 +24,12 @@ function Merge() {
     const formatTime = useformatTime()
     const [events, setEvents] = useState<Event[]>([])
     const [loading, setLoading] = useState(true)
+    const { beastInfo } = useBeastConfig()
 
     useEffect(() => {
         async function getEvents() {
             try {
-                const events = await queryEvent({page: 1})
+                const events = await queryRecommendEvent({page: 1, rec: 'latest'})
                 setEvents(events.splice(0, 3))
             } catch (e: any) {
                 console.error(e)
@@ -139,7 +142,13 @@ function Merge() {
 
                     <div className={'beast-swiper'}>
                         <AppSwiper
-                            items={[ <DivineBeast />,  <DivineBeast />, <DivineBeast />]}
+                            items={[
+                                <DivineBeast info={beastInfo[0]} status={'complete'} />,
+                                <DivineBeast info={beastInfo[0]} status={'hide'}/>,
+                                <DivineBeast info={beastInfo[0]} status={'build'}
+                                             items={['帽子1', '帽子2', '眼镜', '项链', '鞋子1', '鞋子2', '鱼竿']}
+                                />,
+                            ]}
                             space={8}
                             itemWidth={326}
                         />
@@ -155,18 +164,17 @@ function Merge() {
                         <div className={'event-list'}>
                             {
                                 events.map((event, index) => {
-                                    return <div className={'list-item'} key={index}>
+                                    return <div className={'list-item'} key={index} onClick={e => { navigate(`/event/${event.id}`)}}>
                                         <img src="/images/merge/poap_cover.png" alt=""/>
                                         <div>
                                             <div className={'name'}>{event.title}</div>
-                                            <div className={'detail'}>{formatTime(event.start_time!)}</div>
-                                            <div className={'host'}>
-                                                <img src={event} alt=""/>
-                                            </div>
+                                            <div className={'detail'}>{formatTime(event.start_time!)} - {formatTime(event.ending_time!)}</div>
+                                            <div className={'detail'}>{event.event_site?.title || event.location || ''}</div>
                                         </div>
                                     </div>
                                 })
                             }
+                            <Link className={'show-more'} to={'/'}>查看更多 <ChevronDown  size={16}/></Link>
                         </div>
                     </Panel>
                 </div>

@@ -5,25 +5,30 @@ import './DivineBeast.less'
 import useBeastConfig from "./beastConfig";
 import BeastBtn from "./BeastBtn";
 import AppSwiper from "../../../components/base/AppSwiper/AppSwiper";
+import {BeastInfo, BeastItemInfo} from "./beastConfig";
 
-function DivineBeast() {
+function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'complete', items?: string[]}) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
     const svgRef = useRef<any>(null)
-    const [items, setItems] = useState<string[]>([])
-    const [status, setStatus] = useState<'hide' | 'build' | 'complete'>('build')
+    const [items, setItems] = useState<string[]>(props.items || [])
+    const [selectedItem, setSelectedItem] = useState<BeastItemInfo[]>([])
+    const [status, setStatus] = useState<'hide' | 'build' | 'complete'>(props.status)
     const {beastInfo} = useBeastConfig()
 
     useEffect(() => {
 
     }, [])
 
-    const setItem = (item: string) => {
-        if (items.includes(item)) {
-            setItems(items.filter(i => i !== item))
+    const setSelected = (targetItem: BeastItemInfo) => {
+        if (selectedItem.find(item => item.name === targetItem!.name)) {
+            setSelectedItem(selectedItem
+                .filter(i => i.position !== targetItem!.position)
+                .filter(i => i.name !== targetItem!.name))
         } else {
-            setItems([...items, item])
+            const newSelectedItem = selectedItem.filter(i => i.position !== targetItem!.position)
+            setSelectedItem([...newSelectedItem, targetItem!])
         }
     }
 
@@ -52,63 +57,59 @@ function DivineBeast() {
         }
     }
 
-    const Post = beastInfo[0].post
+    const Post = props.info.post
 
     return (<div className={'divine-beast'}>
-        <div className={'border'}>
+        <div className={status === 'complete' ? 'border border-complete' : 'border'}>
             <div className={'window'}>
+                {
+                    status === 'complete' &&
+                    <img className={'complete-title'} src="/images/merge/complete.png" alt=""/>
+                }
                 <div className={'post'}>
-                    <Post ref={svgRef} status={status} items={items}/>
+                    <Post ref={svgRef} status={status} items={selectedItem.map(i => i.name)}/>
                 </div>
                 <div className={'options'}>
                     {status === 'hide' &&
                         <div className={'des'}>
                             <div className={'left'}>
                                 <div className={'title'}>神兽类型</div>
-                                <div className={'value'}>{beastInfo[0].category}</div>
+                                <div className={'value'}>{props.info.category}</div>
                             </div>
                             <div className={'right'}>
                                 <div className={'title'}>特征</div>
-                                <div className={'value'}>{beastInfo[0].description}</div>
+                                <div className={'value'}>{props.info.description}</div>
                             </div>
                         </div>
                     }
                     {status === 'build' &&
                         <div className={'beast-item-list swiper-no-swiping'}>
-                            <div className={items.includes('帽子') ? 'beast-item active' : 'beast-item'}
-                                 onClick={() => setItem('帽子')}>
-                                <div className={'icon'}>
-                                    <img src="/images/merge/items/beast_1_item_1.svg" alt=""/>
+                            { items.map(item => {
+                                const targetItem = props.info.items.find(i => i.name === item)
+                                return <div key={targetItem!.name} className={!!selectedItem.find(i => i.name === targetItem!.name) ? 'beast-item active' : 'beast-item'}
+                                             onClick={() => setSelected(targetItem!)}>
+                                    <div className={'icon'}>
+                                        <img src={targetItem!.icon} alt=""/>
+                                    </div>
+                                    <div className={'item-name'}>{targetItem!.name}</div>
                                 </div>
-                                <div className={'item-name'}>帽子</div>
-                            </div>
-                            <div className={items.includes('眼镜') ? 'beast-item active' : 'beast-item'}
-                                 onClick={() => setItem('眼镜')}>
-                                <div className={'icon'}>
-                                    <img src="/images/merge/items/beast_1_item_2.svg" alt=""/>
-                                </div>
-                                <div className={'item-name'}>眼镜</div>
-                            </div>
-                            <div className={items.includes('项链') ? 'beast-item active' : 'beast-item'}
-                                 onClick={() => setItem('项链')}>
-                                <div className={'icon'}>
-                                    <img src="/images/merge/items/beast_1_item_3.svg" alt=""/>
-                                </div>
-                                <div className={'item-name'}>项链</div>
-                            </div>
-                            <div className={items.includes('项链') ? 'beast-item active' : 'beast-item'}
-                                 onClick={() => setItem('项链')}>
-                                <div className={'icon'}>
-                                    <img src="/images/merge/items/beast_1_item_3.svg" alt=""/>
-                                </div>
-                                <div className={'item-name'}>项链</div>
-                            </div>
+                            })}
+                        </div>
+                    }
+                    {
+                        status === 'complete' &&
+                        <div className={'complete'}>
+                            <div className={'beast-name'}>{props.info.complete}</div>
+                            <BeastBtn>查看徽章详情</BeastBtn>
                         </div>
                     }
                 </div>
-                <div className={'btns'}>
-                    <BeastBtn background={'#DFC84E'} onClick={e => {draw()}}>合成神兽</BeastBtn>
-                </div>
+                {
+                    status !== 'complete' &&
+                    <div className={'btns'}>
+                        <BeastBtn background={'#DFC84E'} onClick={e => {draw()}}>合成神兽</BeastBtn>
+                    </div>
+                }
             </div>
         </div>
     </div>)
