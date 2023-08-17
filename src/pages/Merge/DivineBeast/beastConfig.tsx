@@ -1,6 +1,7 @@
 import Beast01 from "./svg/Beast01";
 import Beast02 from "./svg/Beast02";
 import Beast03 from "./svg/Beast03";
+import Beast04 from "./svg/Beast04";
 
 export interface BeastInfo {
     id: number
@@ -157,6 +158,15 @@ function useBeastConfig() {
                     position: 3,
                 }
             ]
+        },
+        {
+            id: 4,
+            complete: 'Web3 设计鲺',
+            category: '基础鲺',
+            description: '游于山川水溪\n常不可寻',
+            post: Beast04,
+            cost: [3, 1],
+            items: []
         }
     ]
 

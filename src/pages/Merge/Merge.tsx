@@ -143,7 +143,7 @@ function Merge() {
                     <div className={'beast-swiper'}>
                         <AppSwiper
                             items={[
-                                <DivineBeast info={beastInfo[2]} status={'build'} items={[]}/>,
+                                <DivineBeast info={beastInfo[3]} status={'build'} items={[]}/>,
                                 <DivineBeast info={beastInfo[1]} status={'build'} items={['帽子', '口罩', '鞋子']} />,
                                 <DivineBeast info={beastInfo[0]} status={'build'} items={['帽子1', '帽子2', '眼镜', '项链', '鞋子1', '鞋子2', '鱼竿']} />,
                                 <DivineBeast info={beastInfo[0]} status={'complete'} />,

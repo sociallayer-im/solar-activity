@@ -350,6 +350,9 @@ function EventDetail() {
                         <div className={'event-action'}>
                             { isChecklog
                                 ? <div className={'center'}>
+                                    {isHoster && !canceled &&
+                                        <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
+                                    }
                                     { isHoster && !canceled &&
                                         <AppButton
                                             special
@@ -359,7 +362,7 @@ function EventDetail() {
                                             lang['Activity_Punch_in_BTN']
                                         }</AppButton>
                                     }
-                                    { inCheckinTime && !canceled &&
+                                    { inCheckinTime && !canceled && !isHoster &&
                                         <AppButton
                                             special
                                             onClick={e => {
