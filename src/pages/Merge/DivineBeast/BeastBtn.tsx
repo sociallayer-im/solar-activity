@@ -1,12 +1,12 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
-import {useState, useContext, useEffect} from 'react'
+import {useEffect, useState} from 'react'
 
 export interface BeastBtnProps {
     children?: React.ReactNode
     background?: string
     loading?: boolean,
-    onClick?: (e:any) => any
+    onClick?: (e: any) => any
 }
 
 function BeastBtn(props: BeastBtnProps) {
@@ -20,9 +20,12 @@ function BeastBtn(props: BeastBtnProps) {
 
     }, [])
 
-    return (<div className={'beast-btn'} style={{background: background}} onClick={ e => {props.onClick && props.onClick(e)}}>
+    return (<div className={'beast-btn'} style={{background: background}} onClick={e => {
+        !props.loading && props.onClick && props.onClick(e)
+    }
+    }>
         <div className={'content'} style={{background: background}}>
-            { !props.loading ? props.children : '合成中...'}
+            {!props.loading ? props.children : '合成中...'}
         </div>
     </div>)
 }

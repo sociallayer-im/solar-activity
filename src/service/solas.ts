@@ -149,6 +149,7 @@ export interface Badge {
     content: string | null,
     counter: number,
     badge_type: BadgeType,
+    unlocking?: any
 }
 
 export type NftPass = Badge
@@ -314,6 +315,7 @@ export interface Badgelet {
     expires_at?: null | string,
     value?: null | number,
     last_consumed_at: null | string,
+    metadata?: any,
 }
 
 export async function queryAllTypeBadgelet(props: QueryBadgeletProps): Promise<Badgelet[]> {
@@ -1917,9 +1919,33 @@ export interface DivineBeastMergeProps {
 }
 
 export async function divineBeastMerge (props: DivineBeastMergeProps) {
-    const res = await fetch.get({
-        url: `${api}/profile/shanhaiwoo_list`,
-        data: {}
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/profile/shanhaiwoo_merge`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.badgelets as Badgelet[]
+}
+
+export interface DivineBeastRmergeProps {
+    auth_token: string,
+    badgelet_id: number,
+    metadata: string,
+    image_url:string,
+}
+
+export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/shanhaiwoo_remerge`,
+        data: props
     })
 
     if (res.data.result === 'error') {

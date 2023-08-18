@@ -55,6 +55,15 @@ function Merge() {
         getData()
     }, [user.id])
 
+    const gotoCreate = () => {
+        if (!user.id) {
+            openConnectWalletDialog()
+            return
+        } else {
+            navigate('/event/create')
+        }
+    }
+
     return (<div>
         <div className={'merge-page'}>
             <div className={'center'}>
@@ -159,15 +168,10 @@ function Merge() {
                     <div className={'beast-swiper'}>
                         <AppSwiper
                             items={[
-                                <DivineBeast info={beastInfo[3]} status={'build'} items={[]}/>,
-                                <DivineBeast info={beastInfo[1]} status={'build'} items={['帽子', '口罩', '鞋子']} />,
-                                <DivineBeast info={beastInfo[0]} status={'build'} items={['帽子1', '帽子2', '眼镜', '项链', '鞋子1', '鞋子2', '鱼竿']} />,
-                                <DivineBeast info={beastInfo[0]} status={'complete'} />,
-                                <DivineBeast info={beastInfo[1]} status={'complete'} />,
-                                <DivineBeast info={beastInfo[0]} status={'hide'}/>,
-                                <DivineBeast info={beastInfo[1]} status={'hide'}/>,
-                                <DivineBeast info={beastInfo[2]} status={'hide'}/>,
-                                <DivineBeast info={beastInfo[3]} status={'hide'}/>,
+                                <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
+                                <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
+                                <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
+                                <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
                             ]}
                             space={8}
                             itemWidth={326}
@@ -176,7 +180,7 @@ function Merge() {
 
                     <Panel title={<img className={'panel-title-pic'} src={'/images/merge/panel_1.png'} />}>
                         <div className={'text-1'}>发起活动可获得 Host 徽章</div>
-                        <BeastBtn>+ 发起活动</BeastBtn>
+                        <BeastBtn onClick={e => {gotoCreate()}}>+ 发起活动</BeastBtn>
                     </Panel>
 
                     <Panel title={<img className={'panel-title-pic'} src={'/images/merge/panel_2.png'} />}>
