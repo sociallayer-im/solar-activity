@@ -9,7 +9,7 @@ import DivineBeast from "./DivineBeast/DivineBeast";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import AppSwiper from "../../components/base/AppSwiper/AppSwiper";
 import BeastBtn from "./DivineBeast/BeastBtn";
-import {Event, queryRecommendEvent} from "../../service/solas";
+import {Event, queryRecommendEvent, getShanhaiwooResource, getDivineBeast} from "../../service/solas";
 import useformatTime from "../../hooks/formatTime";
 import useBeastConfig from "./DivineBeast/beastConfig";
 import {ChevronDown} from "baseui/icon";
@@ -24,6 +24,7 @@ function Merge() {
     const formatTime = useformatTime()
     const [events, setEvents] = useState<Event[]>([])
     const [loading, setLoading] = useState(true)
+    const [resource, setResource] = useState<any>(null)
     const { beastInfo } = useBeastConfig()
 
     useEffect(() => {
@@ -38,6 +39,21 @@ function Merge() {
 
         getEvents()
     }, [])
+
+    useEffect(() => {
+        async function getData () {
+            if (user.id) {
+                const resource = await getShanhaiwooResource(user.id)
+                setResource(resource)
+                console.log('resource', resource)
+
+                const beast = await getDivineBeast(user.id)
+                console.log('beast', beast)
+            }
+
+        }
+        getData()
+    }, [user.id])
 
     return (<div>
         <div className={'merge-page'}>
@@ -113,11 +129,11 @@ function Merge() {
                             <div>你已收集</div>
                             <div className={'badge'}>
                                 <img src="/images/merge/host.png" alt=""/>
-                                <div className={'count'}>x{0}</div>
+                                <div className={'count'}>x{resource && resource.host_count || 0}</div>
                             </div>
                             <div className={'badge'}>
                                 <img src="/images/merge/poap.png" alt=""/>
-                                <div className={'count'}>x{0}</div>
+                                <div className={'count'}>x{resource && resource.poap_count || 0}</div>
                             </div>
                         </div>:
                             <div className={'user-account'}>

@@ -1878,6 +1878,57 @@ export async function punchIn (props: PunchInProps) {
     }
 }
 
+export async function getShanhaiwooResource (profile_id: number) {
+    const res = await fetch.get({
+        url: `${api}/profile/shanhaiwoo_resource_count`,
+        data: {profile_id}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data as {
+        poap_count: number,
+        host_count: number,
+        shanhaiwoo_poap_used_count: number,
+        shanhaiwoo_host_used_count: number,
+    }
+}
+
+export async function getDivineBeast (profile_id: number) {
+    const res = await fetch.get({
+        url: `${api}/profile/shanhaiwoo_list`,
+        data: {profile_id}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.badgelets as Badgelet[]
+}
+
+export interface DivineBeastMergeProps {
+    auth_token: string,
+    content: string,
+    metadata: string,
+    image_url:string,
+}
+
+export async function divineBeastMerge (props: DivineBeastMergeProps) {
+    const res = await fetch.get({
+        url: `${api}/profile/shanhaiwoo_list`,
+        data: {}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.badgelets as Badgelet[]
+}
+
 
 export default {
     punchIn,

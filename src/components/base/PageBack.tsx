@@ -56,7 +56,7 @@ function PageBack(props: PageBackProp) {
         } else if (props.onClose) {
             props.onClose()
         } else {
-            window.history.back()
+            window.history.go(-1)
         }
 
     }
@@ -65,26 +65,29 @@ function PageBack(props: PageBackProp) {
     // 如果history长度为2，且history[0]为'/'，history[1]包含'/profile/'，就隐藏返回按钮
     // 如果history长度为1，且history[0]包含当前页面的path，就隐藏返回按钮
     useEffect(() => {
-        const path = location.pathname
-        const ifHidden = (
-            !history.length
-            || (history.length === 2
-                && history[0] === '/'
-                && history[1].includes('/profile/')
-                || (history.length === 1
-                    && history[0].includes(path))
-            ) && !props.onClose
-
-        )
-        setHideBackBtn(ifHidden)
+        // const path = location.pathname
+        // const ifHidden = (
+        //     !history.length
+        //     || (history.length === 2
+        //         && history[0] === '/'
+        //         && history[1].includes('/profile/')
+        //         || (history.length === 1
+        //             && history[0].includes(path))
+        //     ) && !props.onClose
+        //
+        // )
+        setHideBackBtn(window.history.length <=2 && !props.onClose)
     }, [history.length, location])
 
     return (
         <Wrapper>
-            <BackBtn onClick={handleBack}>
-                {!props.backBtnLabel && <ArrowLeft size={18}/>}
-                {props.backBtnLabel ? props.backBtnLabel : lang['Page_Back']}
-            </BackBtn>
+            { !hideBackBtn ?
+                <BackBtn onClick={handleBack}>
+                    {!props.backBtnLabel && <ArrowLeft size={18}/>}
+                    {props.backBtnLabel ? props.backBtnLabel : lang['Page_Back']}
+                </BackBtn>: <div />
+            }
+
             <Title>{props.title}</Title>
             {!!props.menu && props.menu()}
         </Wrapper>

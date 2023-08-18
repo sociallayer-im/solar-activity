@@ -1,11 +1,13 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState, useContext} from 'react'
 import './DivineBeast.less'
 import useBeastConfig from "./beastConfig";
 import BeastBtn from "./BeastBtn";
 import AppSwiper from "../../../components/base/AppSwiper/AppSwiper";
 import {BeastInfo, BeastItemInfo} from "./beastConfig";
+import {uploadImage} from "../../../service/solas";
+import UserContext from "../../../components/provider/UserProvider/UserContext";
 
 function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'complete', items?: string[]}) {
     const [css] = useStyletron()
@@ -15,6 +17,7 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
     const [selectedItem, setSelectedItem] = useState<BeastItemInfo[]>([])
     const [status, setStatus] = useState<'hide' | 'build' | 'complete'>(props.status)
     const {beastInfo} = useBeastConfig()
+    const {user} = useContext(UserContext)
 
     useEffect(() => {
 
@@ -48,10 +51,20 @@ function DivineBeast(props: {info: BeastInfo, status: 'hide' | 'build' | 'comple
             ItemImg.src = 'data:image/svg+xml;base64,' + window.btoa(unescape(encodeURIComponent(svgRef.current.outerHTML)))
             ItemImg.onload = () => {
                 ctx?.drawImage(ItemImg, 0, 0, 286, 272)
-                const a = document.createElement('a');
-                a.download = `beast_${new Date().getTime()}.jpg`;
-                a.href = canvas.toDataURL('image/jpeg', 1);
-                a.click();
+                // const a = document.createElement('a');
+                // a.download = `beast_${new Date().getTime()}.jpg`;
+                // a.href = canvas.toDataURL('image/jpeg', 1);
+                // a.click();
+
+                canvas.toBlob((blob) => {
+                    uploadImage({
+                        file: blob!,
+                        auth_token: user.authToken || '',
+                        uploader: user.userName || '',
+                    }).then(res => {
+                        console.log(res)
+                    })
+                }, 'image/jpeg', 1)
             }
         }
     }
