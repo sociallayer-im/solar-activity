@@ -53,7 +53,7 @@ function Subscriber() {
             })
         }
 
-        showPendingBadgelets()
+        // showPendingBadgelets()
 
 
         async function showPendingInvite() {
@@ -63,7 +63,7 @@ function Subscriber() {
             })
         }
 
-        showPendingInvite()
+        // showPendingInvite()
     }, [user.id, user.domain])
 
     return (<></>)
