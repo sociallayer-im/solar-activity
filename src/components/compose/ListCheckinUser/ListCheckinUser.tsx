@@ -92,10 +92,10 @@ function ListCheckinUser({editable=true, ...props}: ListCheckinUserProps) {
         {
             participants.map((item, index) => {
                 const checked = item.status === 'checked' || !editable
-                return <div className={!checked ? 'user-list-item uncheck' : 'user-list-item'}>
+                return <div className={!checked ? 'user-list-item uncheck' : 'user-list-item'} key={index}>
                     <div className={'left'}
                          onClick={e => {goToProfile(item.profile.domain?.split('.')[0]!)}}>
-                        <img src={item.profile.image_url || defaultAvatar(item.id)} alt=""/>
+                        <img src={item.profile.image_url || defaultAvatar(item.profile.id)} alt=""/>
                         {item.profile.domain?.split('.')[0]}
                     </div>
                     <div className={'right'}>
