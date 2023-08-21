@@ -32,6 +32,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
     const [badgelet, setBadgelet] = useState<Badgelet | undefined>(props.badgelet)
     const [status, setStatus] = useState<'hide' | 'build' | 'complete'>('hide')
     const [Post, setPost] = useState<any | null>(null)
+    const [showSuccessAnimation, setSuccessAnimation] = useState(false)
 
     const setSelected = (targetItem: BeastItemInfo) => {
         if (selectedItem.find(item => item.name === targetItem!.name)) {
@@ -134,11 +135,19 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             } as BeastMetadata)
                         })
 
-                        unloading()
-                        setLoading(false)
-                        showToast('合成成功')
-                        setStatus('complete')
-                        props.onMerge && props.onMerge()
+                        const successAnimation = document.createElement('img')
+                        successAnimation.src = '/images/merge/success_animation.gif'
+                        successAnimation.onload = () => {
+                            unloading()
+                            setLoading(false)
+                            showToast('合成成功')
+                            setStatus('complete')
+                            setSuccessAnimation(true)
+                            props.onMerge && props.onMerge()
+                            setTimeout(() => {
+                                setSuccessAnimation(false)
+                            }, 1000)
+                        }
                     } catch (e) {
                         console.error('合成失败', e)
                         showToast('合成失败')
@@ -194,12 +203,21 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             }
                         })
                     })
-                    unloading()
-                    setLoading(false)
-                    showToast('生成成功')
-                    setBadgelet(res)
-                    setStatus('build')
-                    props.onMerge && props.onMerge()
+
+                    const successAnimation = document.createElement('img')
+                    successAnimation.src = '/images/merge/success_animation.gif'
+                    successAnimation.onload = () => {
+                        unloading()
+                        setLoading(false)
+                        showToast('生成成功')
+                        setBadgelet(res)
+                        setStatus('build')
+                        setSuccessAnimation(true)
+                        props.onMerge && props.onMerge()
+                        setTimeout(() => {
+                            setSuccessAnimation(false)
+                        }, 1000)
+                    }
                 } catch (e) {
                     unloading()
                     setLoading(false)
@@ -211,6 +229,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
     }
 
     return (<div className={'divine-beast'}>
+        { showSuccessAnimation && <img className={'success-animation'} src="/images/merge/success_animation.gif" alt=""/>}
         <div className={status === 'complete' ? 'border border-complete' : 'border'}>
             {
                 !!info &&  <div className={'window'}>
