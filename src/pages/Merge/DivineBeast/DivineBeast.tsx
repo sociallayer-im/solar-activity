@@ -140,7 +140,6 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                         successAnimation.onload = () => {
                             unloading()
                             setLoading(false)
-                            showToast('合成成功')
                             setStatus('complete')
                             setSuccessAnimation(true)
                             props.onMerge && props.onMerge()
@@ -209,7 +208,6 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                     successAnimation.onload = () => {
                         unloading()
                         setLoading(false)
-                        showToast('生成成功')
                         setBadgelet(res)
                         setStatus('build')
                         setSuccessAnimation(true)

@@ -42,11 +42,17 @@ function Merge() {
         getEvents()
     }, [])
 
+    async function getResource () {
+        if (user.id) {
+            const resourceRes = await getShanhaiwooResource(user.id)
+            setResource(resourceRes)
+        }
+    }
+
     async function getData () {
         if (user.id) {
-            const resource = await getShanhaiwooResource(user.id)
-            setResource(resource)
-            console.log('resource', resource)
+            setLoading(true)
+            await getResource()
 
             const beast = await getDivineBeast(user.id)
             const completeBeast = beast.filter((item) => {
@@ -63,9 +69,11 @@ function Merge() {
 
             setTimeout(() => {
                 setMyBeasts([...completeBeast, ...buildingBeast])
+                setLoading(false)
             }, 100)
         } else {
             setMyBeasts([])
+            setLoading(false)
         }
 
     }
@@ -82,6 +90,23 @@ function Merge() {
             navigate('/event/create')
         }
     }
+
+    const beastList = myBeasts ? [
+        ...myBeasts.map((beast, index) => {
+            return <DivineBeast badgelet={beast} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />
+        }),
+        <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+    ] : [
+        <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+        <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
+    ]
+
+    console.log('beastListbeastListbeastList', beastList)
 
     return (<div>
         <div className={'merge-page'}>
@@ -186,17 +211,9 @@ function Merge() {
 
                     <div className={'beast-swiper'} style={{height: '470px'}}>
                         {
-                            !!myBeasts && <AppSwiper
+                            !loading && <AppSwiper
                                 initIndex={swiperInitIndex}
-                                items={[
-                                    ...myBeasts.map((beast, index) => {
-                                        return <DivineBeast badgelet={beast} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />
-                                    }),
-                                    <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
-                                    <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
-                                    <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
-                                    <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
-                                ]}
+                                items={beastList}
                                 clickToSlide={false}
                                 space={8}
                                 itemWidth={326}
