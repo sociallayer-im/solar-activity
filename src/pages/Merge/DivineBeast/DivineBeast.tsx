@@ -1,10 +1,11 @@
-import {useContext, useEffect, useRef, useState} from 'react'
+import {ReactNode, useContext, useEffect, useRef, useState} from 'react'
 import './DivineBeast.less'
-import useBeastConfig, {BeastItemInfo} from "./beastConfig";
+import useBeastConfig, {BeastItemInfo, BeastInfo} from "./beastConfig";
 import BeastBtn from "./BeastBtn";
 import {Badgelet, divineBeastMerge, divineBeastRemerge, uploadImage } from "../../../service/solas";
 import UserContext from "../../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../../components/provider/DialogProvider/DialogsContext";
+import {useSwiper} from "swiper/react";
 
 export interface BeastMetadata {
     category: number
@@ -17,7 +18,7 @@ export interface BeastMetadata {
     }
 }
 
-function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number, host?: number }) {
+function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number, host?: number, onMerge?: () => any }) {
     const svgRef = useRef<any>(null)
     const [selectedItem, setSelectedItem] = useState<BeastItemInfo[]>([])
     const {beastInfo} = useBeastConfig()
@@ -26,12 +27,11 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
     const {showLoading, showToast} = useContext(DialogsContext)
     const [poap, setPoap] = useState(props.poap || 0)
     const [host, setHost] = useState(props.host || 0)
-
-    const metadata = props.badgelet ? JSON.parse(props.badgelet.metadata!) as BeastMetadata : null
-    const status: 'hide' | 'build' | 'complete' = props.hide ? 'hide' : (metadata ? metadata.properties.status : 'hide')
-    const info = props.hide ? beastInfo.find(i => i.id === props.hide)
-        : beastInfo.find(i => i.id === metadata!.category)
-
+    const swiper = useSwiper()
+    const [info, setInfo] = useState<BeastInfo | undefined>(undefined)
+    const [badgelet, setBadgelet] = useState<Badgelet | undefined>(props.badgelet)
+    const [status, setStatus] = useState<'hide' | 'build' | 'complete'>('hide')
+    const [Post, setPost] = useState<any | null>(null)
 
     const setSelected = (targetItem: BeastItemInfo) => {
         if (selectedItem.find(item => item.name === targetItem!.name)) {
@@ -43,6 +43,25 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
             setSelectedItem([...newSelectedItem, targetItem!])
         }
     }
+
+    useEffect(() => {
+        const metadata = props.badgelet ? JSON.parse(props.badgelet.metadata!) as BeastMetadata : null
+        console.log('metadata',metadata)
+        const status: 'hide' | 'build' | 'complete' = props.hide ? 'hide' : (metadata ? metadata.properties.status : 'hide')
+        const info = metadata ? beastInfo.find(i =>  i.id === metadata!.category || i.category === metadata!.name)
+            : beastInfo.find(i => i.id === props.hide)
+
+
+        setInfo(info!)
+        setStatus(status)
+        setPost(info!.post)
+
+        if(metadata && status==='complete' && metadata.properties.items) {
+            const a = metadata.properties.items.split(',')
+            const b = a.map(i => info!.items.find(j => j.name === i))
+            setSelectedItem(b as BeastItemInfo[] || [])
+        }
+    }, [])
 
    useEffect(() => {
        if (props.host) {
@@ -56,10 +75,18 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
     const reMerge = () => {
         if (!info) return
 
+        if (selectedItem.length === 0) {
+            showToast('合成至少需要一个元素')
+            return
+        }
+
         if (poap < selectedItem.length) {
             showToast('POAP或HOST徽章不够哦~')
             return
         }
+
+        setLoading(true)
+        const unloading = showLoading()
 
         const bgImg = document.createElement('img')
         bgImg.crossOrigin = 'anonymous';
@@ -82,28 +109,43 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                 // a.href = canvas.toDataURL('image/jpeg', 1);
                 // a.click();
 
-                canvas.toBlob((blob) => {
-                    uploadImage({
-                        file: blob!,
-                        auth_token: user.authToken || '',
-                        uploader: user.userName || '',
-                    }).then(res => {
-                        console.log(res)
-                        divineBeastRemerge({
+                canvas.toBlob(async (blob) => {
+
+                    try {
+                        const newPic = await uploadImage({
+                            file: blob!,
                             auth_token: user.authToken || '',
-                            badgelet_id: props.badgelet!.id,
-                            image_url: res,
+                            uploader: user.userName || '',
+                        })
+
+                        const reMerge = await divineBeastRemerge({
+                            auth_token: user.authToken || '',
+                            badgelet_id: badgelet!.id,
+                            image_url: newPic,
                             metadata: JSON.stringify({
+                                category: info.id,
                                 description: info.description,
-                                name: info.category,
-                                image: res,
+                                name: info.complete,
+                                image: newPic,
                                 properties: {
                                     items: selectedItem.map(i => i.name).join(','),
                                     status: 'complete'
                                 }
-                            })
+                            } as BeastMetadata)
                         })
-                    })
+
+                        unloading()
+                        setLoading(false)
+                        showToast('合成成功')
+                        setStatus('complete')
+                        props.onMerge && props.onMerge()
+                    } catch (e) {
+                        console.error('合成失败', e)
+                        showToast('合成失败')
+                        unloading()
+                        setLoading(false)
+                    }
+
                 }, 'image/jpeg', 1)
             }
         }
@@ -142,6 +184,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                         content: info!.description,
                         image_url: pic,
                         metadata: JSON.stringify({
+                            category: info!.id,
                             description: info!.description,
                             name: info!.category,
                             image: pic,
@@ -151,6 +194,12 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             }
                         })
                     })
+                    unloading()
+                    setLoading(false)
+                    showToast('生成成功')
+                    setBadgelet(res)
+                    setStatus('build')
+                    props.onMerge && props.onMerge()
                 } catch (e) {
                     unloading()
                     setLoading(false)
@@ -161,73 +210,74 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
         }
     }
 
-    const Post = info!.post
-
     return (<div className={'divine-beast'}>
         <div className={status === 'complete' ? 'border border-complete' : 'border'}>
-            <div className={'window'}>
-                {
-                    status === 'complete' &&
-                    <img className={'complete-title'} src="/images/merge/complete.png" alt=""/>
-                }
-                <div className={'post'}>
-                    <Post ref={svgRef} status={status} items={selectedItem.map(i => i.name)}/>
-                </div>
-                <div className={'options'}>
-                    {status === 'hide' &&
-                        <div className={'des'}>
-                            <div className={'left'}>
-                                <div className={'title'}>神兽类型</div>
-                                <div className={'value'}>{info!.category}</div>
-                            </div>
-                            <div className={'right'}>
-                                <div className={'title'}>特征</div>
-                                <div className={'value'}>{info!.description}</div>
-                            </div>
-                        </div>
-                    }
-                    {status === 'build' &&
-                        <div className={'beast-item-list swiper-no-swiping'}>
-                            {info!.items.map(item => {
-                                const targetItem = item
-                                return <div key={targetItem!.name}
-                                            className={!!selectedItem.find(i => i.name === targetItem!.name) ? 'beast-item active' : 'beast-item'}
-                                            onClick={() => setSelected(targetItem!)}>
-                                    <div className={'icon'}>
-                                        <img src={targetItem!.icon} alt=""/>
-                                    </div>
-                                    <div className={'item-name'}>{targetItem!.name}</div>
-                                </div>
-                            })}
-                        </div>
-                    }
+            {
+                !!info &&  <div className={'window'}>
                     {
                         status === 'complete' &&
-                        <div className={'complete'}>
-                            <div className={'beast-name'}>{info!.complete}</div>
-                            <BeastBtn>查看徽章详情</BeastBtn>
+                        <img className={'complete-title'} src="/images/merge/complete.png" alt=""/>
+                    }
+                    <div className={'post'}>
+                        {  !!Post && <Post ref={svgRef} status={status} items={selectedItem.map(i => i.name)}/>
+                        }
+                    </div>
+                    <div className={'options'}>
+                        {status === 'hide' &&
+                            <div className={'des'}>
+                                <div className={'left'}>
+                                    <div className={'title'}>神兽类型</div>
+                                    <div className={'value'}>{info!.category}</div>
+                                </div>
+                                <div className={'right'}>
+                                    <div className={'title'}>特征</div>
+                                    <div className={'value'}>{info!.description}</div>
+                                </div>
+                            </div>
+                        }
+                        {status === 'build' &&
+                            <div className={'beast-item-list swiper-no-swiping'}>
+                                {info!.items.map(item => {
+                                    const targetItem = item
+                                    return <div key={targetItem!.name}
+                                                className={!!selectedItem.find(i => i.name === targetItem!.name) ? 'beast-item active' : 'beast-item'}
+                                                onClick={() => setSelected(targetItem!)}>
+                                        <div className={'icon'}>
+                                            <img src={targetItem!.icon} alt=""/>
+                                        </div>
+                                        <div className={'item-name'}>{targetItem!.name}</div>
+                                    </div>
+                                })}
+                            </div>
+                        }
+                        {
+                            status === 'complete' &&
+                            <div className={'complete'}>
+                                <div className={'beast-name'}>{info!.complete}</div>
+                                <BeastBtn><a href={`https://app.sola.day/badgelet/${badgelet!.id}`} target={'_blank'}>查看徽章详情</a></BeastBtn>
+                            </div>
+                        }
+                    </div>
+                    {status !== 'complete' && status === 'hide' &&
+                        <div className={'btns'}>
+                            <BeastBtn
+                                loading={loading}
+                                background={'#F99351'}
+                                onClick={e => {
+                                    merge()
+                                }}>消耗 Host*1 + POAP*3 生成</BeastBtn>
+                        </div>
+                    }
+
+                    {status !== 'complete' && status === 'build' &&
+                        <div className={'btns'}>
+                            <BeastBtn loading={loading} background={'#F99351'} onClick={e => {
+                                reMerge()
+                            }}>消耗 POAP*{selectedItem.length} 合成神兽</BeastBtn>
                         </div>
                     }
                 </div>
-                {status !== 'complete' && status === 'hide' &&
-                    <div className={'btns'}>
-                        <BeastBtn
-                            loading={loading}
-                            background={'#F99351'}
-                            onClick={e => {
-                                merge()
-                            }}>消耗 Host*1 + POAP*3 生成</BeastBtn>
-                    </div>
-                }
-
-                {status !== 'complete' && status === 'build' &&
-                    <div className={'btns'}>
-                        <BeastBtn loading={loading} background={'#F99351'} onClick={e => {
-                            reMerge()
-                        }}>消耗 POAP*{selectedItem.length} 合成神兽</BeastBtn>
-                    </div>
-                }
-            </div>
+            }
         </div>
     </div>)
 }

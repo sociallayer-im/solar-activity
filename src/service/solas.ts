@@ -64,14 +64,23 @@ interface GetProfileProps {
     username?: string
 }
 
+const sleep = (time: number) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('')
+        }, time)
+    })
+}
+
 export async function getProfile(props: GetProfileProps): Promise<Profile | null> {
+
+    // await sleep(10000)
     const res: any = await fetch.get({
         url: `${api}/profile/get`,
         data: props
     })
 
     if (!res.data.profile) return null
-
     return {
         ...res.data.profile,
         followers: res.data.followers_count,
@@ -1923,14 +1932,14 @@ export async function divineBeastMerge (props: DivineBeastMergeProps) {
 
     const res = await fetch.post({
         url: `${api}/profile/shanhaiwoo_merge`,
-        data: props
+        data: {...props, value: 1}
     })
 
     if (res.data.result === 'error') {
         throw new Error(res.data.message)
     }
 
-    return res.data.badgelets as Badgelet[]
+    return res.data.badgelet as Badgelet
 }
 
 export interface DivineBeastRmergeProps {
@@ -1944,7 +1953,7 @@ export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
     checkAuth(props)
 
     const res = await fetch.post({
-        url: `${api}/event/shanhaiwoo_remerge`,
+        url: `${api}/profile/shanhaiwoo_remerge`,
         data: props
     })
 

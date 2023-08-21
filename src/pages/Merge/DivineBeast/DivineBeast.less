@@ -119,6 +119,11 @@
       line-height: normal;
       margin-bottom: 8px;
     }
+
+    a {
+      text-decoration: none;
+      color: #fff
+    }
   }
 }
 
@@ -129,8 +134,10 @@
   white-space: nowrap;
   overflow: auto;
 
-  &::-webkit-scrollbar {
-    display: none;
+  @media(max-width: 450px) {
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .beast-item {

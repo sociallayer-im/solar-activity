@@ -9,7 +9,7 @@ import DivineBeast from "./DivineBeast/DivineBeast";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import AppSwiper from "../../components/base/AppSwiper/AppSwiper";
 import BeastBtn from "./DivineBeast/BeastBtn";
-import {Event, queryRecommendEvent, getShanhaiwooResource, getDivineBeast} from "../../service/solas";
+import {Event, queryRecommendEvent, getShanhaiwooResource, getDivineBeast, Badgelet} from "../../service/solas";
 import useformatTime from "../../hooks/formatTime";
 import useBeastConfig from "./DivineBeast/beastConfig";
 import {ChevronDown} from "baseui/icon";
@@ -23,9 +23,11 @@ function Merge() {
     const {openConnectWalletDialog} = useContext(DialogsContext)
     const formatTime = useformatTime()
     const [events, setEvents] = useState<Event[]>([])
+    const [myBeasts, setMyBeasts] = useState<Badgelet[] | null>(null)
     const [loading, setLoading] = useState(true)
     const [resource, setResource] = useState<any>(null)
     const { beastInfo } = useBeastConfig()
+    const [swiperInitIndex, setSwiperInitIndex] = useState(0)
 
     useEffect(() => {
         async function getEvents() {
@@ -40,18 +42,35 @@ function Merge() {
         getEvents()
     }, [])
 
-    useEffect(() => {
-        async function getData () {
-            if (user.id) {
-                const resource = await getShanhaiwooResource(user.id)
-                setResource(resource)
-                console.log('resource', resource)
+    async function getData () {
+        if (user.id) {
+            const resource = await getShanhaiwooResource(user.id)
+            setResource(resource)
+            console.log('resource', resource)
 
-                const beast = await getDivineBeast(user.id)
-                console.log('beast', beast)
-            }
+            const beast = await getDivineBeast(user.id)
+            const completeBeast = beast.filter((item) => {
+                const metadata = JSON.parse(item.metadata)
+                return metadata.properties.status === 'complete'
+            })
 
+            const buildingBeast = beast.filter((item) => {
+                const metadata = JSON.parse(item.metadata)
+                return metadata.properties.status !== 'complete'
+            })
+
+            setSwiperInitIndex(completeBeast.length)
+
+            setTimeout(() => {
+                setMyBeasts([...completeBeast, ...buildingBeast])
+            }, 100)
+        } else {
+            setMyBeasts([])
         }
+
+    }
+
+    useEffect(() => {
         getData()
     }, [user.id])
 
@@ -72,7 +91,7 @@ function Merge() {
                 <i className={'bg_3'}/>
                 <div className={'page-header'}>
                     <div className={'left'}>
-                        <a href={'https://app.sola.day'}><img src={'/images/logo.svg'}/></a>
+                        <a href={'https://app.sola.day'}><img src={'/images/logo.svg'} alt={''} /></a>
                         <i className={'split'}/>
                         <Link to={'/'} className={'home'}>
                             <svg onClick={e => {
@@ -165,17 +184,24 @@ function Merge() {
                         </svg>
                     </div>
 
-                    <div className={'beast-swiper'}>
-                        <AppSwiper
-                            items={[
-                                <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
-                                <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
-                                <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
-                                <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0}/>,
-                            ]}
-                            space={8}
-                            itemWidth={326}
-                        />
+                    <div className={'beast-swiper'} style={{height: '470px'}}>
+                        {
+                            !!myBeasts && <AppSwiper
+                                initIndex={swiperInitIndex}
+                                items={[
+                                    ...myBeasts.map((beast, index) => {
+                                        return <DivineBeast badgelet={beast} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />
+                                    }),
+                                    <DivineBeast hide={1} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
+                                    <DivineBeast hide={2} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
+                                    <DivineBeast hide={3} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
+                                    <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getData()}} />,
+                                ]}
+                                clickToSlide={false}
+                                space={8}
+                                itemWidth={326}
+                            />
+                        }
                     </div>
 
                     <Panel title={<img className={'panel-title-pic'} src={'/images/merge/panel_1.png'} />}>

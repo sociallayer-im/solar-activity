@@ -59,6 +59,7 @@ function UserProvider (props: UserProviderProps) {
 
 
     const setProfile = async (props: { authToken: string, address?: string | undefined, email?: string | undefined }) => {
+        const unloading = showLoading()
         try {
             const profileInfo = await solas.getProfile(props)
             console.log('Profile: ', profileInfo)
@@ -94,9 +95,11 @@ function UserProvider (props: UserProviderProps) {
 
             // Float Extension Login
             solaExtensionLogin.login(profileInfo.id.toString(), profileInfo.domain,props.authToken, profileInfo.image_url || '')
+           unloading()
         } catch (e: any) {
-            console.error('[setProfile]: ', e)
+            console.error('login fail [setProfile]: ', e)
             showToast('Login fail', 3000)
+            unloading()
             logOut()
         }
     }
@@ -114,7 +117,10 @@ function UserProvider (props: UserProviderProps) {
 
         AuthStorage.setLastLoginType(null)
         window.localStorage.removeItem('isSolarLogin')
-
+        window.localStorage.removeItem('wagmi.wallet')
+        window.localStorage.removeItem('wagmi.store')
+        window.localStorage.removeItem('wagmi.cache')
+        window.localStorage.removeItem('wagmi.connected')
         setUserInfo(emptyUser)
     }
 
@@ -164,7 +170,7 @@ function UserProvider (props: UserProviderProps) {
                 authToken = await solas.login(data)
                 console.log('New token: ', authToken)
             } catch (e) {
-                console.log(e)
+                console.error('Login fail', e)
                 showToast('Login fail', 3000)
                 logOut()
                 return
