@@ -25,7 +25,7 @@ function useBeastConfig() {
         {
             id: 1,
             category: '基础大狫',
-            complete: 'Web3 大狫',
+            complete: '大狫',
             description: '体大如斗，秉节持重',
             post: Beast01,
             cost: [3, 1],
@@ -76,7 +76,7 @@ function useBeastConfig() {
         },
         {
             id: 2,
-            complete: 'Web3 小狫',
+            complete: '小狫',
             category: '基础小狫',
             description: '沉厚寡言，游于山林',
             post: Beast02,
@@ -101,8 +101,8 @@ function useBeastConfig() {
         },
         {
             id: 3,
-            complete: 'Web3 程序猿',
-            category: '基础猿',
+            complete: '程序猿',
+            category: '基础程序猿',
             description: '善变换，好奇善异\n常有窥探之心',
             post: Beast03,
             cost: [3, 1],
@@ -161,8 +161,8 @@ function useBeastConfig() {
         },
         {
             id: 4,
-            complete: 'Web3 设计鲺',
-            category: '基础鲺',
+            complete: '设计鲺',
+            category: '基础设计鲺',
             description: '游于山川水溪\n常不可寻',
             post: Beast04,
             cost: [3, 1],
