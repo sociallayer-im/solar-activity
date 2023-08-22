@@ -125,7 +125,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             image_url: newPic,
                             metadata: JSON.stringify({
                                 category: info.id,
-                                description: info.description,
+                                description: `你好奇于山海坞的神秘，已组织过1次山海坞探险或参加过3次坞中神兽的秘密聚会。现在，山民海民们邀请你加入他们，成为山海坞的一员，将象征身份的徽章，颁发给你。愿你：${info.description}` + ' @https://event.sola.day/merge '  ,
                                 name: info.complete,
                                 image: newPic,
                                 properties: {
@@ -189,11 +189,11 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                     })
                     const res = await divineBeastMerge({
                         auth_token: user.authToken || '',
-                        content: info!.description,
+                        content: `你好奇于山海坞的神秘，已组织过1次山海坞探险或参加过3次坞中神兽的秘密聚会。现在，山民海民们邀请你加入他们，成为山海坞的一员，将象征身份的徽章，颁发给你。愿你：${info!.description}` + ' @https://event.sola.day/merge ',
                         image_url: pic,
                         metadata: JSON.stringify({
                             category: info!.id,
-                            description: info!.description,
+                            description: `你好奇于山海坞的神秘，已组织过1次山海坞探险或参加过3次坞中神兽的秘密聚会。现在，山民海民们邀请你加入他们，成为山海坞的一员，将象征身份的徽章，颁发给你。愿你：${info!.description}` + ' @https://event.sola.day/merge ',
                             name: info!.category,
                             image: pic,
                             properties: {
@@ -282,7 +282,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                                 background={'#F99351'}
                                 onClick={e => {
                                     merge()
-                                }}>消耗 Host*1 + POAP*3 生成</BeastBtn>
+                                }}>消耗 Host × 1 + POAP × 3 生成</BeastBtn>
                         </div>
                     }
 
@@ -290,7 +290,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                         <div className={'btns'}>
                             <BeastBtn loading={loading} background={'#F99351'} onClick={e => {
                                 reMerge()
-                            }}>{ selectedItem.length ? `消耗 POAP*${selectedItem.length} 合成神兽` : '选择元素合成神兽'}</BeastBtn>
+                            }}>{ selectedItem.length ? `消耗 POAP × ${selectedItem.length} 合成神兽` : '选择元素合成神兽'}</BeastBtn>
                         </div>
                     }
                 </div>
