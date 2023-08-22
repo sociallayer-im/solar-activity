@@ -182,18 +182,17 @@ function Merge() {
                             <div>你已收集</div>
                             <div className={'badge'}>
                                 <img src="/images/merge/host.png" alt=""/>
-                                <div className={'count'}>x{resource && resource.host_count - resource.shanhaiwoo_host_used_count || 0}</div>
+                                <div className={'count'}>HOSTx{resource && resource.host_count - resource.shanhaiwoo_host_used_count || 0}</div>
                             </div>
                             <div className={'badge'}>
                                 <img src="/images/merge/poap.png" alt=""/>
-                                <div className={'count'}>x{resource && resource.poap_count - resource.shanhaiwoo_poap_used_count || 0}</div>
+                                <div className={'count'}>POAPx{resource && resource.poap_count - resource.shanhaiwoo_poap_used_count || 0}</div>
                             </div>
                         </div>:
                             <div className={'user-account'}>
                                <div className={'login-btn'} onClick={e => {openConnectWalletDialog()}}> <span>登录</span>查看你的收藏</div>
                             </div>
                     }
-
 
 
                     <div className={'page-title'} />
