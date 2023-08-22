@@ -290,7 +290,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                         <div className={'btns'}>
                             <BeastBtn loading={loading} background={'#F99351'} onClick={e => {
                                 reMerge()
-                            }}>消耗 POAP*{selectedItem.length} 合成神兽</BeastBtn>
+                            }}>{ selectedItem.length ? `消耗 POAP*${selectedItem.length} 合成神兽` : '选择元素合成神兽'}</BeastBtn>
                         </div>
                     }
                 </div>

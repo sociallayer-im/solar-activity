@@ -232,7 +232,7 @@ function Merge() {
                             {
                                 events.map((event, index) => {
                                     return <div className={'list-item'} key={index} onClick={e => { navigate(`/event/${event.id}`)}}>
-                                        <img src="/images/merge/poap_cover.png" alt=""/>
+                                        <img src="/images/merge/poap.png" alt=""/>
                                         <div>
                                             <div className={'name'}>{event.title}</div>
                                             <div className={'detail'}>{formatTime(event.start_time!)} - {formatTime(event.ending_time!)}</div>
