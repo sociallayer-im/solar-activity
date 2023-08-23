@@ -369,7 +369,7 @@ function EventDetail() {
                                                showEventCheckIn(Number(eventId), true)
                                             }}>{
                                             lang['Activity_Punch_in_BTN']
-                                        }</AppButton>
+                                        } </AppButton>
                                     }
                                     {canceled &&
                                         <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
@@ -401,7 +401,7 @@ function EventDetail() {
                                         <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
                                     }
 
-                                    {!isJoined && !canceled && (inCheckinTime || notStart) &&
+                                    {!isJoined && !canceled && (inCheckinTime || notStart) && !isHoster &&
                                         <AppButton special onClick={e => {
                                             handleJoin()
                                         }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>

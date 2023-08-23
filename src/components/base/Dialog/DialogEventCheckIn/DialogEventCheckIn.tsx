@@ -28,6 +28,10 @@ function DialogEventCheckIn(props: DialogNftCheckInProps) {
         console.log('scan', res)
         console.log('is Checklog', props.isCheckLog)
 
+        const eventId = res.split('#')[0]
+        const profileId = res.split('#')[1]
+
+
         if (props.isCheckLog) {
             await handlePunchIn()
         } else {
@@ -38,7 +42,7 @@ function DialogEventCheckIn(props: DialogNftCheckInProps) {
             try {
                 const punch = await punchIn({
                     auth_token: user.authToken || '',
-                    id: Number(res)
+                    id: Number(eventId)
                 })
                 showToast('Success !')
                 setTimeout(() => {
@@ -56,8 +60,8 @@ function DialogEventCheckIn(props: DialogNftCheckInProps) {
             try {
                 const checkInRes = await eventCheckIn({
                     auth_token: user.authToken || '',
-                    id: Number(res),
-                    profile_id: user.id || 0,
+                    id: Number(eventId),
+                    profile_id: Number(profileId) || 0,
                 })
                 showToast('Checked !')
                 setTimeout(() => {
