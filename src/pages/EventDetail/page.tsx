@@ -380,7 +380,7 @@ function EventDetail() {
                                         <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
                                     }
 
-                                    { !canceled && isJoined && !outOfDate &&
+                                    { !canceled && isJoined && !outOfDate && !hoster &&
                                         <AppButton
                                             onClick={e => {
                                                 addToCalender({
@@ -422,7 +422,7 @@ function EventDetail() {
                                         }</AppButton>
                                     }
 
-                                    {!canceled && (isJoined && !isGuest) && inCheckinTime &&
+                                    {!canceled && isJoined && !isGuest && !hoster && inCheckinTime &&
                                         <AppButton
                                             special
                                             onClick={e => {
