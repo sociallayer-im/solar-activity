@@ -423,7 +423,7 @@ function EventDetail() {
                                         }</AppButton>
                                     }
 
-                                    {!canceled && isJoined && !isGuest && !isHoster && inCheckinTime &&
+                                    {!canceled && isJoined && !isHoster && inCheckinTime &&
                                         <AppButton
                                             special
                                             onClick={e => {

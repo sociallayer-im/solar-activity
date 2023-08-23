@@ -33,7 +33,6 @@ function EventCheckIn() {
     const [isJoin, setIsJoin] = useState(false)
     const [hoster, setHoster] = useState<Profile | null>(null)
     const [participants, setParticipants] = useState<Participants[]>([])
-    const [checkLogs, setCheckLogs] = useState<CheckLog[]>([])
     const [hasCheckin, setHasCheckin] = useState<string[]>([])
     const [isCheckLog, setIsCheckLog] = useState(false)
 
@@ -141,9 +140,24 @@ function EventCheckIn() {
                         <div className={'time'}>
                             {formatTime(event.start_time!)} - {formatTime(event.ending_time!)}
                         </div>
-                        {isHoster &&
+
+                        {!user.id &&
+                            <div className={'checkin-checkin-btn'}>
+                                <div className={'login-tips'}>{lang['Activity_login_des']}</div>
+                            </div>
+                        }
+
+                        {!isCheckLog && isHoster &&
+                            <div className={'checkin-checkin-btn'}>
+                                <AppButton special onClick={e => {
+                                    showEventCheckIn(event.id)
+                                }}>{lang['Activity_Scan_checkin']}</AppButton>
+                            </div>
+                        }
+
+                        { !isCheckLog && isJoin && !isHoster &&
                             <div className={'checkin-qrcode'}>
-                                <QRcode text={eventId || ''} size={[155, 155]}/>
+                                <QRcode text={`${eventId}#${user.id}` || ''} size={[155, 155]}/>
                                 {
                                     isCheckLog ?
                                         <div className={'text'}>{lang['Activity_Scan_punch_in']}</div>
@@ -152,19 +166,25 @@ function EventCheckIn() {
                             </div>
                         }
 
-                        {isJoin && !isHoster &&
+                        { isCheckLog && isHoster &&
+                            <div className={'checkin-qrcode'}>
+                                <QRcode text={`${eventId}#${user.id}` || ''} size={[155, 155]}/>
+                                {
+                                    isCheckLog ?
+                                        <div className={'text'}>{lang['Activity_Scan_punch_in']}</div>
+                                        : <div className={'text'}>{lang['Activity_Scan_checkin']}</div>
+                                }
+                            </div>
+                        }
+
+                        { isCheckLog && !isHoster &&
                             <div className={'checkin-checkin-btn'}>
                                 <AppButton special onClick={e => {
-                                    showEventCheckIn(event.id)
+                                    showEventCheckIn(event.id, true)
                                 }}>{lang['Activity_Scan_checkin']}</AppButton>
                             </div>
                         }
 
-                        {!user.id &&
-                            <div className={'checkin-checkin-btn'}>
-                                <div className={'login-tips'}>{lang['Activity_login_des']}</div>
-                            </div>
-                        }
 
                         {!!user.id && !isJoin && !isHoster && !isCheckLog &&
                             <div className={'checkin-checkin-btn'}>
