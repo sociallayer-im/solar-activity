@@ -45,6 +45,7 @@ interface Draft {
     max_participants: number,
     min_participants: number,
     enable_min_participants: boolean,
+    enable_max_participants: boolean,
     enable_guest: boolean,
     guests: string[],
     tags: string[],
@@ -157,6 +158,7 @@ function CreateEvent(props: CreateEventPageProps) {
                 creator: creator,
                 guests: guests,
                 enable_min_participants: enableMinParticipants,
+                enable_max_participants: enableMaxParticipants,
                 enable_guest: enableGuest,
                 start_time: start,
                 end_time: ending,
@@ -176,15 +178,17 @@ function CreateEvent(props: CreateEventPageProps) {
                 setContent(draft.content)
 
                 setOnlineUrl(draft.online_location || '')
+
                 if (draft.max_participants) {
                     setMaxParticipants(draft.max_participants)
-                    setEnableMaxParticipants(true)
                 }
+
                 if (draft.min_participants) {
                     setMinParticipants(draft.min_participants)
                 }
 
-                setEnableMinParticipants(!!draft.enable_min_participants)
+                setEnableMinParticipants(draft.enable_min_participants)
+                setEnableMaxParticipants(draft.enable_max_participants)
 
                 if (draft.guests) {
                     setGuests(draft.guests)
@@ -260,10 +264,15 @@ function CreateEvent(props: CreateEventPageProps) {
             if (event.max_participant) {
                 setMaxParticipants(event.max_participant)
                 setEnableMaxParticipants(true)
+            } else {
+                setEnableMaxParticipants(false)
             }
+
             if (event.min_participant) {
                 setMinParticipants(event.min_participant)
                 setEnableMinParticipants(true)
+            } else  {
+                setEnableMinParticipants(false)
             }
 
             if (event.participants) {
@@ -343,6 +352,7 @@ function CreateEvent(props: CreateEventPageProps) {
         creator,
         enableGuest,
         enableMinParticipants,
+        enableMaxParticipants,
         formReady,
         eventType
     ])
