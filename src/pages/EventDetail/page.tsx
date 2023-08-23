@@ -375,12 +375,13 @@ function EventDetail() {
                                         <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
                                     }
                                 </div>
-                                : <div className={'center'}>
+                                :
+                                <div className={'center'}>
                                     {canceled &&
                                         <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
                                     }
 
-                                    { !canceled && isJoined && !outOfDate && !hoster &&
+                                    { !canceled && isJoined && !outOfDate && !isHoster &&
                                         <AppButton
                                             onClick={e => {
                                                 addToCalender({
@@ -422,7 +423,7 @@ function EventDetail() {
                                         }</AppButton>
                                     }
 
-                                    {!canceled && isJoined && !isGuest && !hoster && inCheckinTime &&
+                                    {!canceled && isJoined && !isGuest && !isHoster && inCheckinTime &&
                                         <AppButton
                                             special
                                             onClick={e => {
