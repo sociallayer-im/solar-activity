@@ -1521,7 +1521,9 @@ export interface Event {
     online_location: null | string,
     event_site_id?: null | number,
     event_site?: EventSites,
-    event_type: 'event' | 'checklog'
+    event_type: 'event' | 'checklog',
+    wechat_contact_group?: null | string,
+    wechat_contact_person?: null | string,
 
     owner_id: number,
     created_at: string,

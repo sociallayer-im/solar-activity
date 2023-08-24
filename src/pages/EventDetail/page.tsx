@@ -32,6 +32,8 @@ import PageBack from "../../components/base/PageBack";
 import ListCheckLog from "../../components/compose/ListCheckLog/ListCheckLog";
 import useCalender from "../../hooks/addToCalender";
 import ListCheckinUser from "../../components/compose/ListCheckinUser/ListCheckinUser";
+import useShowImage from "../../hooks/showImage/showImage";
+import useCopy from "../../hooks/copy";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -45,6 +47,8 @@ function EventDetail() {
     const {user} = useContext(userContext)
     const {showLoading, showToast, showEventCheckIn} = useContext(DialogsContext)
     const { addToCalender }  = useCalender()
+    const { showImage } = useShowImage()
+    const { copy } = useCopy()
 
 
     const [tab, setTab] = useState(1)
@@ -318,6 +322,22 @@ function EventDetail() {
                             {tab === 1 &&
                                 <div className={'tab-contain'}>
                                     <div className={'center'}>
+                                        { !!event.wechat_contact_group &&
+                                            <>
+                                                <div className={'wechat-title'}>{lang['Activity_Detail_Wechat']}</div>
+                                                {
+                                                    !!event.wechat_contact_person &&
+                                                    <div className={'wechat-account'}>{lang['Activity_Detail_Account']}
+                                                        <span onClick={e => { copy(event.wechat_contact_person!);showToast('Copied!')}}>
+                                                        {event.wechat_contact_person}
+                                                        </span>
+                                                    </div>
+                                                }
+                                                <div className={'wechat-contact-group'} onClick={e => {showImage(event.wechat_contact_group!)}}>
+                                                    <img src={event.wechat_contact_group} alt=""/>
+                                                </div>
+                                            </>
+                                        }
                                         <ReasonText className={'event-des'} text={event.content}/>
                                     </div>
                                 </div>}

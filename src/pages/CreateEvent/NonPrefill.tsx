@@ -33,7 +33,7 @@ import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
-import {c} from "msw/lib/glossary-de6278a9";
+import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/UploadWecatQrcode";
 
 interface Draft {
     cover: string,
@@ -54,6 +54,8 @@ interface Draft {
     start_time: string,
     end_time: string,
     event_type: 'event' | 'checklog',
+    wechat_contact_group: string,
+    wechat_contact_person: string,
 }
 
 interface CreateEventPageProps {
@@ -96,6 +98,8 @@ function CreateEvent(props: CreateEventPageProps) {
     const [guests, setGuests] = useState<string[]>([''])
     const [label, setLabel] = useState<string[]>([])
     const [badgeId, setBadgeId] = useState<null | number>(null)
+    const [wechatImage, setWechatImage] = useState('')
+    const [wechatAccount, setWechatAccount] = useState('')
 
     const [start, setStart] = useState(initTime[0].toISOString())
     const [ending, setEnding] = useState(initTime[1].toISOString())
@@ -163,6 +167,8 @@ function CreateEvent(props: CreateEventPageProps) {
                 start_time: start,
                 end_time: ending,
                 event_type: eventType,
+                wechat_contact_group: wechatImage,
+                wechat_contact_person: wechatAccount,
             }
             window.localStorage.setItem('event_draft', JSON.stringify(draft))
         }
@@ -202,6 +208,14 @@ function CreateEvent(props: CreateEventPageProps) {
 
                 if (draft.creator) {
                     setCreator(draft.creator)
+                }
+
+                if (draft.wechat_contact_group) {
+                    setWechatImage(draft.wechat_contact_group)
+                }
+
+                if (draft.wechat_contact_person) {
+                    setWechatAccount(draft.wechat_contact_person)
                 }
 
                 setTimeout(() => {
@@ -294,6 +308,14 @@ function CreateEvent(props: CreateEventPageProps) {
                 const profile = await getProfile({id: event.owner_id})
                 setCreator(profile)
             }
+
+            if (event.wechat_contact_group) {
+                setWechatImage(event.wechat_contact_group)
+            }
+
+            if (event.wechat_contact_person) {
+                setWechatAccount(event.wechat_contact_person)
+            }
         }
 
         async function fetchEventDetail() {
@@ -354,7 +376,9 @@ function CreateEvent(props: CreateEventPageProps) {
         enableMinParticipants,
         enableMaxParticipants,
         formReady,
-        eventType
+        eventType,
+        wechatImage,
+        wechatAccount
     ])
 
     // 检查event_site在设置的event.start_time和event.ending_time否可用
@@ -469,6 +493,8 @@ function CreateEvent(props: CreateEventPageProps) {
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             event_type: eventType,
+            wechat_contact_group: wechatImage || undefined,
+            wechat_contact_person: wechatAccount || undefined,
 
             auth_token: user.authToken || ''
         }
@@ -549,6 +575,8 @@ function CreateEvent(props: CreateEventPageProps) {
             online_location: onlineUrl || null,
             auth_token: user.authToken || '',
             event_type: eventType,
+            wechat_contact_group: wechatImage || undefined,
+            wechat_contact_person: wechatAccount || undefined,
         }
 
         const unloading = showLoading(true)
@@ -788,6 +816,27 @@ function CreateEvent(props: CreateEventPageProps) {
                                     </div>
                                 }
                             </div>}
+
+                        <div className={'input-area'}>
+                            <div className={'input-area-title'}>{lang['Activity_Form_Wechat']}</div>
+                            <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
+                            <UploadWecatQrcode  confirm={(img => {setWechatImage(img)})}
+                                                imageSelect={wechatImage} />
+                        </div>
+
+                        { !!wechatImage &&
+                            <div className={'input-area'}>
+                                <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
+                                <AppInput
+                                    clearable
+                                    value={wechatAccount}
+                                    errorMsg={''}
+                                    placeholder={'your Wechat'}
+                                    onChange={(e) => {
+                                        setWechatAccount(e.target.value)
+                                    }}/>
+                            </div>
+                        }
 
                         {isEditMode ?
                             <AppButton kind={BTN_KIND.primary}
