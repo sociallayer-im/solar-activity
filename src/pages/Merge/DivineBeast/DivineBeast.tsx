@@ -6,6 +6,7 @@ import {Badgelet, divineBeastMerge, divineBeastRemerge, uploadImage } from "../.
 import UserContext from "../../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../../components/provider/DialogProvider/DialogsContext";
 import {useSwiper} from "swiper/react";
+import useCopy from "../../../hooks/copy";
 
 export interface BeastMetadata {
     category: number
@@ -33,6 +34,13 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
     const [status, setStatus] = useState<'hide' | 'build' | 'complete'>('hide')
     const [Post, setPost] = useState<any | null>(null)
     const [showSuccessAnimation, setSuccessAnimation] = useState(false)
+    const {copy} = useCopy()
+
+    const shareBeast = () => {
+        const link = `https://app.sola.day/badgelet/${badgelet!.id}`
+        copy(link)
+        showToast('分享链接已复制到剪贴板')
+    }
 
     const setSelected = (targetItem: BeastItemInfo) => {
         if (selectedItem.find(item => item.name === targetItem!.name)) {
@@ -229,7 +237,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
 
     return (<div className={'divine-beast'}>
         { showSuccessAnimation && <img className={'success-animation'} src="/images/merge/success_animation.gif" alt=""/>}
-        <div className={status === 'complete' ? 'border border-complete' : 'border'}>
+        <div className={'border border-complete'}>
             {
                 !!info &&  <div className={'window'}>
                     {
@@ -273,6 +281,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             <div className={'complete'}>
                                 <div className={'beast-name'}>{info!.complete}</div>
                                 <BeastBtn><a href={`https://app.sola.day/badgelet/${badgelet!.id}`} target={'_blank'}>查看徽章详情</a></BeastBtn>
+                                <div className={'share-beast'} onClick={() => {shareBeast()}}>分享神兽 <i className={'icon-icon_share'}></i></div>
                             </div>
                         }
                     </div>
@@ -289,9 +298,10 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
 
                     {status !== 'complete' && status === 'build' &&
                         <div className={'btns'}>
-                            <BeastBtn loading={loading} background={'#F99351'} onClick={e => {
+                            <BeastBtn loading={loading} background={'#DFC84E'} onClick={e => {
                                 reMerge()
                             }}>{ selectedItem.length ? `消耗 POAP × ${selectedItem.length} 合成神兽` : '选择元素合成神兽'}</BeastBtn>
+                            <a className={'to-detail'} href={`https://app.sola.day/badgelet/${badgelet!.id}`} target={'_blank'}>{'查看徽章详情 >'}</a>
                         </div>
                     }
                 </div>
