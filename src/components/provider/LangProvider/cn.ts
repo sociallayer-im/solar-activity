@@ -250,6 +250,7 @@ const langCN: LangConfig = {
   Activity_Form_Badge: '活动徽章',
   Activity_Form_Wechat: '活动微信群',
   Activity_Form_Wechat_Des: '此二维码将会在活动创建完成后展示',
+  Activity_Form_Wechat_Account: '此二维码失效，参与者可以通过微信找到发起人',
   Activity_Form_Badge_Des: '活动参与者签到后，活动结束可自动收到徽章',
   Activity_Form_Badge_Select: '选择徽章',
   Activity_Form_wechat_Select: '选择图片',

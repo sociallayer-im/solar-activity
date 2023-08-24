@@ -826,7 +826,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         { !!wechatImage &&
                             <div className={'input-area'}>
-                                <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
+                                <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Account']}</div>
                                 <AppInput
                                     clearable
                                     value={wechatAccount}
