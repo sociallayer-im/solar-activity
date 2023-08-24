@@ -26,21 +26,21 @@ function Beast01(props: BeastProps, ref: any) {
                         </g>
                         <defs>
                             <linearGradient id="paint0_linear_1691_15727" x1="146.737" y1="86.8803" x2="146.737" y2="62.9001" gradientUnits="userSpaceOnUse">
-                                <stop strokeMiterlimit="#C59D62"/>
-                                <stop offset="1" strokeMiterlimit="#C9BC9C"/>
+                                <stop stopColor="#C59D62"/>
+                                <stop offset="1" stopColor="#C9BC9C"/>
                             </linearGradient>
                             <linearGradient id="paint1_linear_1691_15727" x1="127.638" y1="68.6406" x2="152.016" y2="68.6406" gradientUnits="userSpaceOnUse">
-                                <stop strokeMiterlimit="#9FA0A0"/>
-                                <stop offset="0.58" strokeMiterlimit="#D4DADF"/>
-                                <stop offset="1" strokeMiterlimit="#DCDDDD"/>
+                                <stop stopColor="#9FA0A0"/>
+                                <stop offset="0.58" stopColor="#D4DADF"/>
+                                <stop offset="1" stopColor="#DCDDDD"/>
                             </linearGradient>
                             <linearGradient id="paint2_linear_1691_15727" x1="131.986" y1="69.6616" x2="131.986" y2="28.0896" gradientUnits="userSpaceOnUse">
-                                <stop strokeMiterlimit="#C59D62"/>
-                                <stop offset="1" strokeMiterlimit="#C9BC9C"/>
+                                <stop stopColor="#C59D62"/>
+                                <stop offset="1" stopColor="#C9BC9C"/>
                             </linearGradient>
                             <linearGradient id="paint3_linear_1691_15727" x1="77.0894" y1="64.5406" x2="89.2376" y2="64.5406" gradientUnits="userSpaceOnUse">
-                                <stop strokeMiterlimit="#3F3B3A"/>
-                                <stop offset="1" strokeMiterlimit="#050C05"/>
+                                <stop stopColor="#3F3B3A"/>
+                                <stop offset="1" stopColor="#050C05"/>
                             </linearGradient>
                             <clipPath id="clip0_1691_15727">
                                 <rect width="91" height="59" fill="white" transform="translate(77 28)"/>
