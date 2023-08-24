@@ -102,7 +102,7 @@ function useBeastConfig() {
         {
             id: 3,
             complete: '程序猿',
-            category: '基础程序猿',
+            category: '基础猿',
             description: '善变换，好奇善异\n常有窥探之心',
             post: Beast03,
             cost: [3, 1],
@@ -162,7 +162,7 @@ function useBeastConfig() {
         {
             id: 4,
             complete: '设计鲺',
-            category: '基础设计鲺',
+            category: '基础鲺',
             description: '游于山川水溪\n常不可寻',
             post: Beast04,
             cost: [3, 1],
