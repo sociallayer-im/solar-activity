@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useState} from 'react'
 import LangContext from '../../provider/LangProvider/LangContext'
@@ -71,6 +71,9 @@ function HomeUserPanel() {
                 </div>
             </div>
         </div>
+        <Link to={'/merge'} className={'beast-banner'}>
+            <img src="/images/merge/beast_ad.jpg" alt=""/>
+        </Link>
         <div className={'center'}>
             <div className={'calendar-btn'} onClick={e => {
                 toCalendar()
