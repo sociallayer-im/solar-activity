@@ -106,7 +106,6 @@ function Merge() {
         <DivineBeast hide={4} poap={resource?.poap_count || 0} host={resource?.host_count || 0} onMerge={() => {getResource()}} />,
     ]
 
-    console.log('beastListbeastListbeastList', beastList)
 
     return (<div>
         <div className={'merge-page'}>

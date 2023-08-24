@@ -1947,6 +1947,7 @@ export interface DivineBeastRmergeProps {
     badgelet_id: number,
     metadata: string,
     image_url:string,
+    value: number,
 }
 
 export async function divineBeastRemerge (props: DivineBeastRmergeProps) {

@@ -123,6 +123,7 @@ function DivineBeast(props: { badgelet?: Badgelet, hide?: number, poap?: number,
                             auth_token: user.authToken || '',
                             badgelet_id: badgelet!.id,
                             image_url: newPic,
+                            value: selectedItem.length,
                             metadata: JSON.stringify({
                                 category: info.id,
                                 description: `你好奇于山海坞的神秘，已组织过1次山海坞探险或参加过3次坞中神兽的秘密聚会。现在，山民海民们邀请你加入他们，成为山海坞的一员，将象征身份的徽章，颁发给你。愿你：${info.description}` + ' @https://event.sola.day/merge '  ,
