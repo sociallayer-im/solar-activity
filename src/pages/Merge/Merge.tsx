@@ -207,7 +207,7 @@ function Merge() {
                         </svg>
                     </div>
 
-                    <div className={'beast-swiper'} style={{height: '470px'}}>
+                    <div className={'beast-swiper'} style={{height: '520px'}}>
                         {
                             !loading && <AppSwiper
                                 initIndex={swiperInitIndex}
