@@ -120,7 +120,7 @@ function Calendar() {
         async function getProfileInfo(id?: number, domain?: string) {
             return await getProfile({id, domain})
         }
-        
+
         async function fetchData() {
             const unload = showLoading()
             const selected = new Date(selectedDate.value)
