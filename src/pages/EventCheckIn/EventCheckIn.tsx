@@ -63,9 +63,11 @@ function EventCheckIn() {
                 }) || [])
                 setHasCheckin(eventDetails?.participants?.filter(item => item.status === 'checked').map(item => item.profile.domain!) || [])
 
-                if (eventDetails.host_info) {
-                    const isDomain = eventDetails.host_info.indexOf('.') > -1
-                    const profile = await getProfile(isDomain ? {domain: eventDetails.host_info} : {id: Number(eventDetails.host_info)})
+                if (eventDetails.host_info || eventDetails.group_id) {
+                    const isDomain = eventDetails.host_info && eventDetails.host_info.indexOf('.') > -1
+                    const profile = await getProfile(isDomain
+                        ? {domain: eventDetails.host_info!}
+                        : {id: eventDetails.group_id || Number(eventDetails.host_info)})
                     if (profile) {
                         setHoster(profile)
                     }

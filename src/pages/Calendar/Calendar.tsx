@@ -134,16 +134,19 @@ function Calendar() {
                     start_time_from: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0 , 0 ).getTime() / 1000,
                     start_time_to: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59 ).getTime() / 1000,
                     tag: selectedLabel[0] || undefined,
-                    page: 1
+                    page: 1,
+                    group_id: user.eventGroup?.id || undefined,
                 })
 
                 const task = res.map(item => {
                     if (item.host_info) {
-                        if (item.host_info?.indexOf('.') > -1) {
+                        if (item.host_info && item.host_info?.indexOf('.') > -1) {
                             return getProfileInfo(undefined, item.host_info)
                         } else {
                             return getProfileInfo(parseInt(item.host_info))
                         }
+                    } else if (item.group_id) {
+                        return getProfileInfo(item.group_id)
                     } else {
                         return getProfileInfo(item.owner_id)
                     }
@@ -170,7 +173,7 @@ function Calendar() {
         }
 
         fetchData()
-    }, [selectedDate, selectedLabel])
+    }, [selectedDate, selectedLabel, user.eventGroup])
 
     // start_time 和 end_time 相同的为同一组, 并且按照是否是自己的事件分组
     let groupedEvent: EventWithProfile[][] = []

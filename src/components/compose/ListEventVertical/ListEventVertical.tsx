@@ -12,6 +12,7 @@ import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
 import {Spinner} from "baseui/icon";
 import './ListEventVertical.less'
+import userContext from "../../provider/UserProvider/UserContext";
 
 
 function ListEventVertical() {
@@ -21,6 +22,7 @@ function ListEventVertical() {
     const [tab2Index, setTab2Index] = useState<'latest' | 'soon'>('latest')
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
+    const {user} = useContext(userContext)
 
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [labels, setLabels] = useState<string[]>([])
@@ -28,7 +30,7 @@ function ListEventVertical() {
 
     const getEvent = async (page: number) => {
         try {
-            let res = await queryRecommendEvent({page, rec: tab2Index})
+            let res = await queryRecommendEvent({page, rec: tab2Index, group_id: user.eventGroup?.id || undefined})
             if (selectTag[0]) {
                 res = res.filter(item => {
                     return item.tags?.includes(selectTag[0])
@@ -49,7 +51,7 @@ function ListEventVertical() {
 
     useEffect(() => {
         refresh()
-    }, [selectTag, tab2Index])
+    }, [selectTag, tab2Index, user.eventGroup])
 
     useEffect(() => {
         const getLabels = async () => {

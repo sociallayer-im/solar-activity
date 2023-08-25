@@ -13,6 +13,8 @@ function slotLang(str: string) {
 const langEN = {
   Nav_Wallet_Connect: 'Sign In',
   Nav_Wallet_Disconnect: 'Sign Out',
+  Nav_Badge_Page: 'Badge',
+  Nav_Event_Page: 'Event',
 
   Wallet_Title_MetaMask: 'Meta Mask',
   Wallet_Intro_MetaMask: 'Connect to your MetaMask Wallet Or injected explorer wallet',

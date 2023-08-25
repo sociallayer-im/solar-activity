@@ -200,15 +200,11 @@ function CreateEvent(props: CreateEventPageProps) {
                     setGuests(draft.guests)
                 }
 
-                setEnableGuest(!!draft.enable_guest)
+                setEnableGuest(draft.enable_guest)
 
                 setLabel(draft.tags ? draft.tags : [])
                 setBadgeId(draft.badge_id)
                 setEventType(draft.event_type || 'event')
-
-                if (draft.creator) {
-                    setCreator(draft.creator)
-                }
 
                 if (draft.wechat_contact_group) {
                     setWechatImage(draft.wechat_contact_group)
@@ -301,8 +297,8 @@ function CreateEvent(props: CreateEventPageProps) {
             setBadgeId(event.badge_id)
             setEventType(event.event_type || 'event')
 
-            if (event.host_info) {
-                const profile = await getProfile({id: Number(event.host_info)})
+            if (event.host_info || event.group_id) {
+                const profile = await getProfile({id: event.group_id || Number(event.host_info)})
                 setCreator(profile)
             } else {
                 const profile = await getProfile({id: event.owner_id})
@@ -489,7 +485,7 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            host_info: creator?.is_group ? creator?.id + '' : null,
+            group_id: creator?.is_group ? creator?.id : null,
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             event_type: eventType,
