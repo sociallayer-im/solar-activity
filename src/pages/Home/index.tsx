@@ -23,7 +23,6 @@ function Home() {
     const [tabIndex, setTabIndex] = useState('0')
     const [showMyCreate, setShowMyCreate] = useState(true)
     const [showMyAttend, setShowMyAttend] = useState(true)
-    const [ready, setReady] = useState(false)
 
     useEffect(() => {
         const myEvent = async () => {
@@ -38,10 +37,6 @@ function Home() {
                 }  else {
                     setTabIndex('1')
                 }
-
-                setTimeout(() => {
-                    setReady(true)
-                }, 100)
             } else {
                 setShowMyAttend(false)
                 setShowMyCreate(false)

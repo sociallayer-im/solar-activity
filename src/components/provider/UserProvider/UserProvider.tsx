@@ -19,7 +19,6 @@ export interface User {
     twitter: string | null,
     authToken: string | null,
     nickname: string | null,
-    eventGroup: null | Group
 }
 
 export interface UserContext {
@@ -42,7 +41,6 @@ const emptyUser: User = {
     twitter: null,
     authToken: null,
     nickname: null,
-    eventGroup: null
 }
 
 function UserProvider (props: UserProviderProps) {

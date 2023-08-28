@@ -11,7 +11,6 @@ const emptyUser: User = {
     twitter: null,
     authToken: null,
     nickname: null,
-    eventGroup: null,
 }
 
 const UserContext  = createContext<UserContextType>({

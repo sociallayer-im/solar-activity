@@ -7,6 +7,7 @@ import usePicture from "../../../hooks/pictrue";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import './HomeUserPanel.less'
 import AppButton from "../AppButton/AppButton";
+import {useParams} from "react-router-dom";
 
 
 function HomeUserPanel() {
@@ -17,6 +18,7 @@ function HomeUserPanel() {
     const {user} = useContext(UserContext)
     const {defaultAvatar} = usePicture()
     const {openConnectWalletDialog} = useContext(DialogsContext)
+    const {groupname} = useParams()
 
 
     const date = new Date().getDate()
@@ -41,7 +43,7 @@ function HomeUserPanel() {
     }
 
     const toCalendar = () => {
-        navigate('/calendar')
+        groupname ? navigate(`/calendar/${groupname}`) : navigate('/calendar')
     }
 
     return <div className={'home-user-panel'}>

@@ -20,7 +20,8 @@ import solas, {
     Profile,
     queryEvent,
     setEventBadge,
-    updateEvent
+    updateEvent,
+    queryUserGroup
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -119,6 +120,8 @@ function CreateEvent(props: CreateEventPageProps) {
     const [formReady, setFormReady] = useState(false)
     const location = useLocation()
     const [creating, setCreating] = useState(false)
+    const [myGroups, setMyGroup] = useState<Profile[]>([])
+    const [selectedGroup, setSelectedGroup] = useState<Profile | null>(null)
 
     const toNumber = (value: string, set: any) => {
         if (!value) {
@@ -257,6 +260,18 @@ function CreateEvent(props: CreateEventPageProps) {
     }, [badgeId])
 
     useEffect(() => {
+        async function getMyGroups() {
+           if ( user.id) {
+               const groups = await queryUserGroup({profile_id: user.id})
+               setMyGroup(groups)
+               setSelectedGroup(groups[0] || null)
+           }
+        }
+
+        getMyGroups()
+    }, [user.id])
+
+    useEffect(() => {
         async function prefillEventDetail(event: Event) {
             setCover(event.cover)
             setTitle(event.title)
@@ -297,8 +312,8 @@ function CreateEvent(props: CreateEventPageProps) {
             setBadgeId(event.badge_id)
             setEventType(event.event_type || 'event')
 
-            if (event.host_info || event.group_id) {
-                const profile = await getProfile({id: event.group_id || Number(event.host_info)})
+            if (event.host_info) {
+                const profile = await getProfile({id: Number(event.host_info)})
                 setCreator(profile)
             } else {
                 const profile = await getProfile({id: event.owner_id})
@@ -474,6 +489,11 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
+        if (!selectedGroup) {
+            showToast('必须选择一个从属组织')
+            return
+        }
+
         const props: CreateEventProps = {
             title: title.trim(),
             cover,
@@ -485,7 +505,7 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            group_id: creator?.is_group ? creator?.id : null,
+            group_id: selectedGroup.id,
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             event_type: eventType,
@@ -554,6 +574,11 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
+        if (!selectedGroup) {
+            showToast('必须选择一个从属组织')
+            return
+        }
+
         const saveProps: CreateEventProps = {
             id: props.eventId!,
             title: title.trim(),
@@ -573,6 +598,7 @@ function CreateEvent(props: CreateEventPageProps) {
             event_type: eventType,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
+            group_id: selectedGroup.id
         }
 
         const unloading = showLoading(true)
@@ -777,6 +803,20 @@ function CreateEvent(props: CreateEventPageProps) {
                                     value={creator}
                                     onChange={(res) => {
                                         setCreator(res)
+                                    }}/>
+                            </div>
+                        }
+
+                        {
+                            formReady && !!selectedGroup &&
+                            <div className='input-area'>
+                                <div className='input-area-title'>{'从属组织'}</div>
+                                <SelectCreator
+                                    data={myGroups}
+                                    groupFirst
+                                    value={selectedGroup}
+                                    onChange={(res) => {
+                                        setSelectedGroup(res)
                                     }}/>
                             </div>
                         }

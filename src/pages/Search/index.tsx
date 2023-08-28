@@ -44,9 +44,7 @@ function SearchPage() {
     return (<Layout>
         <div className='search-result-page'>
             <div className={'center'}>
-                <PageBack onClose={() => {
-                    navigate('/')
-                }}></PageBack>
+                <PageBack />
                 <div className={'event-search'}>
                     <AppInput
                         onKeyUp={e => { if (e.key === 'Enter') handleSearch(keywordState) }}

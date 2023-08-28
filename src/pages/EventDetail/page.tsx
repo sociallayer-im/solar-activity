@@ -15,7 +15,7 @@ import {
     ProfileSimple,
     punchIn,
     queryBadgeDetail,
-    queryEventDetail,
+    queryEventDetail, queryGroupDetail,
     queryMyEvent,
     queryUserGroup
 } from "../../service/solas";
@@ -65,6 +65,7 @@ function EventDetail() {
     const [guests, setGuests] = useState<ProfileSimple[]>([])
     const [badge, setBadge] = useState<Badge | null>(null)
     const [isChecklog, setIsChecklog] = useState(false)
+    const [eventGroup, setEventGroup] = useState<Group | null>(null)
 
     async function fetchData() {
         if (eventId) {
@@ -111,11 +112,12 @@ function EventDetail() {
             }
 
             let profile: Profile | Group | null
-            if (res.host_info || res.group_id) {
+            if (res.host_info) {
                 const isDomain = res.host_info && res.host_info.indexOf('.') > -1
                 profile = await getProfile(isDomain
                     ? {domain: res.host_info!}
-                    : {id: res.group_id || Number(res.host_info)})
+                    : {id: Number(res.host_info)})
+
                 if (profile) {
                     setHoster(profile)
                 }
@@ -124,6 +126,11 @@ function EventDetail() {
                 if (profile) {
                     setHoster(profile)
                 }
+            }
+
+            if (res.group_id) {
+                const group = await queryGroupDetail(res.group_id)
+                setEventGroup(group as Group)
             }
 
             if (res?.badge_id) {
@@ -170,11 +177,13 @@ function EventDetail() {
     const handleJoin = async () => {
         const unload = showLoading()
         try {
-            if (hoster?.group_event_visibility !== 'public') {
+            alert(eventGroup?.group_event_visibility)
+            if (eventGroup?.group_event_visibility !== 'public') {
                 const myGroup = await queryUserGroup({profile_id: user.id!})
                 const isMember = myGroup.some((item: Group) => item.id === hoster?.id)
                 if (!isMember) {
-                    showToast('The event is open to members of the group only')
+                    unload()
+                    showToast('Event only open to members of the group')
                     return
                 }
             }

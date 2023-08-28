@@ -8,7 +8,6 @@ import HorizontalList from "../../base/HorizontalList/HorizontalList";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
 import LangContext from "../../provider/LangProvider/LangContext";
 
-
 function ListRecommendedEvent() {
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -20,18 +19,11 @@ function ListRecommendedEvent() {
     const [showList, setShowList] = useState(true)
     const list = useRef<any>(null)
 
-
     const getMyEvent = async (page: number) => {
-        const res = await queryRecommendEvent({page: page, rec: 'top', group_id: user.eventGroup?.id || undefined})
+        const res = await queryRecommendEvent({page: page, rec: 'top'})
         setShowList(!(page === 1 && res.length === 0))
         return res
     }
-
-    useEffect(() => {
-        if (user.eventGroup) {
-            list.current?.refresh()
-        }
-    }, [user.eventGroup])
 
     return (<>
         { showList &&
