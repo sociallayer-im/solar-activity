@@ -261,10 +261,10 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         async function getMyGroups() {
-           if ( user.id) {
+           if (user.id && !isEditMode) {
                const groups = await queryUserGroup({profile_id: user.id})
                setMyGroup(groups)
-               setSelectedGroup(groups[0] || null)
+               setSelectedGroup(groups[0])
            }
         }
 
@@ -460,8 +460,20 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleCreate = async () => {
-        setCreating(true)
-        const unloading = showLoading(true)
+        if (!user.id) {
+            showToast('Please login first')
+            return
+        }
+
+        if (myGroups.length === 0) {
+            showToast('必须先加入一个组织')
+            return
+        }
+
+        if (!selectedGroup) {
+            showToast('请选择一个组织')
+            return
+        }
 
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
@@ -489,11 +501,6 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        if (!selectedGroup) {
-            showToast('必须选择一个从属组织')
-            return
-        }
-
         const props: CreateEventProps = {
             title: title.trim(),
             cover,
@@ -514,6 +521,9 @@ function CreateEvent(props: CreateEventPageProps) {
 
             auth_token: user.authToken || ''
         }
+
+        setCreating(true)
+        const unloading = showLoading(true)
 
         try {
             const newEvent = await solas.createEvent(props)
@@ -548,6 +558,11 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleSave = async () => {
+        if (!user.id) {
+            showToast('Please login first')
+            return
+        }
+
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
             window.location.href = location.pathname + '#SiteError'
@@ -574,11 +589,6 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        if (!selectedGroup) {
-            showToast('必须选择一个从属组织')
-            return
-        }
-
         const saveProps: CreateEventProps = {
             id: props.eventId!,
             title: title.trim(),
@@ -592,13 +602,11 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
             auth_token: user.authToken || '',
             event_type: eventType,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
-            group_id: selectedGroup.id
         }
 
         const unloading = showLoading(true)
@@ -807,13 +815,11 @@ function CreateEvent(props: CreateEventPageProps) {
                             </div>
                         }
 
-                        {
-                            formReady && !!selectedGroup &&
+                        { formReady && !!selectedGroup &&
                             <div className='input-area'>
                                 <div className='input-area-title'>{'从属组织'}</div>
                                 <SelectCreator
                                     data={myGroups}
-                                    groupFirst
                                     value={selectedGroup}
                                     onChange={(res) => {
                                         setSelectedGroup(res)

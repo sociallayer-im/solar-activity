@@ -100,6 +100,8 @@ function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
     useEffect(() => {
         if (!user.id) return
         if (list.length) return
+        if (props.data) return
+
         async function getList () {
             const profile = await solas.getProfile({ id: user.id! })
             if (!profile) return
