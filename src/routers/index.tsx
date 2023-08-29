@@ -43,9 +43,8 @@ function AppRouter () {
                 <Route path="/:groupname" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/regist" element={<Regist />} />
-                <Route path="/calendar" element={<Calendar />} />
-                <Route path="/calendar/:groupname" element={<Calendar />} />
-                <Route path="/event/create" element={<CreateEvent />} />
+                <Route path="/:groupname/calendar" element={<Calendar />} />
+                <Route path="/:groupname/create" element={<CreateEvent />} />
                 <Route path="/event/edit/:eventId" element={<CreateEvent />} />
                 <Route path="/checkin/:eventId" element={<EventCheckIn />} />
                 <Route path="/event/:eventId" element={<EventDetail />} />
@@ -54,7 +53,7 @@ function AppRouter () {
                 <Route path="/merge" element={<Merge />} />
 
                 <Route path="/platform/login" element={<PlatformLogin />} />
-                <Route path="*" element={<Error />} />
+                <Route path="/error" element={<Error />} />
             </Routes>
         </Suspense>
     )

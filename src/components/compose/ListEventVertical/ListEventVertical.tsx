@@ -12,6 +12,7 @@ import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
 import './ListEventVertical.less'
 import userContext from "../../provider/UserProvider/UserContext";
+import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 
 
 function ListEventVertical() {
@@ -23,7 +24,7 @@ function ListEventVertical() {
     const {showLoading, showToast} = useContext(DialogsContext)
     const {user} = useContext(userContext)
     const {groupname} = useParams()
-    const [targetGroup, setTargetGroup] = useState<Profile | null>(null)
+    const {ready, eventGroup} = useContext(EventHomeContext)
 
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [labels, setLabels] = useState<string[]>([])
@@ -31,7 +32,7 @@ function ListEventVertical() {
 
     const getEvent = async (page: number) => {
         try {
-            let res = await queryRecommendEvent({page, rec: tab2Index, group_id: targetGroup?.id || undefined})
+            let res = await queryRecommendEvent({page, rec: tab2Index, group_id: eventGroup?.id || undefined})
             if (selectTag[0]) {
                 res = res.filter(item => {
                     return item.tags?.includes(selectTag[0])
@@ -52,19 +53,7 @@ function ListEventVertical() {
 
     useEffect(() => {
         refresh()
-    }, [selectTag, tab2Index, targetGroup])
-
-    useEffect(() => {
-        const getGroup = async () => {
-            if (groupname) {
-                const res = await getProfile({username: groupname})
-                setTargetGroup(res)
-            } else {
-                setTargetGroup(null)
-            }
-        }
-        getGroup()
-    }, [groupname])
+    }, [selectTag, tab2Index, eventGroup])
 
     useEffect(() => {
         const getLabels = async () => {

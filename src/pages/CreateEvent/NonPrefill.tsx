@@ -35,6 +35,7 @@ import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
 import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/UploadWecatQrcode";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 
 interface Draft {
     cover: string,
@@ -87,6 +88,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [searchParams, _] = useSearchParams()
     const [creator, setCreator] = useState<Group | Profile | null>(null)
     const {lang} = useContext(LangContext)
+    const {eventGroup, joined} = useContext(EventHomeContext)
 
     const [cover, setCover] = useState('')
     const [title, setTitle] = useState('')
@@ -120,8 +122,6 @@ function CreateEvent(props: CreateEventPageProps) {
     const [formReady, setFormReady] = useState(false)
     const location = useLocation()
     const [creating, setCreating] = useState(false)
-    const [myGroups, setMyGroup] = useState<Profile[]>([])
-    const [selectedGroup, setSelectedGroup] = useState<Profile | null>(null)
 
     const toNumber = (value: string, set: any) => {
         if (!value) {
@@ -232,6 +232,13 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     useEffect(() => {
+       if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined ) {
+           navigate('/')
+           return
+       }
+    }, [joined, eventGroup])
+
+    useEffect(() => {
         const checkUrl = (url: string) => {
             if (!url) {
                 setOnlineUrlError('')
@@ -258,18 +265,6 @@ function CreateEvent(props: CreateEventPageProps) {
 
         fetchBadgeDetail()
     }, [badgeId])
-
-    useEffect(() => {
-        async function getMyGroups() {
-           if (user.id && !isEditMode) {
-               const groups = await queryUserGroup({profile_id: user.id})
-               setMyGroup(groups)
-               setSelectedGroup(groups[0])
-           }
-        }
-
-        getMyGroups()
-    }, [user.id])
 
     useEffect(() => {
         async function prefillEventDetail(event: Event) {
@@ -465,12 +460,7 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        if (myGroups.length === 0) {
-            showToast('必须先加入一个组织')
-            return
-        }
-
-        if (!selectedGroup) {
+        if (!eventGroup) {
             showToast('请选择一个组织')
             return
         }
@@ -512,7 +502,7 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            group_id: selectedGroup.id,
+            group_id: eventGroup.id,
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             event_type: eventType,
@@ -811,18 +801,6 @@ function CreateEvent(props: CreateEventPageProps) {
                                     value={creator}
                                     onChange={(res) => {
                                         setCreator(res)
-                                    }}/>
-                            </div>
-                        }
-
-                        { formReady && !!selectedGroup &&
-                            <div className='input-area'>
-                                <div className='input-area-title'>{'从属组织'}</div>
-                                <SelectCreator
-                                    data={myGroups}
-                                    value={selectedGroup}
-                                    onChange={(res) => {
-                                        setSelectedGroup(res)
                                     }}/>
                             </div>
                         }

@@ -13,6 +13,7 @@ import EventLabels from "../../components/base/EventLabels/EventLabels";
 import {getLabelColor} from "../../hooks/labelColor";
 import PageBack from "../../components/base/PageBack";
 import {useParams} from "react-router-dom";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 
 interface EventWithProfile extends Event {
     profile: Profile | null
@@ -38,9 +39,8 @@ function Calendar() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const [labels, setLabels] = useState<string[]>([])
-    const [targetGroup, setTargetGroup] = useState<Profile | null>(null)
     const {groupname} = useParams()
-    const [ready, setReady] = useState(false)
+    const {eventGroup, setEventGroup, findGroup, ready} = useContext(EventHomeContext)
 
     const monthName = langType === 'en'
         ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -82,22 +82,14 @@ function Calendar() {
 
     useEffect(() => {
         async function fetchData1() {
-            if (groupname) {
-                const group = await getProfile({username: groupname})
-                if (group) {
-                    setTargetGroup(group)
-                    setReady(true)
-                } else {
-                    navigate('/calendar')
-                }
-            } else {
-                setReady(true)
-                setTargetGroup(null)
+            if (groupname && ready) {
+                const group = findGroup(groupname)
+                setEventGroup(group)
             }
         }
 
         fetchData1()
-    }, [groupname])
+    }, [groupname, ready])
 
     useEffect(() => {
         async function getProfileInfo(id?: number, domain?: string) {
@@ -114,7 +106,7 @@ function Calendar() {
                     start_time_to: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59 ).getTime() / 1000,
                     tag: selectedLabel[0] || undefined,
                     page: 1,
-                    group_id: targetGroup?.id || undefined,
+                    group_id: eventGroup?.id || undefined,
                 })
 
                 if (res.length === 0) {
@@ -156,7 +148,7 @@ function Calendar() {
         }
 
         fetchData()
-    }, [selectedDate, selectedLabel, targetGroup, ready])
+    }, [selectedDate, selectedLabel, eventGroup, ready])
 
     // 一个今年1月1日到12月31日时间戳的数组
     const dateList: DateItem[] = Array.from({length: 365}, (v, k) => k + 1).map(item => {
