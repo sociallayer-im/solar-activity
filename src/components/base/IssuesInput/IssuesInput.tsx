@@ -29,7 +29,6 @@ function IssuesInput (props: IssuesInputProps) {
             if (timeout.current) {
                 clearTimeout(timeout.current)
             }
-            return
         }
 
 
