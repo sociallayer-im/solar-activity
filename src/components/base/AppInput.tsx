@@ -58,7 +58,9 @@ interface AppInputProps  {
     startEnhancer?: () => ReactNode,
     maxLength?: number,
     style?: any
-    autoFocus?: boolean
+    autoFocus?: boolean,
+    onFocus?: (...rest: any[]) => any
+    onBlur?: (...rest: any[]) => any
 }
 
 /**
@@ -109,6 +111,8 @@ export default function AppInput(props: AppInputProps) {
                 startEnhancer={ props.startEnhancer }
                 endEnhancer={ props.endEnhancer }
                 autoFocus={ props.autoFocus || false }
+                onFocus={ (e) => { if (props.onFocus) { props.onFocus(e) } } }
+                onBlur={ (e) => { if (props.onBlur) { props.onBlur(e) } } }
             />
             {   props.errorMsg ?
                 <div className={css(errorStyle)}>{ props.errorMsg }</div>
