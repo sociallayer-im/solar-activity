@@ -29,12 +29,20 @@ function IssuesInput (props: IssuesInputProps) {
             if (timeout.current) {
                 clearTimeout(timeout.current)
             }
+            return
         }
+
+
 
         setShowSearchRes(index)
         const copyValue = [...props.value]
         copyValue[index] = newValue
         props.onChange(copyValue)
+
+        console.log('newValue', newValue)
+        console.log('copyValue', copyValue)
+        console.log('index', index)
+
         if (newValue.length >= 3) {
            if (timeout.current) {
                clearTimeout(timeout.current)
@@ -122,8 +130,8 @@ function IssuesInput (props: IssuesInputProps) {
                    <div className={'search-res'}>
                        <div className={'shell'} onClick={e => { hideSearchRes() }}></div>
                        {
-                            searchRes.map((item, index) => {
-                                return <div className={'res-item'} onClick={e => { onChange(item.domain || '', index); hideSearchRes()}}>
+                            searchRes.map((item, index2) => {
+                                return <div className={'res-item'} key={index2} onClick={e => { onChange(item.domain || '', index); hideSearchRes()}}>
                                     <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
                                     <div>{item.nickname || item.username }({item.domain || item.email || item.address})</div>
                                 </div>
