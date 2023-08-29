@@ -18,8 +18,9 @@ function ProfileMenu () {
         logOut()
     }
 
+    const home = import.meta.env.VITE_SOLAS_HOME
     const toProfile = () => {
-       window.location.href=`https://app.sociallayer.im/profile/${user.userName}`
+       window.location.href=`${home}/profile/${user.userName}`
     }
 
     const menuContent = (close: any) => <>
