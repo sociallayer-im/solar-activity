@@ -1,4 +1,3 @@
-import {useNavigate} from 'react-router-dom'
 import {useContext, useEffect, useState} from 'react'
 import './Calendar.less'
 import Layout from "../../components/Layout/Layout";
@@ -12,6 +11,7 @@ import Empty from "../../components/base/Empty";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import {getLabelColor} from "../../hooks/labelColor";
 import PageBack from "../../components/base/PageBack";
+import {useLocation, useSearchParams, useNavigate} from "react-router-dom";
 
 interface EventWithProfile extends Event {
     profile: Profile | null
@@ -37,20 +37,23 @@ function Calendar() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const [labels, setLabels] = useState<string[]>([])
+    const [searchParams] = useSearchParams()
+    const location = useLocation()
 
     const monthName = langType === 'en'
         ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月']
 
     const now = new Date()
+    const selectedDateFromParams = searchParams.get('time') ? new Date(Number(searchParams.get('time'))) : now
+    const selectedDateItem = {
+        value: selectedDateFromParams.toISOString(),
+        date: selectedDateFromParams.getDate(),
+        day: dayName[selectedDateFromParams.getDay()],
+        monthName: monthName[selectedDateFromParams.getMonth()],
+    }
 
-    const [selectedDate, setSelectedDate] = useState<DateItem>({
-        value: now.toISOString(),
-        date: now.getDate(),
-        day: dayName[now.getDay()],
-        monthName: monthName[now.getMonth()],
-
-    })
+    const [selectedDate, setSelectedDate] = useState<DateItem>(selectedDateItem)
 
     const [currDate, _] = useState<DateItem>({
         value: now.toISOString(),
@@ -59,6 +62,17 @@ function Calendar() {
         monthName: monthName[now.getMonth()],
 
     })
+
+    useEffect(() => {
+        const selectedDateFromParams = searchParams.get('time') ? new Date(Number(searchParams.get('time'))) : now
+        const selectedDateItem = {
+            value: selectedDateFromParams.toISOString(),
+            date: selectedDateFromParams.getDate(),
+            day: dayName[selectedDateFromParams.getDay()],
+            monthName: monthName[selectedDateFromParams.getMonth()],
+        }
+        setSelectedDate(selectedDateItem)
+    }, [searchParams.get('time')])
 
     useEffect(() => {
         async function fetchData() {
@@ -102,6 +116,8 @@ function Calendar() {
         }
 
         return <div className={className} onClick={e => {
+            const href = location.pathname + '?time=' + new Date(item.value).getTime().toString()
+            navigate(href)
             setSelectedDate(item)
         }}>
             <div>{showMonth ? item.monthName : ''}</div>
@@ -204,7 +220,7 @@ function Calendar() {
         <div className={'calendar-page'}>
             <div className={'page-title'}>
                 <div className={'center'}>
-                    <PageBack onClose={() => { navigate('/')}} />
+                    <PageBack />
                 </div>
                 <div className={'center'}>
                     <div className={'left'}>{lang['Activity_Calendar']}</div>
