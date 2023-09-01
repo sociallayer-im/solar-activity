@@ -1,17 +1,18 @@
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {getHotTags, queryRecommendEvent, Event} from "../../../service/solas";
+import {Event, getHotTags, getProfile, Profile, queryRecommendEvent} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import scrollToLoad from "../../../hooks/scrollToLoad";
-import {Spinner} from "baseui/icon";
 import './ListEventVertical.less'
+import userContext from "../../provider/UserProvider/UserContext";
+import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 
 
 function ListEventVertical() {
@@ -21,6 +22,9 @@ function ListEventVertical() {
     const [tab2Index, setTab2Index] = useState<'latest' | 'soon'>('latest')
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
+    const {user} = useContext(userContext)
+    const {groupname} = useParams()
+    const {ready, eventGroup} = useContext(EventHomeContext)
 
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [labels, setLabels] = useState<string[]>([])
@@ -28,7 +32,7 @@ function ListEventVertical() {
 
     const getEvent = async (page: number) => {
         try {
-            let res = await queryRecommendEvent({page, rec: tab2Index})
+            let res = await queryRecommendEvent({page, rec: tab2Index, group_id: eventGroup?.id || undefined})
             if (selectTag[0]) {
                 res = res.filter(item => {
                     return item.tags?.includes(selectTag[0])
@@ -49,7 +53,7 @@ function ListEventVertical() {
 
     useEffect(() => {
         refresh()
-    }, [selectTag, tab2Index])
+    }, [selectTag, tab2Index, eventGroup])
 
     useEffect(() => {
         const getLabels = async () => {
@@ -66,7 +70,7 @@ function ListEventVertical() {
                      className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_latest']}
                 </div>
-                <div onClick={() => setTab2Index('latest')}  style={{display: 'none'}}
+                <div onClick={() => setTab2Index('latest')} style={{display: 'none'}}
                      className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Popular']}
                 </div>
@@ -80,7 +84,9 @@ function ListEventVertical() {
                     onKeyUp={(e) => {
                         e.key === 'Enter' && navigate(`/search/${searchKeyword}`)
                     }}
-                    onChange={(e) => {setSearchKeyWork(e.currentTarget.value)}}
+                    onChange={(e) => {
+                        setSearchKeyWork(e.currentTarget.value)
+                    }}
                     placeholder={lang['Activity_search_placeholder']}
                     value={searchKeyword}
                     startEnhancer={() => <Search/>}/>
@@ -109,7 +115,7 @@ function ListEventVertical() {
                                 return <CardEvent fixed={false} key={item.title} event={item}/>
                             })
                         }
-                        { !loading && <div ref={ref}></div>}
+                        {!loading && <div ref={ref}></div>}
 
                     </div>
                 }

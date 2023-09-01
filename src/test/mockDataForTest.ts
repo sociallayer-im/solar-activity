@@ -1,43 +1,6 @@
 import { Group, Profile, Badge, Badgelet, ProfileSimple, Invite, Presend } from '../service/solas'
 
 export const groups: Group[] = [
-    {
-        id: 567,
-        group_owner_id: 1,
-        image_url: 'https://ik.imagekit.io/soladata/tr:n-ik_ml_thumbnail/5ypp629n_4fCVC1OIJ',
-        is_group: true,
-        status: 'active',
-        token_id: 'asdasdasdasdasdasda123123asdasd',
-        twitter: null,
-        twitter_proof_url:null,
-        username: 'testgroup1',
-        domain: 'testgroup1.sociallayer.im',
-        nickname: 'testgroup1',
-    }, {
-        id: 568,
-        group_owner_id: 1,
-        image_url: null,
-        is_group: true,
-        status: 'active',
-        token_id: 'asdasdasdasdasdasda123123asdasd22',
-        twitter: null,
-        twitter_proof_url:null,
-        username: 'testgroup2',
-        domain: 'testgroup2.sociallayer.im',
-        nickname: 'testgroup2',
-    }, {
-        id: 569,
-        group_owner_id: 1,
-        image_url: null,
-        is_group: true,
-        status: 'freezed',
-        token_id: 'asdasdasdasdasdasda123123asdasd33',
-        twitter: null,
-        twitter_proof_url:null,
-        username: 'testgroup3',
-        domain: 'testgroup3.sociallayer.im',
-        nickname: 'testgroup3',
-    }
 ]
 
 export const profiles: Profile[] = [
@@ -65,6 +28,8 @@ export const profiles: Profile[] = [
         telegram: 'zfd',
         lens: 'zfd',
         location: 'zfd',
+        group_event_visibility: 'public',
+        group_event_enabled: true,
 
     },
     {
@@ -91,6 +56,8 @@ export const profiles: Profile[] = [
         telegram: 'zfd',
         lens: 'zfd',
         location: 'zfd',
+        group_event_visibility: 'public',
+        group_event_enabled: true,
     },
     {
         address: 'null',
@@ -116,6 +83,8 @@ export const profiles: Profile[] = [
         telegram: 'zfd',
         lens: 'zfd',
         location: 'zfd',
+        group_event_visibility: 'public',
+        group_event_enabled: true,
     }
 ]
 

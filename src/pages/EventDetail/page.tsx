@@ -4,9 +4,7 @@ import {useContext, useEffect, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
 import {
     Badge,
-    cancelEvent,
     Event,
-    getEventCheckLog,
     getProfile,
     Group,
     joinEvent,
@@ -17,6 +15,7 @@ import {
     queryBadgeDetail,
     queryEventDetail,
     queryMyEvent,
+    queryUserGroup
 } from "../../service/solas";
 import './EventDetail.less'
 import LangContext from "../../components/provider/LangProvider/LangContext";
@@ -24,7 +23,6 @@ import useTime from "../../hooks/formatTime";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import usePicture from "../../hooks/pictrue";
 import ReasonText from "../../components/base/ReasonText/ReasonText";
-import AddressList from "../../components/base/AddressList/AddressList";
 import AppButton from "../../components/base/AppButton/AppButton";
 import userContext from "../../components/provider/UserProvider/UserContext";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
@@ -34,6 +32,7 @@ import useCalender from "../../hooks/addToCalender";
 import ListCheckinUser from "../../components/compose/ListCheckinUser/ListCheckinUser";
 import useShowImage from "../../hooks/showImage/showImage";
 import useCopy from "../../hooks/copy";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -46,9 +45,10 @@ function EventDetail() {
     const {defaultAvatar} = usePicture()
     const {user} = useContext(userContext)
     const {showLoading, showToast, showEventCheckIn} = useContext(DialogsContext)
-    const { addToCalender }  = useCalender()
-    const { showImage } = useShowImage()
-    const { copy } = useCopy()
+    const {addToCalender} = useCalender()
+    const {showImage} = useShowImage()
+    const {copy} = useCopy()
+    const {eventGroups, setEventGroup, eventGroup, ready} = useContext(EventHomeContext)
 
 
     const [tab, setTab] = useState(1)
@@ -64,6 +64,7 @@ function EventDetail() {
     const [guests, setGuests] = useState<ProfileSimple[]>([])
     const [badge, setBadge] = useState<Badge | null>(null)
     const [isChecklog, setIsChecklog] = useState(false)
+    const [canAccess, setCanAccess] = useState(false)
 
     async function fetchData() {
         if (eventId) {
@@ -111,8 +112,11 @@ function EventDetail() {
 
             let profile: Profile | Group | null
             if (res.host_info) {
-                const isDomain = res.host_info.indexOf('.') > -1
-                profile = await getProfile(isDomain ? {domain: res.host_info} : {id: Number(res.host_info)})
+                const isDomain = res.host_info && res.host_info.indexOf('.') > -1
+                profile = await getProfile(isDomain
+                    ? {domain: res.host_info!}
+                    : {id: Number(res.host_info)})
+
                 if (profile) {
                     setHoster(profile)
                 }
@@ -149,6 +153,36 @@ function EventDetail() {
     useEffect(() => {
         fetchData()
     }, [eventId])
+
+    useEffect(() => {
+        if (event && event.group_id && ready) {
+            const group: any = eventGroups.find(item => item.id === event.group_id)
+            if (!group) {
+                navigate('/error')
+                return
+            }
+
+            setEventGroup(group as Group)
+
+            const selectedGroup = group as Group
+            if (selectedGroup.group_event_visibility === 'public') {
+                setCanAccess(true)
+                return
+            } else if (user.id) {
+                const myGroup = queryUserGroup({profile_id: user.id}).then(res => {
+                    const joined = res.find(item => item.id === selectedGroup.id)
+                    if (!joined && selectedGroup.group_event_visibility === 'private') {
+                        navigate('/error')
+                    } else {
+                        setCanAccess(!!joined)
+                    }
+                })
+            } else {
+                setCanAccess(false)
+            }
+        }
+
+    }, [event, ready, user.id])
 
     useEffect(() => {
         setIsHoster(hoster?.id === user.id || hoster?.group_owner_id === user.id)
@@ -322,18 +356,23 @@ function EventDetail() {
                             {tab === 1 &&
                                 <div className={'tab-contain'}>
                                     <div className={'center'}>
-                                        { !!event.wechat_contact_group &&
+                                        {!!event.wechat_contact_group &&
                                             <>
                                                 <div className={'wechat-title'}>{lang['Activity_Detail_Wechat']}</div>
                                                 {
                                                     !!event.wechat_contact_person &&
                                                     <div className={'wechat-account'}>{lang['Activity_Detail_Account']}
-                                                        <span onClick={e => { copy(event.wechat_contact_person!);showToast('Copied!')}}>
+                                                        <span onClick={e => {
+                                                            copy(event.wechat_contact_person!);
+                                                            showToast('Copied!')
+                                                        }}>
                                                         {event.wechat_contact_person}
                                                         </span>
                                                     </div>
                                                 }
-                                                <div className={'wechat-contact-group'} onClick={e => {showImage(event.wechat_contact_group!)}}>
+                                                <div className={'wechat-contact-group'} onClick={e => {
+                                                    showImage(event.wechat_contact_group!)
+                                                }}>
                                                     <img src={event.wechat_contact_group} alt=""/>
                                                 </div>
                                             </>
@@ -367,100 +406,107 @@ function EventDetail() {
                                 </div>}
                         </div>
 
-                        <div className={'event-action'}>
-                            { isChecklog
-                                ? <div className={'center'}>
-                                    {isHoster && !canceled &&
-                                        <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
-                                    }
-                                    { isHoster && !canceled &&
-                                        <AppButton
-                                            special
-                                            onClick={e => {
-                                                handleHostCheckIn()
-                                            }}>{
-                                            lang['Activity_Punch_in_BTN']
-                                        }</AppButton>
-                                    }
-                                    { inCheckinTime && !canceled && !isHoster &&
-                                        <AppButton
-                                            special
-                                            onClick={e => {
-                                               showEventCheckIn(Number(eventId), true)
-                                            }}>{
-                                            lang['Activity_Punch_in_BTN']
-                                        } </AppButton>
-                                    }
-                                    {canceled &&
-                                        <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
-                                    }
-                                </div>
-                                :
-                                <div className={'center'}>
-                                    {canceled &&
-                                        <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
-                                    }
+                        { canAccess && <div className={'event-action'}>
+                                {isChecklog
+                                    ? <div className={'center'}>
+                                        {isHoster && !canceled &&
+                                            <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
+                                        }
+                                        {isHoster && !canceled &&
+                                            <AppButton
+                                                special
+                                                onClick={e => {
+                                                    handleHostCheckIn()
+                                                }}>{
+                                                lang['Activity_Punch_in_BTN']
+                                            }</AppButton>
+                                        }
+                                        {inCheckinTime && !canceled && !isHoster &&
+                                            <AppButton
+                                                special
+                                                onClick={e => {
+                                                    showEventCheckIn(Number(eventId), true)
+                                                }}>{
+                                                lang['Activity_Punch_in_BTN']
+                                            } </AppButton>
+                                        }
+                                        {canceled &&
+                                            <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
+                                        }
+                                    </div>
+                                    :
+                                    <div className={'center'}>
+                                        {canceled &&
+                                            <AppButton disabled>{lang['Activity_Detail_Btn_has_Cancel']}</AppButton>
+                                        }
 
-                                    { !canceled && isJoined && !outOfDate && !isHoster &&
-                                        <AppButton
-                                            onClick={e => {
-                                                addToCalender({
-                                                    name: event.title,
-                                                    startTime: event.start_time!,
-                                                    endTime: event.ending_time!,
-                                                    location: event.event_site?.title || event.location || '',
-                                                    details: event.content,
-                                                    url: window.location.href
-                                                })
-                                            }}>
-                                            <i className="icon-calendar" style={{marginRight: '8px'}}/>
-                                            {lang['Activity_Detail_Btn_add_Calender']}</AppButton>
-                                    }
+                                        {!canceled && isJoined && !outOfDate && !isHoster &&
+                                            <AppButton
+                                                onClick={e => {
+                                                    addToCalender({
+                                                        name: event.title,
+                                                        startTime: event.start_time!,
+                                                        endTime: event.ending_time!,
+                                                        location: event.event_site?.title || event.location || '',
+                                                        details: event.content,
+                                                        url: window.location.href
+                                                    })
+                                                }}>
+                                                <i className="icon-calendar" style={{marginRight: '8px'}}/>
+                                                {lang['Activity_Detail_Btn_add_Calender']}</AppButton>
+                                        }
 
-                                    {isHoster && !canceled &&
-                                        <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
-                                    }
+                                        {isHoster && !canceled &&
+                                            <AppButton onClick={gotoModify}>{lang['Activity_Detail_Btn_Modify']}</AppButton>
+                                        }
 
-                                    {!isJoined && !canceled && (inCheckinTime || notStart) && !isHoster &&
-                                        <AppButton special onClick={e => {
-                                            handleJoin()
-                                        }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
-                                    }
+                                        {!isJoined && !canceled && (inCheckinTime || notStart) && !isHoster &&
+                                            <AppButton special onClick={e => {
+                                                handleJoin()
+                                            }}>{lang['Activity_Detail_Btn_Attend']}</AppButton>
+                                        }
 
-                                    {false &&
-                                        <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
-                                    }
+                                        {false &&
+                                            <AppButton disabled>{lang['Activity_Detail_Btn_End']}</AppButton>
+                                        }
 
-                                    {isHoster && !canceled &&
-                                        <AppButton
-                                            special
-                                            onClick={e => {
-                                                handleHostCheckIn()
-                                            }}>{
-                                            event.badge_id
-                                                ? lang['Activity_Host_Check_And_Send']
-                                                : lang['Activity_Detail_Btn_Checkin']
-                                        }</AppButton>
-                                    }
+                                        {isHoster && !canceled &&
+                                            <AppButton
+                                                special
+                                                onClick={e => {
+                                                    handleHostCheckIn()
+                                                }}>{
+                                                event.badge_id
+                                                    ? lang['Activity_Host_Check_And_Send']
+                                                    : lang['Activity_Detail_Btn_Checkin']
+                                            }</AppButton>
+                                        }
 
-                                    {!canceled && isJoined && !isHoster && inCheckinTime &&
-                                        <AppButton
-                                            special
-                                            onClick={e => {
-                                                handleUserCheckIn()
-                                            }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
-                                    }
+                                        {!canceled && isJoined && !isHoster && inCheckinTime &&
+                                            <AppButton
+                                                special
+                                                onClick={e => {
+                                                    handleUserCheckIn()
+                                                }}>{lang['Activity_Detail_Btn_Checkin']}</AppButton>
+                                        }
 
-                                    {!canceled && isJoined && inProgress && !!event.online_location &&
-                                        <AppButton
-                                            onClick={e => {
-                                                window.open(event.online_location!, '_blank')
-                                            }}
-                                            special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
-                                    }
-                                </div>
-                            }
-                        </div>
+                                        {!canceled && isJoined && inProgress && !!event.online_location &&
+                                            <AppButton
+                                                onClick={e => {
+                                                    window.open(event.online_location!, '_blank')
+                                                }}
+                                                special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        { !canAccess &&
+                            <div className={'event-action'}>
+                               <div className={'can-not-access'}> Event only open to members of the group</div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

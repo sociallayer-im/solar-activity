@@ -13,17 +13,18 @@ import ListMyCreatedEvent from "../../components/compose/ListMyCreatedEvent/List
 import ListEventVertical from "../../components/compose/ListEventVertical/ListEventVertical";
 import ListRecommendedEvent from "../../components/compose/ListRecommendedEvent/ListRecommendedEvent";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 
 function Home() {
     const {user} = useContext(UserContext)
     const navigate = useNavigate()
     const {lang} = useContext(LangContext)
     const {showToast} = useContext(DialogsContext)
+    const {eventGroup , ready, joined} = useContext(EventHomeContext)
 
     const [tabIndex, setTabIndex] = useState('0')
     const [showMyCreate, setShowMyCreate] = useState(true)
     const [showMyAttend, setShowMyAttend] = useState(true)
-    const [ready, setReady] = useState(false)
 
     useEffect(() => {
         const myEvent = async () => {
@@ -38,10 +39,6 @@ function Home() {
                 }  else {
                     setTabIndex('1')
                 }
-
-                setTimeout(() => {
-                    setReady(true)
-                }, 100)
             } else {
                 setShowMyAttend(false)
                 setShowMyCreate(false)
@@ -68,7 +65,11 @@ function Home() {
             return
         }
 
-        navigate('/event/create')
+        if (!eventGroup) {
+            return
+        }
+
+        navigate(`/${eventGroup.username}/create`)
     }
 
 
@@ -113,9 +114,12 @@ function Home() {
                 <ListEventVertical/>
             </div>
 
-            <div className={'create-event-btn'} onClick={e => {
-                gotoCreateEvent()
-            }}>+ {lang['Activity_Create_title']}</div>
+            {
+                user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public') &&
+                <div className={'create-event-btn'} onClick={e => {
+                    gotoCreateEvent()
+                }}>+ {lang['Activity_Create_title']}</div>
+            }
         </div>
     </Layout>
 }

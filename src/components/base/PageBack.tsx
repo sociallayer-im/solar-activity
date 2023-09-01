@@ -56,7 +56,7 @@ function PageBack(props: PageBackProp) {
         } else if (props.onClose) {
             props.onClose()
         } else {
-            window.history.go(-1)
+            window.history.back()
         }
 
     }

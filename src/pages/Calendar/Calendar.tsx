@@ -11,7 +11,9 @@ import Empty from "../../components/base/Empty";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
 import {getLabelColor} from "../../hooks/labelColor";
 import PageBack from "../../components/base/PageBack";
-import {useLocation, useSearchParams, useNavigate} from "react-router-dom";
+import {useParams, useNavigate, useSearchParams, useLocation} from "react-router-dom";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
+
 
 interface EventWithProfile extends Event {
     profile: Profile | null
@@ -39,6 +41,8 @@ function Calendar() {
     const [labels, setLabels] = useState<string[]>([])
     const [searchParams] = useSearchParams()
     const location = useLocation()
+    const {groupname} = useParams()
+    const {eventGroup, setEventGroup, findGroup, ready} = useContext(EventHomeContext)
 
     const monthName = langType === 'en'
         ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -75,7 +79,7 @@ function Calendar() {
     }, [searchParams.get('time')])
 
     useEffect(() => {
-        async function fetchData() {
+        async function fetchData2() {
             const labels = await getHotTags()
             setLabels(labels)
             if (user.authToken) {
@@ -87,8 +91,78 @@ function Calendar() {
 
         }
 
-        fetchData()
+        fetchData2()
     }, [user.authToken])
+
+    useEffect(() => {
+        async function fetchData1() {
+            if (groupname && ready) {
+                const group = findGroup(groupname)
+                setEventGroup(group)
+            }
+        }
+
+        fetchData1()
+    }, [groupname, ready])
+
+    useEffect(() => {
+        async function getProfileInfo(id?: number, domain?: string) {
+            return await getProfile({id, domain})
+        }
+
+        async function fetchData() {
+            if (!ready) return
+            const unload = showLoading()
+            const selected = new Date(selectedDate.value)
+            try {
+                let res = await queryEvent({
+                    start_time_from: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0 , 0 ).getTime() / 1000,
+                    start_time_to: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59 ).getTime() / 1000,
+                    tag: selectedLabel[0] || undefined,
+                    page: 1,
+                    group_id: eventGroup?.id || undefined,
+                })
+
+                if (res.length === 0) {
+                    setEventList([])
+                }
+
+                const task = res.map(item => {
+                    if (item.host_info) {
+                        if (item.host_info && item.host_info?.indexOf('.') > -1) {
+                            return getProfileInfo(undefined, item.host_info)
+                        } else {
+                            return getProfileInfo(parseInt(item.host_info))
+                        }
+                    } else if (item.group_id) {
+                        return getProfileInfo(item.group_id)
+                    } else {
+                        return getProfileInfo(item.owner_id)
+                    }
+                })
+
+                const eventWithProfile: EventWithProfile[] = []
+                await Promise.all(task).then((profiles) => {
+                    profiles.map((profile, index) => {
+                        eventWithProfile.push({
+                            ...res[index],
+                            profile
+                        })
+                    })
+                })
+
+                console.log(res)
+                setEventList(eventWithProfile)
+                unload()
+            } catch (e: any) {
+                unload()
+                console.error(e)
+                showToast(e.message)
+            }
+        }
+
+        fetchData()
+    }, [selectedDate, selectedLabel, eventGroup, ready])
 
     // 一个今年1月1日到12月31日时间戳的数组
     const dateList: DateItem[] = Array.from({length: 365}, (v, k) => k + 1).map(item => {
@@ -131,62 +205,6 @@ function Calendar() {
     if (initIndex > 6) {
         initIndex = initIndex - 6
     }
-
-    useEffect(() => {
-        async function getProfileInfo(id?: number, domain?: string) {
-            return await getProfile({id, domain})
-        }
-
-        const getDateStr = (dateStr: string) => {
-            const date = new Date(dateStr)
-            return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-        }
-
-        async function fetchData() {
-            const unload = showLoading()
-            const selected = new Date(selectedDate.value)
-            try {
-                let res = await queryEvent({
-                    start_time_from: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0 , 0 ).getTime() / 1000,
-                    start_time_to: new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59 ).getTime() / 1000,
-                    tag: selectedLabel[0] || undefined,
-                    page: 1
-                })
-
-                const task = res.map(item => {
-                    if (item.host_info) {
-                        if (item.host_info?.indexOf('.') > -1) {
-                            return getProfileInfo(undefined, item.host_info)
-                        } else {
-                            return getProfileInfo(parseInt(item.host_info))
-                        }
-                    } else {
-                        return getProfileInfo(item.owner_id)
-                    }
-                })
-
-                const eventWithProfile: EventWithProfile[] = []
-                await Promise.all(task).then((profiles) => {
-                    profiles.map((profile, index) => {
-                        eventWithProfile.push({
-                            ...res[index],
-                            profile
-                        })
-                    })
-                })
-
-                console.log(res)
-                setEventList(eventWithProfile)
-                unload()
-            } catch (e: any) {
-                unload()
-                console.error(e)
-                showToast(e.message)
-            }
-        }
-
-        fetchData()
-    }, [selectedDate, selectedLabel])
 
     // start_time 和 end_time 相同的为同一组, 并且按照是否是自己的事件分组
     let groupedEvent: EventWithProfile[][] = []

@@ -11,7 +11,8 @@ interface SelectCreatorProp {
     groupFirst?: boolean
     value: Profile | Group | null
     onChange: (res: (Profile | Group)) => any
-    autoSet?: boolean
+    autoSet?: boolean,
+    data?: (Profile | Group)[]
 }
 
 const WithStyledControlContainer = withStyle(StyledControlContainer, (props) => {
@@ -66,7 +67,7 @@ const GroupMark = styled('div', ({$theme}) => ({
 
 function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
     const [css] = useStyletron()
-    const [list, setList] = useState<(Profile | Group)[]>([])
+    const [list, setList] = useState<(Profile | Group)[]>(props.data || [])
     const { user } = useContext(UserContext)
     const [searchParams, _] = useSearchParams()
     const [selected, setSelected] = useState(props.value ? [props.value] : [])
@@ -93,8 +94,14 @@ function SelectCreator({autoSet=true, ...props}: SelectCreatorProp) {
     }
 
     useEffect(() => {
+        setList(props.data || [])
+    }, [props.data])
+
+    useEffect(() => {
         if (!user.id) return
         if (list.length) return
+        if (props.data) return
+
         async function getList () {
             const profile = await solas.getProfile({ id: user.id! })
             if (!profile) return

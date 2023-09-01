@@ -13,6 +13,8 @@ function slotLang(str: string) {
 const langCN: LangConfig = {
   Nav_Wallet_Connect: '登录',
   Nav_Wallet_Disconnect: '登出',
+  Nav_Badge_Page: '徽章',
+  Nav_Event_Page: '活动',
 
   Wallet_Title_MetaMask: 'Meta Mask',
   Wallet_Intro_MetaMask: '连接你的 MetaMask 钱包',

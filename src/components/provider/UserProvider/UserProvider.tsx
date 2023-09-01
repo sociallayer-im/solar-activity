@@ -3,7 +3,7 @@ import {useAccount, useDisconnect, useSigner} from 'wagmi'
 import UserContext from './UserContext'
 import DialogsContext from '../DialogProvider/DialogsContext'
 import * as AuthStorage from '../../../utils/authStorage'
-import solas from '../../../service/solas'
+import solas, {Group} from '../../../service/solas'
 import { useNavigate } from 'react-router-dom'
 import useEvent, {EVENT} from '../../../hooks/globalEvent'
 
@@ -40,7 +40,7 @@ const emptyUser: User = {
     wallet: null,
     twitter: null,
     authToken: null,
-    nickname: null
+    nickname: null,
 }
 
 function UserProvider (props: UserProviderProps) {

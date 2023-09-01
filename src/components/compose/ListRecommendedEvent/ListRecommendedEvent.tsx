@@ -1,13 +1,12 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
-import {useContext, useState} from 'react'
+import {useContext, useState, useRef, useEffect} from 'react'
 import {Event, queryRecommendEvent} from '../../../service/solas'
 import './ListRecommendedEvent.less'
 import userContext from "../../provider/UserProvider/UserContext";
 import HorizontalList from "../../base/HorizontalList/HorizontalList";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
 import LangContext from "../../provider/LangProvider/LangContext";
-
 
 function ListRecommendedEvent() {
     const [css] = useStyletron()
@@ -18,7 +17,7 @@ function ListRecommendedEvent() {
     const {user} = useContext(userContext)
     const {lang} = useContext(LangContext)
     const [showList, setShowList] = useState(true)
-
+    const list = useRef<any>(null)
 
     const getMyEvent = async (page: number) => {
         const res = await queryRecommendEvent({page: page, rec: 'top'})
@@ -38,6 +37,7 @@ function ListRecommendedEvent() {
                     space={16}
                     itemWidth={300}
                     itemHeight={164}
+                    onRef={list}
                 />
             </div>
         }

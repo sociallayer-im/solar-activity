@@ -16,6 +16,7 @@ import Subscriber from './components/base/Subscriber'
 import {BrowserRouter} from 'react-router-dom'
 import './styles/index.less'
 import { Analytics } from '@vercel/analytics/react'
+import EventHomeProvider from "./components/provider/EventHomeProvider/EventHomeProvider";
 
 const engine = new Styletron();
 
@@ -57,7 +58,9 @@ function App() {
                                         <LangProvider>
                                             <DialogProvider>
                                                 <Subscriber/>
-                                                <AppRouter/>
+                                                <EventHomeProvider>
+                                                    <AppRouter/>
+                                                </EventHomeProvider>
                                             </DialogProvider>
                                         </LangProvider>
                                     </UserProvider>

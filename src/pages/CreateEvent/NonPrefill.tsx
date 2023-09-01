@@ -20,7 +20,8 @@ import solas, {
     Profile,
     queryEvent,
     setEventBadge,
-    updateEvent
+    updateEvent,
+    queryUserGroup
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -34,6 +35,7 @@ import EventLabels from "../../components/base/EventLabels/EventLabels";
 import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/DialogIssuePrefill";
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
 import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/UploadWecatQrcode";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 
 interface Draft {
     cover: string,
@@ -86,6 +88,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [searchParams, _] = useSearchParams()
     const [creator, setCreator] = useState<Group | Profile | null>(null)
     const {lang} = useContext(LangContext)
+    const {eventGroup, joined} = useContext(EventHomeContext)
 
     const [cover, setCover] = useState('')
     const [title, setTitle] = useState('')
@@ -200,15 +203,11 @@ function CreateEvent(props: CreateEventPageProps) {
                     setGuests(draft.guests)
                 }
 
-                setEnableGuest(!!draft.enable_guest)
+                setEnableGuest(draft.enable_guest)
 
                 setLabel(draft.tags ? draft.tags : [])
                 setBadgeId(draft.badge_id)
                 setEventType(draft.event_type || 'event')
-
-                if (draft.creator) {
-                    setCreator(draft.creator)
-                }
 
                 if (draft.wechat_contact_group) {
                     setWechatImage(draft.wechat_contact_group)
@@ -231,6 +230,13 @@ function CreateEvent(props: CreateEventPageProps) {
             setFormReady(true)
         }
     }
+
+    useEffect(() => {
+       if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined ) {
+           navigate('/')
+           return
+       }
+    }, [joined, eventGroup])
 
     useEffect(() => {
         const checkUrl = (url: string) => {
@@ -449,8 +455,15 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleCreate = async () => {
-        setCreating(true)
-        const unloading = showLoading(true)
+        if (!user.id) {
+            showToast('Please login first')
+            return
+        }
+
+        if (!eventGroup) {
+            showToast('请选择一个组织')
+            return
+        }
 
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
@@ -489,7 +502,7 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            host_info: creator?.is_group ? creator?.id + '' : null,
+            group_id: eventGroup.id,
             online_location: onlineUrl || null,
             event_site_id: eventSite[0] ? eventSite[0].id : null,
             event_type: eventType,
@@ -498,6 +511,9 @@ function CreateEvent(props: CreateEventPageProps) {
 
             auth_token: user.authToken || ''
         }
+
+        setCreating(true)
+        const unloading = showLoading(true)
 
         try {
             const newEvent = await solas.createEvent(props)
@@ -532,6 +548,11 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const handleSave = async () => {
+        if (!user.id) {
+            showToast('Please login first')
+            return
+        }
+
         if (siteOccupied) {
             showToast(lang['Activity_Detail_site_Occupied'])
             window.location.href = location.pathname + '#SiteError'
@@ -571,7 +592,6 @@ function CreateEvent(props: CreateEventPageProps) {
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
-            host_info: creator?.is_group ? creator?.id + '' : null,
             online_location: onlineUrl || null,
             auth_token: user.authToken || '',
             event_type: eventType,

@@ -46,6 +46,8 @@ export interface Profile {
     is_group: boolean | null,
     badge_count: number,
     status: 'active' | 'freezed',
+    group_event_enabled: boolean,
+    group_event_visibility?: 'public' | 'protected' | 'private'
 }
 
 export interface ProfileSimple {
@@ -399,7 +401,7 @@ export async function queryNftPasslet(props: QueryBadgeletProps): Promise<NftPas
     })
 }
 
-export interface Group {
+export interface Group extends Profile {
     id: number,
     group_owner_id: number
     image_url: string | null,
@@ -1524,6 +1526,7 @@ export interface Event {
     event_type: 'event' | 'checklog',
     wechat_contact_group?: null | string,
     wechat_contact_person?: null | string,
+    group_id?: null | number,
 
     owner_id: number,
     created_at: string,
@@ -1576,6 +1579,7 @@ export interface QueryEventProps {
     event_site_id?: number,
     start_time_from?: number,
     start_time_to?: number,
+    group_id?: number,
 }
 
 
@@ -1595,6 +1599,7 @@ export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
 export interface QueryRecommendEventProps {
     rec?: 'latest' | 'soon' | 'top'
     page: number,
+    group_id?: number,
 }
 
 export async function queryRecommendEvent(props: QueryRecommendEventProps): Promise<Event[]> {
@@ -1967,8 +1972,22 @@ export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
     return res.data.badgelets as Badgelet[]
 }
 
+export async function getEventGroup () {
+    const res = await fetch.get({
+        url: `${api}/event/group_list`,
+        data: {}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.groups as Group[]
+}
+
 
 export default {
+    getEventGroup,
     punchIn,
     getEventCheckLog,
     sendEventBadge,
