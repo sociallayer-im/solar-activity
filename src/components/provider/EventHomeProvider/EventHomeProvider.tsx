@@ -31,7 +31,7 @@ function EventHomeProvider(props: { children: any }) {
 
     useEffect(() => {
         async function getAvailableList() {
-            if (eventGroups.length && user.id) {
+            if (eventGroups.length) {
                 if (user.id) {
                     const userGroup = await queryUserGroup({profile_id: user.id})
                     const res = eventGroups.filter(g => {
@@ -41,7 +41,7 @@ function EventHomeProvider(props: { children: any }) {
                     setAvailableList(res as Profile[])
                 } else {
                     const res = eventGroups.filter(g => {
-                        return g.group_event_visibility === 'public'
+                        return g.group_event_visibility !== 'private'
                     })
                     setAvailableList(res as Profile[])
                 }
