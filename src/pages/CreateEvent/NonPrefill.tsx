@@ -807,13 +807,16 @@ function CreateEvent(props: CreateEventPageProps) {
                             </div>
                         }
 
-                        <div className={'input-area'}>
-                            <div className={'input-area-title'}>{lang['Activity_Form_Label']}</div>
-                            <EventLabels
-                                data={labels} onChange={e => {
-                                setLabel(e)
-                            }} value={label}/>
-                        </div>
+                        {!!eventGroup && eventGroup.group_event_tags &&
+                            <div className={'input-area'}>
+                                <div className={'input-area-title'}>{lang['Activity_Form_Label']}</div>
+                                <EventLabels
+                                    data={eventGroup.group_event_tags.split(',')} onChange={e => {
+                                    setLabel(e)
+                                }} value={label}/>
+                            </div>
+                        }
+
 
                         {eventType === 'event' &&
                             <div className={'input-area'}>

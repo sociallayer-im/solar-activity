@@ -80,8 +80,6 @@ function Calendar() {
 
     useEffect(() => {
         async function fetchData2() {
-            const labels = await getHotTags()
-            setLabels(labels)
             if (user.authToken) {
                 const res = await queryMyEvent({auth_token: user.authToken!})
                 setMyEvent(res.map(item => item.event))
@@ -112,6 +110,9 @@ function Calendar() {
 
         async function fetchData() {
             if (!ready) return
+            if (!eventGroup) return
+            if (!selectedDate) return
+
             const unload = showLoading()
             const selected = new Date(selectedDate.value)
             try {
@@ -257,13 +258,15 @@ function Calendar() {
 
 
             <div className={'calendar-event-list'}>
-                <div className={'label-bar'}>
-                    <EventLabels single data={labels} value={selectedLabel} onChange={
-                        (value) => {
-                            setSelectedLabel(value)
-                        }
-                    }/>
-                </div>
+                { !!eventGroup && eventGroup.group_event_tags &&
+                    <div className={'label-bar'}>
+                        <EventLabels single data={eventGroup.group_event_tags.split(',')} value={selectedLabel} onChange={
+                            (value) => {
+                                setSelectedLabel(value)
+                            }
+                        }/>
+                    </div>
+                }
                 <div className={'calendar-event-title'}>
                     <div className={'col1'}>{lang['Activity_Calendar_Page_Time']}</div>
                     <div className={'col2'}>{lang['Activity_Calendar_Page_Name']}</div>

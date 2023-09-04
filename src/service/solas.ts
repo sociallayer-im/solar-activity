@@ -48,6 +48,7 @@ export interface Profile {
     status: 'active' | 'freezed',
     group_event_enabled: boolean,
     group_event_visibility?: 'public' | 'protected' | 'private'
+    group_event_tags: string | null,
 }
 
 export interface ProfileSimple {
@@ -413,7 +414,7 @@ export interface Group extends Profile {
     username: string
     domain: string,
     nickname: string,
-    group_event_tags: string
+    group_event_tags: string | null
 }
 
 export interface QueryUserGroupProps {

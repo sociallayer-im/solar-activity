@@ -112,19 +112,21 @@ function ListEventVertical() {
                     value={searchKeyword}
                     startEnhancer={() => <Search/>}/>
             </div>
-            <div className={'tag-list'}>
-                <EventLabels
-                    single
-                    onChange={(value) => {
-                        if (selectTag[0] === value[0]) {
-                            setSelectTag([])
-                        } else {
-                            setSelectTag(value)
-                        }
-                    }}
-                    data={labels}
-                    value={selectTag}/>
-            </div>
+            { !!eventGroup && eventGroup.group_event_tags &&
+                <div className={'tag-list'}>
+                    <EventLabels
+                        single
+                        onChange={(value) => {
+                            if (selectTag[0] === value[0]) {
+                                setSelectTag([])
+                            } else {
+                                setSelectTag(value)
+                            }
+                        }}
+                        data={eventGroup.group_event_tags.split(',')}
+                        value={selectTag}/>
+                </div>
+            }
             <div className={'tab-contains'}>
                 {!list.length ? <Empty/> :
                     <div className={'list'}>

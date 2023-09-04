@@ -34,6 +34,7 @@ function EventHomeProvider(props: { children: any }) {
             if (eventGroups.length) {
                 if (user.id) {
                     const userGroup = await queryUserGroup({profile_id: user.id})
+                    setUserGroup(userGroup as Profile[])
                     const res = eventGroups.filter(g => {
                         return g.group_event_visibility !== 'private' ||
                             userGroup.find(ug => ug.id === g.id)
@@ -44,6 +45,7 @@ function EventHomeProvider(props: { children: any }) {
                         return g.group_event_visibility !== 'private'
                     })
                     setAvailableList(res as Profile[])
+                    setUserGroup([])
                 }
             }
         }
@@ -51,19 +53,7 @@ function EventHomeProvider(props: { children: any }) {
         getAvailableList()
     }, [eventGroups, user.id])
 
-    useEffect(() => {
-        async function getUserGroup() {
-           if (!user.id) {
-               setUserGroup([])
-           } else {
-                const userGroup = await queryUserGroup({profile_id: user.id})
-                setUserGroup(userGroup as Profile[])
-           }
-        }
-
-        getUserGroup()
-    }, [user.id])
-
+   
     useEffect(() => {
         if (userGroup.length) {
             const joined = userGroup.find(g => {
