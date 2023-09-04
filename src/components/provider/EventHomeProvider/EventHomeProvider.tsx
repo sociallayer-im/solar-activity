@@ -53,7 +53,7 @@ function EventHomeProvider(props: { children: any }) {
         getAvailableList()
     }, [eventGroups, user.id])
 
-   
+
     useEffect(() => {
         if (userGroup.length) {
             const joined = userGroup.find(g => {
