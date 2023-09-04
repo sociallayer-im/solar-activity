@@ -48,7 +48,7 @@ function ListEventVertical() {
                 }
                 return res
             } else {
-                let res = await queryEvent({page, group_id: eventGroup?.id || undefined, start_time_to: new Date().toISOString()})
+                let res = await queryEvent({page, group_id: eventGroup?.id || undefined, start_time_to: new Date().getTime() / 1000})
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])

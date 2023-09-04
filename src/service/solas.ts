@@ -413,6 +413,7 @@ export interface Group extends Profile {
     username: string
     domain: string,
     nickname: string,
+    group_event_tags: string
 }
 
 export interface QueryUserGroupProps {
@@ -1577,8 +1578,8 @@ export interface QueryEventProps {
     date?: string,
     page: number,
     event_site_id?: number,
-    start_time_from?: string,
-    start_time_to?: string,
+    start_time_from?: number,
+    start_time_to?: number,
     group_id?: number,
 }
 
