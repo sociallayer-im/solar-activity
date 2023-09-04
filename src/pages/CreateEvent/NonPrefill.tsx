@@ -659,16 +659,18 @@ function CreateEvent(props: CreateEventPageProps) {
                             }}/>
                         </div>
 
-                        <div className='input-area'>
-                            <div className={'toggle'}>
-                                <div className={'item-title'}>{lang['Activity_Form_Checklog']}</div>
-                                <div className={'item-value'}>
-                                    <Toggle checked={eventType === 'checklog'} onChange={e => {
-                                        setEventType(e.target.checked ? 'checklog' : 'event')
-                                    }}/>
+                        { false &&
+                            <div className='input-area'>
+                                <div className={'toggle'}>
+                                    <div className={'item-title'}>{lang['Activity_Form_Checklog']}</div>
+                                    <div className={'item-value'}>
+                                        <Toggle checked={eventType === 'checklog'} onChange={e => {
+                                            setEventType(e.target.checked ? 'checklog' : 'event')
+                                        }}/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
 
                         <div className='input-area'>
                             <div className='input-area-title'>{lang['Activity_Form_Starttime']}</div>

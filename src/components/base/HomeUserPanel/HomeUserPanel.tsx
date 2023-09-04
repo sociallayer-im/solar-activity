@@ -20,6 +20,7 @@ function HomeUserPanel() {
     const {defaultAvatar} = usePicture()
     const {openConnectWalletDialog} = useContext(DialogsContext)
     const {eventGroup} = useContext(EventHomeContext)
+    const {groupname} = useParams()
 
 
     const date = new Date().getDate()
@@ -74,9 +75,11 @@ function HomeUserPanel() {
                 </div>
             </div>
         </div>
-        <Link to={'/merge'} className={'beast-banner'}>
-            <img src="/images/merge/beast_ad.jpg" alt=""/>
-        </Link>
+        { groupname === 'shanhaiwoo' &&
+            <Link to={'/merge'} className={'beast-banner'}>
+                <img src="/images/merge/beast_ad.jpg" alt=""/>
+            </Link>
+        }
         <div className={'center'}>
             <div className={'calendar-btn'} onClick={e => {
                 toCalendar()
