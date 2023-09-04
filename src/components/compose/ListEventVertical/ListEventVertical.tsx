@@ -1,10 +1,10 @@
-import {useNavigate, useParams} from 'react-router-dom'
+import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {Event, getHotTags, getProfile, Profile, queryRecommendEvent} from "../../../service/solas";
+import {Event, getHotTags, getProfile, Profile, queryEvent, queryRecommendEvent} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
@@ -16,10 +16,10 @@ import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext"
 
 
 function ListEventVertical() {
-    const [css] = useStyletron()
+    const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
     const [a, seta] = useState('')
-    const [tab2Index, setTab2Index] = useState<'latest' | 'soon'>('latest')
+    const [tab2Index, setTab2Index] = useState<'latest' | 'soon' | 'past'>(searchParams.get('tab') as any || 'latest')
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
     const {user} = useContext(userContext)
@@ -30,15 +30,32 @@ function ListEventVertical() {
     const [labels, setLabels] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
 
+
+    useEffect(() => {
+        if (searchParams.get('tab')) {
+            setTab2Index(searchParams.get('tab') as any)
+        }
+    }, [searchParams])
+
     const getEvent = async (page: number) => {
         try {
-            let res = await queryRecommendEvent({page, rec: tab2Index, group_id: eventGroup?.id || undefined})
-            if (selectTag[0]) {
-                res = res.filter(item => {
-                    return item.tags?.includes(selectTag[0])
-                })
+            if (tab2Index !== 'past') {
+                let res = await queryRecommendEvent({page, rec: tab2Index, group_id: eventGroup?.id || undefined})
+                if (selectTag[0]) {
+                    res = res.filter(item => {
+                        return item.tags?.includes(selectTag[0])
+                    })
+                }
+                return res
+            } else {
+                let res = await queryEvent({page, group_id: eventGroup?.id || undefined, start_time_to: new Date().toISOString()})
+                if (selectTag[0]) {
+                    res = res.filter(item => {
+                        return item.tags?.includes(selectTag[0])
+                    })
+                }
+                return res
             }
-            return res
         } catch (e: any) {
             console.error(e)
             showToast(e.message)
@@ -66,7 +83,7 @@ function ListEventVertical() {
     return (
         <div className={'module-tabs'}>
             <div className={'tab-titles'}>
-                <div onClick={() => setTab2Index('latest')}
+                <div onClick={() => {setTab2Index('latest'); setSearchParams({tab: 'latest'})}}
                      className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_latest']}
                 </div>
@@ -74,9 +91,13 @@ function ListEventVertical() {
                      className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Popular']}
                 </div>
-                <div onClick={() => setTab2Index('soon')}
+                <div onClick={() => {setTab2Index('soon'); setSearchParams({tab: 'soon'})}}
                      className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Coming']}
+                </div>
+                <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
+                     className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
+                    {lang['Activity_Past']}
                 </div>
             </div>
             <div className={'event-search-bar'}>
@@ -109,10 +130,14 @@ function ListEventVertical() {
                     <div className={'list'}>
                         {
                             list.filter((item: Event) => {
-                                const now = new Date().getTime()
-                                return new Date(item.ending_time!).getTime() >= now
+                               if (tab2Index === 'past') {
+                                   return true
+                               } else {
+                                   const now = new Date().getTime()
+                                   return new Date(item.ending_time!).getTime() >= now
+                               }
                             }).map((item, index) => {
-                                return <CardEvent fixed={false} key={item.title} event={item}/>
+                                return <CardEvent fixed={false} key={item.id} event={item}/>
                             })
                         }
                         {!loading && <div ref={ref}></div>}

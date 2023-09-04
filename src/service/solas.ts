@@ -1577,8 +1577,8 @@ export interface QueryEventProps {
     date?: string,
     page: number,
     event_site_id?: number,
-    start_time_from?: number,
-    start_time_to?: number,
+    start_time_from?: string,
+    start_time_to?: string,
     group_id?: number,
 }
 

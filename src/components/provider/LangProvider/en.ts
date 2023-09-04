@@ -211,6 +211,7 @@ const langEN = {
   Activity_latest: 'Latest',
   Activity_Commended: 'Recommended',
   Activity_Popular: 'Popular',
+  Activity_Past: 'Past',
   Activity_Coming: 'Coming',
   Activity_Greeting_Morning: 'Good Morning',
   Activity_Greeting_Afternoon: 'Good Afternoon',
