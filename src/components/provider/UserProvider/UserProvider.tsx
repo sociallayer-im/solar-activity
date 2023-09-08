@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import useEvent, {EVENT} from '../../../hooks/globalEvent'
 
 import solaExtensionLogin from '../../../service/ExtensionLogin'
+import {setAuth} from "../../../utils/authStorage";
 
 export interface User {
     id: number | null,
@@ -140,6 +141,7 @@ function UserProvider (props: UserProviderProps) {
         console.log('Login email: ', email)
         console.log('Storage token: ', authToken)
         await setProfile({ email, authToken })
+        setAuth(email, authToken)
     }
 
     const walletLogin = async () => {
@@ -165,7 +167,7 @@ function UserProvider (props: UserProviderProps) {
 
         let authToken = AuthStorage.getAuth()?.authToken
         let historyAddr = AuthStorage.getAuth()?.account
-        console.log('login authtoken: ====================================', authToken)
+        console.log('login authtoken: ===================================', authToken)
         if (!authToken || historyAddr !== address) {
             const unloading = showLoading()
             try {
@@ -184,6 +186,7 @@ function UserProvider (props: UserProviderProps) {
         console.log('Storage token: ', authToken)
 
         await setProfile({ address: address, authToken: authToken })
+        setAuth(address, authToken)
     }
 
     const login = async () => {
