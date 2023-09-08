@@ -325,7 +325,6 @@ function CreateEvent(props: CreateEventPageProps) {
         }
 
         async function fetchEventDetail() {
-            fetchLocation()
             if (isEditMode) {
                 try {
                     const event = await solas.queryEventDetail({id: props.eventId!})
