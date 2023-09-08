@@ -48,19 +48,28 @@ function IssuesInput (props: IssuesInputProps) {
            }
 
            timeout.current = setTimeout(async () => {
-               const res1 = await searchDomain({username: newValue.split('.')[0], page: 1})
-               const res2 = await getProfile({domain: newValue.split('.')[0]})
-               const res3 = await getProfile({username: newValue.split('.')[0]})
-               const res4 = await getProfile({email: newValue})
+               const tast = [
+                   searchDomain({username: newValue.split('.')[0], page: 1}),
+                   getProfile({domain: newValue.split('.')[0]}),
+                   getProfile({username: newValue.split('.')[0]}),
+                   getProfile({email: newValue})
+               ]
+
+               const fetch = await Promise.all(tast)
+
+               // const res1 = await searchDomain({username: newValue.split('.')[0], page: 1})
+               // const res2 = await getProfile({domain: newValue.split('.')[0]})
+               // const res3 = await getProfile({username: newValue.split('.')[0]})
+               // const res4 = await getProfile({email: newValue})
                let res:Profile[] = []
-               const deduplication = [res2, res3, res4, ...res1].map(item => {
+               const deduplication = [fetch[1], fetch[2], fetch[3], ...fetch[0] as any].map(item => {
                      if (item && !res.find(i => i.id === item.id)) {
                          res.push(item)
                      }
                })
 
                setSearchRes(res.splice(0,4) || [])
-           }, 300)
+           }, 200)
        }
     }
 
@@ -110,7 +119,7 @@ function IssuesInput (props: IssuesInputProps) {
                <AppInput
                    endEnhancer={ addressListBtn }
                    placeholder={props.placeholder || lang['IssueBadge_IssueesPlaceholder']}
-                   value={ value }
+                   value={ value.replace('.sociallayer.im', '') }
                    onChange={(e) => { onChange(e.target.value, index)} }
                    key={index.toString()}
                    onFocus={(e) => { onChange(e.target.value, index)}}
