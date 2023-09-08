@@ -222,6 +222,7 @@ const langCN: LangConfig = {
   Activity_Btn_Create: '发布活动',
   Activity_Btn_Modify: '修改活动',
   Activity_Create_title: '发布活动',
+  Activity_Create_Btn: '发布活动',
   Activity_Setting_title: '修改活动',
   Activity_Create_Done: '完成',
   Activity_Create_Success: '创建成功 🎉',

@@ -12,6 +12,7 @@ export interface CardEventProps {
     event: Event,
     fixed?: boolean,
     participants?: Participants[]
+    attend?: boolean
 }
 
 function CardEvent({fixed=true, ...props}: CardEventProps) {
@@ -23,7 +24,7 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
     const [isCreated, setIsCreated] = useState(false)
     const {user} = useContext(userContext)
 
-    const hasRegistered = props.participants?.find(item => item.event.id === props.event.id)
+    const hasRegistered = props.participants?.some(item => item.event.id === props.event.id) || props.attend
 
     const now = new Date().getTime()
     const endTime = new Date(eventDetail.ending_time!).getTime()
@@ -48,7 +49,7 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
         {(fixed || hasMarker && !fixed) &&
             <div className={'markers'}>
                 {isExpired && <div className={'marker expired'}>{lang['Activity_Detail_Expired']}</div>}
-                {!!hasRegistered && <div className={'marker registered'}>{lang['Activity_State_Registered']}</div>}
+                {hasRegistered && !isExpired && <div className={'marker registered'}>{lang['Activity_State_Registered']}</div>}
                 {isCreated && <div className={'marker created'}>{lang['Activity_Detail_Created']}</div>}
             </div>
         }

@@ -11,11 +11,6 @@ import CardEvent from "../../base/Cards/CardEvent/CardEvent";
 
 
 function ListMyAttentedEvent(props: {emptyCallBack?: () => any}) {
-    const [css] = useStyletron()
-    const navigate = useNavigate()
-    const [a, seta] = useState('')
-    const [created, setCreated] = useState<Event[]>([])
-    const [attended, setAttended] = useState<Event[]>([])
     const {user} = useContext(userContext)
 
 
@@ -34,7 +29,7 @@ function ListMyAttentedEvent(props: {emptyCallBack?: () => any}) {
     return (<div>
         <HorizontalList
             queryFunction={ getMyEvent }
-            item={(itemData: Event) => <CardEvent event={itemData} />}
+            item={(itemData: Event) => <CardEvent event={itemData} attend />}
             space={ 16 }
             itemWidth={ 300 }
             itemHeight={ 164 }

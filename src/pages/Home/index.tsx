@@ -118,7 +118,7 @@ function Home() {
                 user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public') &&
                 <div className={'create-event-btn'} onClick={e => {
                     gotoCreateEvent()
-                }}>+ {lang['Activity_Create_title']}</div>
+                }}>+ {lang['Activity_Create_Btn']}</div>
             }
         </div>
     </Layout>

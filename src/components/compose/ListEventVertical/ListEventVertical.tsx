@@ -19,7 +19,7 @@ function ListEventVertical() {
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
     const [a, seta] = useState('')
-    const [tab2Index, setTab2Index] = useState<'latest' | 'soon' | 'past'>(searchParams.get('tab') as any || 'latest')
+    const [tab2Index, setTab2Index] = useState<'latest' | 'soon' | 'past'>(searchParams.get('tab') as any || 'soon')
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
     const {user} = useContext(userContext)
@@ -83,14 +83,6 @@ function ListEventVertical() {
     return (
         <div className={'module-tabs'}>
             <div className={'tab-titles'}>
-                <div onClick={() => {setTab2Index('latest'); setSearchParams({tab: 'latest'})}}
-                     className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
-                    {lang['Activity_latest']}
-                </div>
-                <div onClick={() => setTab2Index('latest')} style={{display: 'none'}}
-                     className={tab2Index === 'latest' ? 'module-title' : 'tab-title'}>
-                    {lang['Activity_Popular']}
-                </div>
                 <div onClick={() => {setTab2Index('soon'); setSearchParams({tab: 'soon'})}}
                      className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Coming']}
