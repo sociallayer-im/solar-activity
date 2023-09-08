@@ -160,7 +160,7 @@ function UserProvider (props: UserProviderProps) {
         }
 
 
-        // if (!data) return
+        if (!data) return
 
         console.log('Login ...')
         console.log('Login type: ', loginType)
