@@ -123,7 +123,7 @@ function ListEventVertical() {
                                 setSelectTag(value)
                             }
                         }}
-                        data={eventGroup.group_event_tags.split(',')}
+                        data={eventGroup.group_event_tags}
                         value={selectTag}/>
                 </div>
             }
