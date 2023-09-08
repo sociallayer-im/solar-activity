@@ -6,6 +6,12 @@ import {getEventGroup, Profile, queryUserGroup} from "../../../service/solas";
 import UserContext from "../UserProvider/UserContext";
 import DialogsContext from "../DialogProvider/DialogsContext";
 
+const leadingEvent = {
+    id: 1572,
+    username: 'muchiangmai',
+    logo: 'https://ik.imagekit.io/soladata/iosjmr58_gFa04c32n'
+}
+
 function EventHomeProvider(props: { children: any }) {
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -22,7 +28,16 @@ function EventHomeProvider(props: { children: any }) {
         const getEventGroupList = async () => {
             const unload = showLoading()
             const eventGroup = await getEventGroup()
-            setEventGroups(eventGroup as Profile[])
+            if (leadingEvent) {
+                const leading = eventGroup.find(g => g.id === leadingEvent.id)
+                const listWithoutLeading = eventGroup.filter(g => g.id !== leadingEvent.id)
+                const toTop = [leading, ...listWithoutLeading]
+                setEventGroups(toTop as Profile[])
+            } else {
+                setEventGroups(eventGroup as Profile[])
+            }
+
+
             unload()
             setReady(true)
         }
@@ -76,7 +91,8 @@ function EventHomeProvider(props: { children: any }) {
             findGroup,
             availableList,
             ready,
-            joined
+            joined,
+            leadingEvent
         }}>
             {props.children}
         </EventHomeContext.Provider>

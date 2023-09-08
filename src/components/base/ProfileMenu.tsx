@@ -1,18 +1,18 @@
-import { useContext } from 'react'
+import {useContext} from 'react'
 import UserContext from '../provider/UserProvider/UserContext'
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import MenuItem from './MenuItem'
-import { StatefulPopover, PLACEMENT } from 'baseui/popover'
-import { useStyletron } from 'baseui'
+import {PLACEMENT, StatefulPopover} from 'baseui/popover'
+import {useStyletron} from 'baseui'
 import LangContext from '../provider/LangProvider/LangContext'
 import usePicture from '../../hooks/pictrue'
 
-function ProfileMenu () {
-    const { user, logOut } = useContext(UserContext)
-    const { lang } = useContext(LangContext)
+function ProfileMenu() {
+    const {user, logOut} = useContext(UserContext)
+    const {lang} = useContext(LangContext)
     const [css] = useStyletron()
     const navigate = useNavigate()
-    const { defaultAvatar } = usePicture()
+    const {defaultAvatar} = usePicture()
 
     const handleLogOut = () => {
         logOut()
@@ -20,14 +20,20 @@ function ProfileMenu () {
 
     const home = import.meta.env.VITE_SOLAS_HOME
     const toProfile = () => {
-       window.location.href=`${home}/profile/${user.userName}`
+        window.location.href = `${home}/profile/${user.userName}`
     }
 
     const menuContent = (close: any) => <>
-        {   !!user.domain &&
-            <MenuItem onClick={ () => { toProfile(); close() } }>{ lang['UserAction_MyProfile'] }</MenuItem>
+        {!!user.domain &&
+            <MenuItem onClick={() => {
+                toProfile();
+                close()
+            }}>{lang['UserAction_MyProfile']}</MenuItem>
         }
-        <MenuItem onClick={ () => { handleLogOut(); close() } }>{ lang['UserAction_Disconnect'] }</MenuItem>
+        <MenuItem onClick={() => {
+            handleLogOut();
+            close()
+        }}>{lang['UserAction_Disconnect']}</MenuItem>
     </>
 
     const style = {
@@ -36,22 +42,29 @@ function ProfileMenu () {
             'flex-direction': 'row',
             'flex-wrap': 'nowrap',
             alignItems: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
         },
-        img : {
+        img: {
             width: '16px',
             height: '16px',
             borderRadius: ' 50%',
             marginRight: '6px'
-        }
+        },
+        showName: {
+            maxWidth: '40px',
+            overflow: 'hidden',
+            'text-overflow': 'ellipsis',
+            whitespace: 'nowrap',
+        },
     }
 
     const overridesStyle = {
-        Body : {
+        Body: {
             style: {
                 'z-index': 999
             }
-        }}
+        }
+    }
 
     const shortAddress = (address: null | string) => {
         if (!address) return address
@@ -60,14 +73,14 @@ function ProfileMenu () {
 
     return (
         <StatefulPopover
-            overrides={ overridesStyle }
-            placement={ PLACEMENT.bottomRight }
-            returnFocus = { false }
-            content={ ({close}) => menuContent(close) }
+            overrides={overridesStyle}
+            placement={PLACEMENT.bottomRight}
+            returnFocus={false}
+            content={({close}) => menuContent(close)}
             autoFocus>
-            <div className={ css(style.wrapper) }>
-                <img className={ css(style.img) } src={ user.avatar || defaultAvatar(user.id) } alt="" />
-                { user.nickname || user.userName || shortAddress(user.wallet)|| user.email }
+            <div className={css(style.wrapper)}>
+                <img className={css(style.img)} src={user.avatar || defaultAvatar(user.id)} alt=""/>
+                <div className={css(style.showName)}> {user.nickname || user.userName || shortAddress(user.wallet) || user.email}</div>
             </div>
         </StatefulPopover>
     )

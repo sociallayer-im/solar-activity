@@ -32,10 +32,13 @@
     border: 1px solid var(--fill-6-dark, #272928);
     cursor: pointer;
 
+    img {
+      height: 20px;
+    }
+
 
     @media (max-width: 400px) {
       & {
-        max-width: 60%;
 
         > div {
           max-width: 80%;
@@ -47,7 +50,8 @@
     }
 
     &.active {
-      border: 1px solid var(--fill-6-dark, #272928);
+      background: #F5F8F6;
+      border-color: rgba(0,0,0,0);
     }
   }
 
@@ -92,6 +96,10 @@
         align-items: center;
         cursor: pointer;
         margin-bottom: 16px;
+
+        img {
+          height: 20px;
+        }
 
         &.active {
           border: 1px solid #272928;

@@ -16,7 +16,7 @@ function HomePageSwitcher() {
     const {groupname} = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const {eventGroups: groupList, ready, setEventGroup, findGroup, eventGroup, availableList} = useContext(EventHomeContext)
+    const {eventGroups: groupList, ready, setEventGroup, findGroup, eventGroup, availableList, leadingEvent} = useContext(EventHomeContext)
 
     useEffect(() => {
         if (ready && location.pathname === '/') {
@@ -54,7 +54,12 @@ function HomePageSwitcher() {
     return (<div className={'home-page-switcher'}>
         <a href={home} className={'badge-page'}>{lang['Nav_Badge_Page']}</a>
         <div className={ 'group-page active' } onClick={switchList}>
-            <div>{eventGroup ? (eventGroup.nickname || eventGroup.username) : lang['Nav_Event_Page']}</div>
+            {eventGroup ?
+                leadingEvent?.id === eventGroup.id ?
+                    <img src={leadingEvent.logo} alt={''} />
+                    :  (eventGroup.nickname || eventGroup.username)
+                : lang['Nav_Event_Page']
+            }
             <TriangleDown/>
         </div>
         {showList &&
@@ -69,7 +74,9 @@ function HomePageSwitcher() {
                                             setSelect(group)
                                             switchList()
                                         }}>
-                                {group.nickname || group.username}
+                                { leadingEvent?.id === group.id ?
+                                    <img src={leadingEvent.logo} alt={''} />
+                                    :  (group.nickname || group.username)}
                             </div>
                         })
                     }
