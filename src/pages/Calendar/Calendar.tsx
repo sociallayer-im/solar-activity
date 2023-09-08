@@ -239,7 +239,9 @@ function Calendar() {
         <div className={'calendar-page'}>
             <div className={'page-title'}>
                 <div className={'center'}>
-                    <PageBack />
+                    <PageBack onClose={() => {
+                        navigate(`/${eventGroup?.username || ''}`)
+                    }} />
                 </div>
                 <div className={'center'}>
                     <div className={'left'}>{lang['Activity_Calendar']}</div>
