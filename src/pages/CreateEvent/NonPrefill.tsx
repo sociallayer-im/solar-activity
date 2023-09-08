@@ -9,7 +9,8 @@ import AppInput from '../../components/base/AppInput'
 import UserContext from '../../components/provider/UserProvider/UserContext'
 import AppButton, {BTN_KIND} from '../../components/base/AppButton/AppButton'
 import solas, {
-    Badge, cancelEvent,
+    Badge,
+    cancelEvent,
     CreateEventProps,
     Event,
     getEventSide,
@@ -20,8 +21,7 @@ import solas, {
     Profile,
     queryEvent,
     setEventBadge,
-    updateEvent,
-    queryUserGroup
+    updateEvent
 } from '../../service/solas'
 import DialogsContext from '../../components/provider/DialogProvider/DialogsContext'
 import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
@@ -232,10 +232,10 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     useEffect(() => {
-       if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined ) {
-           navigate('/')
-           return
-       }
+        if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined) {
+            navigate('/')
+            return
+        }
     }, [joined, eventGroup])
 
     useEffect(() => {
@@ -291,7 +291,7 @@ function CreateEvent(props: CreateEventPageProps) {
             if (event.min_participant) {
                 setMinParticipants(event.min_participant)
                 setEnableMinParticipants(true)
-            } else  {
+            } else {
                 setEnableMinParticipants(false)
             }
 
@@ -349,18 +349,23 @@ function CreateEvent(props: CreateEventPageProps) {
             setLabels(tags)
         }
 
-        async function fetchLocation() {
-            const location = await getEventSide()
-            setPresetLocations(location.map((l) => ({
-                label: l.title + (l.location ? `(${l.location})` : ''),
-                id: l.id
-            })))
-        }
-
-        fetchLocation()
         fetchTags()
         fetchEventDetail()
     }, [])
+
+    useEffect(() => {
+        async function fetchLocation() {
+            if (eventGroup) {
+                const location = await getEventSide(eventGroup.id)
+                setPresetLocations(location.map((l) => ({
+                    label: l.title + (l.location ? `(${l.location})` : ''),
+                    id: l.id
+                })))
+            }
+        }
+
+        fetchLocation()
+    }, [eventGroup])
 
     useEffect(() => {
         SaveDraft()
@@ -659,7 +664,7 @@ function CreateEvent(props: CreateEventPageProps) {
                             }}/>
                         </div>
 
-                        { false &&
+                        {false &&
                             <div className='input-area'>
                                 <div className={'toggle'}>
                                     <div className={'item-title'}>{lang['Activity_Form_Checklog']}</div>
@@ -845,11 +850,13 @@ function CreateEvent(props: CreateEventPageProps) {
                         <div className={'input-area'}>
                             <div className={'input-area-title'}>{lang['Activity_Form_Wechat']}</div>
                             <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
-                            <UploadWecatQrcode  confirm={(img => {setWechatImage(img)})}
-                                                imageSelect={wechatImage} />
+                            <UploadWecatQrcode confirm={(img => {
+                                setWechatImage(img)
+                            })}
+                                               imageSelect={wechatImage}/>
                         </div>
 
-                        { !!wechatImage &&
+                        {!!wechatImage &&
                             <div className={'input-area'}>
                                 <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Account']}</div>
                                 <AppInput
