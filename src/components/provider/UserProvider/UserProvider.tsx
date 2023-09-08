@@ -164,7 +164,9 @@ function UserProvider (props: UserProviderProps) {
         console.log('Login wallet: ', address)
 
         let authToken = AuthStorage.getAuth()?.authToken
-        if (!authToken) {
+        let historyAddr = AuthStorage.getAuth()?.account
+        console.log('login authtoken: ====================================', authToken)
+        if (!authToken || historyAddr !== address) {
             const unloading = showLoading()
             try {
                 authToken = await solas.login(data)
@@ -185,6 +187,7 @@ function UserProvider (props: UserProviderProps) {
     }
 
     const login = async () => {
+        console.log('======================login=======================')
         const loginType = AuthStorage.getLastLoginType()
         if (!loginType) return
 
@@ -192,7 +195,10 @@ function UserProvider (props: UserProviderProps) {
         console.log('Login type: ', loginType)
 
         let auth = AuthStorage.getAuth()
-        if (!auth) return
+        if (!auth) {
+            console.log('======================no auth=======================')
+            return
+        }
 
         const authToken = auth.authToken
         const account = auth.account
