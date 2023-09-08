@@ -159,16 +159,15 @@ function UserProvider (props: UserProviderProps) {
             return
         }
 
-        if (!data) return
+
+        // if (!data) return
 
         console.log('Login ...')
         console.log('Login type: ', loginType)
         console.log('Login wallet: ', address)
 
-        let authToken = AuthStorage.getAuth()?.authToken
-        let historyAddr = AuthStorage.getAuth()?.account
-        console.log('login authtoken: ===================================', authToken)
-        if (!authToken || historyAddr !== address) {
+        let authToken = AuthStorage.getAuth(address)?.authToken
+        if (!authToken) {
             const unloading = showLoading()
             try {
                 authToken = await solas.login(data)
@@ -190,16 +189,14 @@ function UserProvider (props: UserProviderProps) {
     }
 
     const login = async () => {
-        console.log('======================login=======================')
         const loginType = AuthStorage.getLastLoginType()
         if (!loginType) return
 
         console.log('Login ...')
         console.log('Login type: ', loginType)
 
-        let auth = AuthStorage.getAuth()
+        let auth = AuthStorage.getAuth(address)
         if (!auth) {
-            console.log('======================no auth=======================')
             return
         }
 
@@ -221,11 +218,8 @@ function UserProvider (props: UserProviderProps) {
     }, [])
 
     useEffect(() => {
-        if (address) {
-            console.log('address change==============', address)
-        }
         walletLogin()
-    }, [address])
+    }, [data])
 
     // update profile from event
     useEffect(() => {
