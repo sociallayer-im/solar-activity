@@ -48,7 +48,7 @@ export interface Profile {
     status: 'active' | 'freezed',
     group_event_enabled: boolean,
     group_event_visibility?: 'public' | 'protected' | 'private'
-    group_event_tags: string | null,
+    group_event_tags: string[] | null,
 }
 
 export interface ProfileSimple {
@@ -414,7 +414,7 @@ export interface Group extends Profile {
     username: string
     domain: string,
     nickname: string,
-    group_event_tags: string | null
+    group_event_tags: string[] | null
 }
 
 export interface QueryUserGroupProps {
@@ -1708,10 +1708,10 @@ export interface EventSites {
     "created_at": string
 }
 
-export async function getEventSide(): Promise<EventSites[]> {
+export async function getEventSide(groupId?: number): Promise<EventSites[]> {
     const res: any = await fetch.get({
         url: `${api}/event/event_sites`,
-        data: {}
+        data: {group_id: groupId}
     })
 
     return res.data.event_sites as EventSites[]
