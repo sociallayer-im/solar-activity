@@ -58,6 +58,8 @@ interface Draft {
     event_type: 'event' | 'checklog',
     wechat_contact_group: string,
     wechat_contact_person: string,
+    telegram_contact_group: string,
+    location: string,
 }
 
 interface CreateEventPageProps {
@@ -87,7 +89,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const {showLoading, showToast, openDialog} = useContext(DialogsContext)
     const [searchParams, _] = useSearchParams()
     const [creator, setCreator] = useState<Group | Profile | null>(null)
-    const {lang} = useContext(LangContext)
+    const {lang, langType} = useContext(LangContext)
     const {eventGroup, joined} = useContext(EventHomeContext)
 
     const [cover, setCover] = useState('')
@@ -103,6 +105,8 @@ function CreateEvent(props: CreateEventPageProps) {
     const [badgeId, setBadgeId] = useState<null | number>(null)
     const [wechatImage, setWechatImage] = useState('')
     const [wechatAccount, setWechatAccount] = useState('')
+    const [customLocation, setCustomLocation] = useState('')
+    const [telegram, setTelegram] = useState('')
 
     const [start, setStart] = useState(initTime[0].toISOString())
     const [ending, setEnding] = useState(initTime[1].toISOString())
@@ -172,6 +176,8 @@ function CreateEvent(props: CreateEventPageProps) {
                 event_type: eventType,
                 wechat_contact_group: wechatImage,
                 wechat_contact_person: wechatAccount,
+                telegram_contact_group: telegram,
+                location: customLocation,
             }
             window.localStorage.setItem('event_draft', JSON.stringify(draft))
         }
@@ -185,6 +191,8 @@ function CreateEvent(props: CreateEventPageProps) {
                 setCover(draft.cover)
                 setTitle(draft.title)
                 setContent(draft.content)
+                setTelegram(draft.telegram_contact_group || '')
+                setCustomLocation(draft.location || '')
 
                 setOnlineUrl(draft.online_location || '')
 
@@ -295,6 +303,9 @@ function CreateEvent(props: CreateEventPageProps) {
                 setEnableMinParticipants(false)
             }
 
+            setTelegram(event.telegram_contact_group || '')
+            setCustomLocation(event.location || '')
+
             if (event.participants) {
                 const gustList = event.participants
                     .filter(p => p.role === 'guest')
@@ -388,7 +399,9 @@ function CreateEvent(props: CreateEventPageProps) {
         formReady,
         eventType,
         wechatImage,
-        wechatAccount
+        wechatAccount,
+        telegram,
+        customLocation,
     ])
 
     // 检查event_site在设置的event.start_time和event.ending_time否可用
@@ -512,8 +525,9 @@ function CreateEvent(props: CreateEventPageProps) {
             event_type: eventType,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
-
-            auth_token: user.authToken || ''
+            auth_token: user.authToken || '',
+            location: customLocation,
+            telegram_contact_group: telegram || null,
         }
 
         setCreating(true)
@@ -601,6 +615,8 @@ function CreateEvent(props: CreateEventPageProps) {
             event_type: eventType,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
+            location: customLocation,
+            telegram_contact_group: telegram || null,
         }
 
         const unloading = showLoading(true)
@@ -696,7 +712,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         {eventType === 'event' &&
                             <div className='input-area'>
-                                <div className='input-area-title'>{lang['Activity_Detail_Online_address']}</div>
+                                <div className='input-area-title'>{lang['Activity_Form_online_address']}</div>
                                 <AppInput
                                     clearable
                                     value={onlineUrl}
@@ -724,6 +740,18 @@ function CreateEvent(props: CreateEventPageProps) {
                             {siteOccupied && <div id='SiteError' className={'event-size-error'}>
                                 {lang['Activity_Detail_site_Occupied']}
                             </div>}
+                        </div>
+
+                        <div className='input-area'>
+                            <div className='input-area-title'>{lang['Activity_Detail_Offline_location_Custom']}</div>
+                            <AppInput
+                                clearable
+                                value={customLocation}
+                                errorMsg={''}
+                                placeholder={lang['Activity_Detail_Offline_location_Custom']}
+                                onChange={(e) => {
+                                    setCustomLocation(e.target.value)
+                                }}/>
                         </div>
 
                         {eventType === 'event' &&
@@ -846,13 +874,28 @@ function CreateEvent(props: CreateEventPageProps) {
                                 }
                             </div>}
 
-                        <div className={'input-area'}>
-                            <div className={'input-area-title'}>{lang['Activity_Form_Wechat']}</div>
-                            <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
-                            <UploadWecatQrcode confirm={(img => {
-                                setWechatImage(img)
-                            })}
-                                               imageSelect={wechatImage}/>
+
+                        {langType === 'cn' &&
+                            <div className={'input-area'}>
+                                <div className={'input-area-title'}>{lang['Activity_Form_Wechat']}</div>
+                                <div className={'input-area-des'}>{lang['Activity_Form_Wechat_Des']}</div>
+                                <UploadWecatQrcode confirm={(img => {
+                                    setWechatImage(img)
+                                })}
+                                                   imageSelect={wechatImage}/>
+                            </div>
+                        }
+
+                        <div className='input-area'>
+                            <div className='input-area-title'>{lang['Activity_Detail_Offline_Tg']}</div>
+                            <AppInput
+                                clearable
+                                value={telegram}
+                                errorMsg={''}
+                                placeholder={lang['Activity_Detail_Offline_Tg']}
+                                onChange={(e) => {
+                                    setTelegram(e.target.value)
+                                }}/>
                         </div>
 
                         {!!wechatImage &&

@@ -1535,6 +1535,7 @@ export interface Event {
     updated_at: string,
     category: null | string,
     status: string,
+    telegram_contact_group: null | string,
 
     participants: null | Participants[],
 }
