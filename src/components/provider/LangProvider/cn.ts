@@ -259,6 +259,7 @@ const langCN: LangConfig = {
   Activity_Form_Badge_Des: '活动参与者签到后，活动结束可自动收到徽章',
   Activity_Form_Badge_Select: '选择徽章',
   Activity_Form_wechat_Select: '选择图片',
+  Activity_Form_Ending_Time_Error: '结束时间不能早于开始时间',
   Activity_Detail_Btn_Modify: '修改',
   Activity_Detail_Btn_Canceled: '已经取消',
   Activity_Detail_Btn_Cancel: '取消活动',

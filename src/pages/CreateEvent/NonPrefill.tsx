@@ -121,6 +121,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [labels, setLabels] = useState<string[]>([])
     const [presetLocations, setPresetLocations] = useState<{ label: string, id: number }[]>([])
     const [onlineUrlError, setOnlineUrlError] = useState('')
+    const [startTimeError, setStartTimeError] = useState('')
     const isEditMode = !!props.eventId
     const [siteOccupied, setSiteOccupied] = useState(false)
     const [formReady, setFormReady] = useState(false)
@@ -245,6 +246,16 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
     }, [joined, eventGroup])
+
+    useEffect(() => {
+       if (start && ending) {
+              if (start > ending) {
+                setStartTimeError(lang['Activity_Form_Ending_Time_Error'])
+              } else {
+                setStartTimeError('')
+              }
+       }
+    }, [start, ending])
 
     useEffect(() => {
         const checkUrl = (url: string) => {
@@ -508,6 +519,11 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
+        if (startTimeError) {
+            showToast(lang['Activity_Form_Ending_Time_Error'])
+            return
+        }
+
         const props: CreateEventProps = {
             title: title.trim(),
             cover,
@@ -594,6 +610,11 @@ function CreateEvent(props: CreateEventPageProps) {
 
         if (!title) {
             showToast('please input title')
+            return
+        }
+
+        if (startTimeError) {
+            showToast(lang['Activity_Form_Ending_Time_Error'])
             return
         }
 
@@ -709,6 +730,10 @@ function CreateEvent(props: CreateEventPageProps) {
                                 }}/>
                             </div>
                         }
+
+                        {startTimeError && <div className={'start-time-error'}>
+                            {lang['Activity_Form_Ending_Time_Error']}
+                        </div>}
 
                         {eventType === 'event' &&
                             <div className='input-area'>
