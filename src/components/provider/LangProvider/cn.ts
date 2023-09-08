@@ -241,7 +241,7 @@ const langCN: LangConfig = {
   Activity_Form_Checklog: '作为重复打卡活动',
   Activity_Form_Name: '活动名',
   Activity_Form_Details: '内容 (选填)',
-  Activity_Form_online_address: '现实地址 (选填)',
+  Activity_Form_online_address: '线上地址 (选填)',
   Activity_Form_Starttime: '活动时间',
   Activity_Form_Ending: '结束时间',
   Activity_Form_Where: '活动地点',
