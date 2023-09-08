@@ -571,7 +571,7 @@ function CreateEvent(props: CreateEventPageProps) {
             unloading()
             showToast('create success')
             window.localStorage.removeItem('event_draft')
-            navigate(`/success/${newEvent.id}`)
+            navigate(`/success/${newEvent.id}`, {replace: true})
             setCreating(false)
         } catch (e: any) {
             unloading()
