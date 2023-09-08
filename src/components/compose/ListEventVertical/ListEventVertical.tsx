@@ -38,9 +38,16 @@ function ListEventVertical() {
     }, [searchParams])
 
     const getEvent = async (page: number) => {
+        // 获取当日0点时间戳
+        const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
+
         try {
             if (tab2Index !== 'past') {
-                let res = await queryRecommendEvent({page, rec: tab2Index, group_id: eventGroup?.id || undefined})
+                let res = await queryEvent({
+                    page,
+                    start_time_from: todayZero,
+                    event_order: 'start_time_asc',
+                    group_id: eventGroup?.id || undefined})
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -48,7 +55,11 @@ function ListEventVertical() {
                 }
                 return res
             } else {
-                let res = await queryEvent({page, group_id: eventGroup?.id || undefined, start_time_to: Math.floor(new Date().getTime() / 1000)})
+                let res = await queryEvent({
+                    page,
+                    start_time_to: todayZero,
+                    event_order: 'start_time_desc',
+                    group_id: eventGroup?.id || undefined})
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])

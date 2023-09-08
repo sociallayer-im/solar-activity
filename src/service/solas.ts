@@ -1583,6 +1583,7 @@ export interface QueryEventProps {
     start_time_from?: number,
     start_time_to?: number,
     group_id?: number,
+    event_order?: 'start_time_asc' | 'start_time_desc',
 }
 
 
