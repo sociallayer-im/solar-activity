@@ -310,7 +310,7 @@ function EventDetail() {
                                                     <img src={item.image_url || defaultAvatar(item.id)} alt=""/>
                                                     <div>
                                                         <div className={'host-name'}>{item.domain?.split('.')[0]}</div>
-                                                        <div>{lang['Activity_Form_Guest']}</div>
+                                                        <div>{lang['Activity_Detail_Guest']}</div>
                                                     </div>
                                                 </div>
                                             })
