@@ -146,7 +146,6 @@ function ListEventVertical() {
                             })
                         }
                         {!loading && <div ref={ref}></div>}
-
                     </div>
                 }
             </div>

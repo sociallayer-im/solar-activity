@@ -129,17 +129,7 @@ function Calendar() {
                 }
 
                 const task = res.map(item => {
-                    if (item.host_info) {
-                        if (item.host_info && item.host_info?.indexOf('.') > -1) {
-                            return getProfileInfo(undefined, item.host_info)
-                        } else {
-                            return getProfileInfo(parseInt(item.host_info))
-                        }
-                    } else if (item.group_id) {
-                        return getProfileInfo(item.group_id)
-                    } else {
-                        return getProfileInfo(item.owner_id)
-                    }
+                    return getProfileInfo(item.owner_id)
                 })
 
                 const eventWithProfile: EventWithProfile[] = []

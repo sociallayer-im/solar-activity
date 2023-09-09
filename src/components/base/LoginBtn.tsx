@@ -24,7 +24,8 @@ function LoginBtn () {
             }
         },
         text: {
-            marginLeft: '8px'
+            marginLeft: '8px',
+            whiteSpace: 'nowrap' as const
         }
     }
 
