@@ -107,6 +107,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [wechatAccount, setWechatAccount] = useState('')
     const [customLocation, setCustomLocation] = useState('')
     const [telegram, setTelegram] = useState('')
+    const [telegramError, setTelegramError] = useState('')
 
     const [start, setStart] = useState(initTime[0].toISOString())
     const [ending, setEnding] = useState(initTime[1].toISOString())
@@ -239,6 +240,14 @@ function CreateEvent(props: CreateEventPageProps) {
             setFormReady(true)
         }
     }
+
+    useEffect(() => {
+        if (telegram) {
+            const telegramGroupRegex = /^https?:\/\/t.me\/(joinchat\/)?[a-zA-Z0-9_-]+$/;
+            const valid = telegramGroupRegex.test(telegram)
+            setTelegramError(valid? '' : 'Invalid Telegram Group Url')
+        }
+    }, [telegram])
 
     useEffect(() => {
         if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined) {
@@ -524,6 +533,11 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
+        if (telegramError) {
+            showToast('Invalid telegram Group Url')
+            return
+        }
+
         const props: CreateEventProps = {
             title: title.trim(),
             cover,
@@ -615,6 +629,11 @@ function CreateEvent(props: CreateEventPageProps) {
 
         if (startTimeError) {
             showToast(lang['Activity_Form_Ending_Time_Error'])
+            return
+        }
+
+        if (telegramError) {
+            showToast('Invalid telegram Group Url')
             return
         }
 
@@ -916,7 +935,7 @@ function CreateEvent(props: CreateEventPageProps) {
                             <AppInput
                                 clearable
                                 value={telegram}
-                                errorMsg={''}
+                                errorMsg={telegramError}
                                 placeholder={lang['Activity_Detail_Offline_Tg']}
                                 onChange={(e) => {
                                     setTelegram(e.target.value)
