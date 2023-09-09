@@ -228,8 +228,8 @@ function CreateEvent(props: CreateEventPageProps) {
                 }
 
                 setTimeout(() => {
-                    setStart(draft.start_time)
-                    setEnding(draft.end_time)
+                    // setStart(draft.start_time)
+                    // setEnding(draft.end_time)
                     setEventSite(draft.event_site || [])
                     setFormReady(true)
                 }, 500)
