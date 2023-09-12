@@ -147,6 +147,9 @@
 .icon-calendar:before {
   content: "\e926";
 }
+.icon-edit:before {
+  content: "\e927";
+}
 
 
 

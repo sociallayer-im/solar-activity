@@ -36,6 +36,7 @@ import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
 import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/UploadWecatQrcode";
 import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
+import LocationInput from "../../components/compose/LocationInput/LocationInput";
 
 interface Draft {
     cover: string,
@@ -755,6 +756,10 @@ function CreateEvent(props: CreateEventPageProps) {
                         {startTimeError && <div className={'start-time-error'}>
                             {lang['Activity_Form_Ending_Time_Error']}
                         </div>}
+
+                        { !!eventGroup &&
+                            <LocationInput eventGroup={eventGroup} />
+                        }
 
                         {eventType === 'event' &&
                             <div className='input-area'>
