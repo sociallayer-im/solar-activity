@@ -381,9 +381,10 @@ function EventDetail() {
                                         }
                                         {!!event.telegram_contact_group &&
                                             <div className={'wechat-account'}>
-                                                <div className={'wechat-title'}>Telegram :  <a href={event.telegram_contact_group} target={'_blank'}>
+                                                <div className={'wechat-title'}>Join the Telegram group </div>
+                                                    <a href={event.telegram_contact_group} target={'_blank'}>
                                                     {event.telegram_contact_group}
-                                                </a></div>
+                                                    </a>
                                             </div>
                                         }
                                         <ReasonText className={'event-des'} text={event.content}/>

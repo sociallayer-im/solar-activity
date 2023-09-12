@@ -246,6 +246,8 @@ function CreateEvent(props: CreateEventPageProps) {
             const telegramGroupRegex = /^https?:\/\/t.me\/(joinchat\/)?[a-zA-Z0-9_-]+$/;
             const valid = telegramGroupRegex.test(telegram)
             setTelegramError(valid? '' : 'Invalid Telegram Group Url')
+        } else {
+            setTelegramError('')
         }
     }, [telegram])
 
@@ -761,7 +763,7 @@ function CreateEvent(props: CreateEventPageProps) {
                                     clearable
                                     value={onlineUrl}
                                     errorMsg={onlineUrlError}
-                                    placeholder={'Url'}
+                                    placeholder={'Url...'}
                                     onChange={(e) => {
                                         setOnlineUrl(e.target.value.trim())
                                     }}/>
@@ -862,7 +864,7 @@ function CreateEvent(props: CreateEventPageProps) {
                             {enableGuest &&
                                 <IssuesInput
                                     value={guests}
-                                    placeholder={lang['Activity_Form_Guest']}
+                                    placeholder={lang['Activity_Detail_Guest']}
                                     onChange={(newIssues) => {
                                         setGuests(newIssues)
                                     }}/>
@@ -932,11 +934,13 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         <div className='input-area'>
                             <div className='input-area-title'>{lang['Activity_Detail_Offline_Tg']}</div>
+                            <div className='input-area-des'>{lang['Activity_Detail_Offline_Tg_des']}</div>
                             <AppInput
+                                startEnhancer={() => <i className={'icon icon-link'} />}
                                 clearable
                                 value={telegram}
                                 errorMsg={telegramError}
-                                placeholder={lang['Activity_Detail_Offline_Tg']}
+                                placeholder={'Url...'}
                                 onChange={(e) => {
                                     setTelegram(e.target.value)
                                 }}/>
