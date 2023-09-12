@@ -80,6 +80,11 @@ function HomeUserPanel() {
                 <img src="/images/merge/beast_ad.jpg" alt=""/>
             </Link>
         }
+        { groupname === 'muchiangmai' &&
+            <a href='https://t.me/muchiangmai' className={'beast-banner'} target={'_blank'}>
+                <img src="https://ik.imagekit.io/soladata/83mw44pe_maUsJCxqz" alt=""/>
+            </a>
+        }
         <div className={'center'}>
             <div className={'calendar-btn'} onClick={e => {
                 toCalendar()
