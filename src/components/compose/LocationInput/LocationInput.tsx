@@ -151,6 +151,7 @@ function LocationInput(props: LocationInputProps) {
             ':authority' : 'maps.googleapis.com'
             }})
             .catch(e => {
+                
                 unload()
                 showToast('error', 'Google map search failed.')
             })
