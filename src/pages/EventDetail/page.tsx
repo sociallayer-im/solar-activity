@@ -511,7 +511,7 @@ function EventDetail() {
                                         {!canceled && isJoined && inProgress && !!event.online_location &&
                                             <AppButton
                                                 onClick={e => {
-                                                    window.open(event.online_location!, '_blank')
+                                                    window.open(getUrl(event.online_location!) || '#', '_blank')
                                                 }}
                                                 special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
                                         }
