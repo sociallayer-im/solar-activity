@@ -241,7 +241,7 @@ const langEN = {
   Activity_Form_Checklog : 'Set as a punch in location',
   Activity_Form_Name: 'Event Name',
   Activity_Form_Details: 'Event Description (Optional)',
-  Activity_Form_online_address: 'Online address (Optional)',
+  Activity_Form_online_address: 'Online',
   Activity_Form_Starttime: 'When will it happen?',
   Activity_Form_Ending: 'When will it Ending?',
   Activity_Form_Where: 'Where is the event taking place?',
@@ -273,8 +273,8 @@ const langEN = {
   Activity_Detail_Btn_add_Calender: 'Add to calendar',
   Activity_Detail_Badge: 'Registration for the event, upon completion, will be rewarded with POAP*1',
   Activity_Detail_Guest: 'Guest',
-  Activity_Detail_Offline_location: 'Preset Offline location (Optional)',
-  Activity_Detail_Offline_location_Custom: 'Custom location (Optional)',
+  Activity_Detail_Offline_location: 'In person',
+  Activity_Detail_Offline_location_Custom: 'Select the location',
   Activity_Detail_Offline_Tg: 'Event Telegram group (Optional)',
   Activity_Detail_Offline_Tg_des: 'The group link will be displayed after participants have Applied.',
   Activity_Detail_Online_address: 'Online address',
@@ -494,6 +494,10 @@ const langEN = {
   Selector_issue_type_badge: 'Send the badge',
   Selector_issue_type_amount: 'Badge amount',
 
+  Meeting_Zoom_Title: 'Zoom Meeting',
+  Meeting_Google_Title: 'Google Meeting',
+  Meeting_Tencent_Title: 'Tencent Meeting',
+  Meeting_Others_Title: 'Online meeting',
 }
 
 export type LangConfig = typeof langEN

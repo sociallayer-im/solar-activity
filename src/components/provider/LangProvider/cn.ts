@@ -244,7 +244,7 @@ const langCN: LangConfig = {
   Activity_Form_online_address: '线上地址 (选填)',
   Activity_Form_Starttime: '活动时间',
   Activity_Form_Ending: '结束时间',
-  Activity_Form_Where: '活动地点',
+  Activity_Form_Where: '在哪里举办活动？',
   Activity_Form_participants: '最大参与人数',
   Activity_Form_participants_Min: '最小参与人数',
   Activity_Form_Guest: '嘉宾 (选填)',
@@ -274,8 +274,8 @@ const langCN: LangConfig = {
   Activity_Detail_Btn_AttendOnline: '线上参与',
   Activity_Detail_Badge: '报名参加活动，结束可获得 POAP*1',
   Activity_Detail_Guest: '嘉宾',
-  Activity_Detail_Offline_location: '预设线下场地 (选填)',
-  Activity_Detail_Offline_location_Custom: '自定场地 (选填)',
+  Activity_Detail_Offline_location: '活动现场',
+  Activity_Detail_Offline_location_Custom: '选择地点',
   Activity_Detail_Offline_Tg: 'Telegram (选填)',
   Activity_Detail_Offline_Tg_des: 'The group link will be displayed after participants have Applied.',
   Activity_Detail_Online_address: '线上地址',
@@ -490,6 +490,11 @@ const langCN: LangConfig = {
 
   Selector_issue_type_badge: '发送徽章',
   Selector_issue_type_amount: '徽章数量',
+
+  Meeting_Zoom_Title: 'Zoom会议',
+  Meeting_Google_Title: 'Google会议',
+  Meeting_Tencent_Title: '腾讯会议',
+  Meeting_Others_Title: '线上会议',
 }
 
 export default langCN

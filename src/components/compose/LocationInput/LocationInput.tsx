@@ -1,5 +1,3 @@
-import {useNavigate} from 'react-router-dom'
-import {useStyletron} from 'baseui'
 import {useContext, useEffect, useRef, useState} from 'react'
 import {EventSites, getEventSide, Profile} from "../../../service/solas";
 import './LocationInput.less'
@@ -8,7 +6,6 @@ import AppInput from "../../base/AppInput";
 import {Delete} from "baseui/icon";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import langContext from "../../provider/LangProvider/LangContext";
-import fetch from "../../../utils/fetch"
 
 export interface LocationInputValue {
     customLocation: string,
@@ -19,32 +16,38 @@ export interface LocationInputValue {
 export interface GMapSearchResult {
     description: string,
     place_id: string,
+    structured_formatting: {
+        main_text: string,
+        secondary_text: string
+    }
 }
 
 export interface LocationInputProps {
+    initValue?: LocationInputValue,
     eventGroup: Profile,
     onChange?: (value: LocationInputValue) => any
 }
 
 function LocationInput(props: LocationInputProps) {
-    const [css] = useStyletron()
-    const navigate = useNavigate()
     const {showToast, showLoading} = useContext(DialogsContext)
-    const {lang, langType} = useContext(langContext)
+    const {langType, lang} = useContext(langContext)
+
 
     const [eventSiteList, setEventSiteList] = useState<EventSites[]>([])
-    const [isCustom, setIsCustom] = useState(false)
-    const [eventSite, setEventSite] = useState<{ id: number, title: string, isCreatable: boolean }[]>([])
-    const [customLocation, setCustomLocation] = useState('')
-    const [selectionSearchRes, setSelectionSearchRes] = useState<GMapSearchResult | null>()
+    const [isCustom, setIsCustom] = useState(!!props?.initValue?.customLocation || false)
+    const [eventSite, setEventSite] = useState<{ id: number, title: string, isCreatable?: boolean }[]>([])
+    const [customLocation, setCustomLocation] = useState(props?.initValue?.customLocation || '')
 
-    const [customLocationSearch, setCustomLocationSearch] = useState('')
+    const [searchKeyword, setSearchKeyword] = useState('')
+    const [customLocationDetail, setCustomLocationDetail] = useState<any>(props?.initValue?.metaData ? JSON.parse(props.initValue.metaData) : null)
     const [GmapSearchResult, setGmapSearchResult] = useState<GMapSearchResult[]>([])
     const [searching, setSearching] = useState(false)
     const [showSearchRes, setShowSearchRes] = useState(false)
 
+
     const mapService = useRef<any>(null)
     const delay = useRef<any>(null)
+    const sessionToken = useRef('')
 
     useEffect(() => {
         async function fetchLocation() {
@@ -54,7 +57,7 @@ function LocationInput(props: LocationInputProps) {
             }
         }
 
-       function initGoogleMap() {
+        function initGoogleMap() {
             const apiKey = import.meta.env.VITE_GMAP_API_KEY
             if (!apiKey) {
                 showToast('error', 'Google Map API key is not set.')
@@ -103,9 +106,14 @@ function LocationInput(props: LocationInputProps) {
                 clearTimeout(delay.current)
             }
             delay.current = setTimeout(() => {
-                if (customLocationSearch && mapService.current && !searching) {
+                if (searchKeyword && mapService.current && !searching) {
                     setSearching(true)
-                    mapService.current.getQueryPredictions({ input: customLocationSearch }, (predictions: any, status: any) => {
+                    const token = new (window as any).google.maps.places.AutocompleteSessionToken();
+                    mapService.current.getQueryPredictions({
+                        input: searchKeyword,
+                        token: token,
+                        language: langType === 'cn' ? 'zh-CN' : 'en'
+                    }, (predictions: any, status: any) => {
                         setSearching(false)
                         console.log('predictions', predictions)
                         console.log('status', status)
@@ -113,19 +121,20 @@ function LocationInput(props: LocationInputProps) {
                             showToast('error', 'Google map search failed.')
                             return
                         }
+                        sessionToken.current = token
                         setGmapSearchResult(predictions)
                     });
                 }
-            }, 400)
+            }, 200)
         }
         search()
-    }, [customLocationSearch, showSearchRes])
+    }, [searchKeyword, showSearchRes])
 
     useEffect(() => {
         const res = {
             customLocation,
             eventSite: eventSiteList.find((site) => site.id === eventSite[0]?.id) || null,
-            metaData: selectionSearchRes ? JSON.stringify(selectionSearchRes) : null
+            metaData: customLocationDetail ? JSON.stringify(customLocationDetail) : null
         }
         console.log('location value', res)
         if (props.onChange) {
@@ -134,40 +143,60 @@ function LocationInput(props: LocationInputProps) {
     }, [
         eventSite,
         customLocation,
-        selectionSearchRes
+        customLocationDetail
     ])
+
+    useEffect(() => {
+        if (showSearchRes) {
+            document.body.style.overflow = 'hidden';
+            (document.querySelector('.search-res input') as HTMLInputElement).focus()
+        } else {
+            document.body.style.overflow = 'auto'
+        }
+    }, [showSearchRes])
 
     const reset = () => {
         setEventSite([])
         setIsCustom(false)
         setCustomLocation('')
+        resetSelect()
     }
 
-    const handleSelectSearchRes = async (res: GMapSearchResult) => {
-        const lang = langType === 'cn' ? 'zh-CN' : 'en'
-        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${res.place_id}&fields=formatted_address,name,geometry&key=${import.meta.env.VITE_GMAP_API_KEY}&language=${lang}`
-        const unload = showLoading()
-        const detail = await fetch.get({url, header: {
-            ':authority' : 'maps.googleapis.com'
-            }})
-            .catch(e => {
-                
-                unload()
-                showToast('error', 'Google map search failed.')
-            })
-
-        if (detail) {
-            console.log('location detail', detail)
-        }
+    const resetSelect = () => {
+        setSearchKeyword('')
+        setGmapSearchResult([])
         setShowSearchRes(false)
-        // setCustomLocation(result.description)
-        // setSelectionSearchRes(result);
-        unload()
+        setCustomLocationDetail(null)
+    }
+
+    const handleSelectSearchRes = async (result: GMapSearchResult) => {
+        const unload = showLoading()
+       try {
+           const lang = langType === 'cn' ? 'zh-CN' : 'en'
+           const placesList = document.getElementById("map") as HTMLElement
+           const map = new (window as any).google.maps.Map(placesList)
+           const service = new (window as any).google.maps.places.PlacesService(map)
+           service.getDetails({
+               sessionToken: sessionToken.current,
+               fields: ['geometry','formatted_address','name'],
+               placeId: result.place_id
+           }, (place: any, status: string) => {
+               console.log('placeplace detail', place)
+               setShowSearchRes(false)
+               setCustomLocationDetail(place)
+               setSearchKeyword('')
+               unload()
+           })
+       } catch (e) {
+           console.error(e)
+           unload()
+       }
     }
 
     return (<div className={'input-area event-location-input'}>
-        <div className={'input-area-title'}>{'Where is the event taking place?'}</div>
-        <div className={'input-area-sub-title'}>In person</div>
+        <input type="text" id={'map'}/>
+        <div className={'input-area-title'}>{lang['Activity_Form_Where']}</div>
+        <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location']}</div>
         {!isCustom &&
             <div className={'selector'}>
                 <i className={'icon-Outline'}/>
@@ -179,11 +208,14 @@ function LocationInput(props: LocationInputProps) {
                     options={eventSiteList}
                     value={eventSite}
                     onChange={(params) => {
-                        console.log(params)
                         if (params.value.length && params.value[0].isCreatable) {
                             setIsCustom(true)
                             setEventSite([])
                             setCustomLocation(params.value[0].title)
+                            setSearchKeyword(params.value[0].title)
+                            setTimeout(() => {
+                                setShowSearchRes(true)
+                            }, 100)
                             return
                         }
 
@@ -201,35 +233,45 @@ function LocationInput(props: LocationInputProps) {
                     value={customLocation}
                     onChange={(e) => setCustomLocation(e.currentTarget.value)}
                 />
-                <div className={'input-area-sub-title'}>Select the location</div>
+                <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location_Custom']}</div>
                 <div className={'custom-selector'}>
                     {
-                        showSearchRes && <div className={'shell'} onClick={e => {setShowSearchRes(false)}} />
+                        showSearchRes && <div className={'shell'} onClick={e => {
+                            setShowSearchRes(false)
+                        }}/>
                     }
                     <AppInput
-                        onFocus={() => setShowSearchRes(true)}
+                        readOnly
+                        onFocus={(e) => {setSearchKeyword(e.target.value); setShowSearchRes(true)}}
                         startEnhancer={() => <i className={'icon-Outline'}/>}
-                        endEnhancer={() => <Delete size={24} onClick={reset} className={'delete'}/>}
+                        endEnhancer={() => <Delete size={24} onClick={resetSelect} className={'delete'}/>}
                         placeholder={'Select location'}
-                        value={customLocationSearch}
-                        onChange={(e) => setCustomLocationSearch(e.currentTarget.value)}
+                        value={customLocationDetail ? customLocationDetail.name : ''}
                     />
-                    { showSearchRes && GmapSearchResult.length > 0 &&
+                    {showSearchRes &&
                         <div className={'search-res'}>
-                            {
-                                GmapSearchResult.map((result, index) => {
-                                    let textSplit = result.description.split(', ')
-                                    const title = textSplit.shift()
-                                    const sub = textSplit.join(', ')
-                                    return  <div className={'search-res-item'}
-                                                 key={index}
-                                                 onClick={e => {
-                                                     handleSelectSearchRes(result)
-                                                    }}>
-                                        <div className={'search-title'}>{title}</div>
-                                        <div className={'search-sub-title'}>{sub}</div>
-                                    </div>
-                                })
+                            <AppInput
+                                value={searchKeyword}
+                                onChange={e => setSearchKeyword(e.currentTarget.value)}
+                                placeholder={'Search location'}
+                            />
+                            {!!GmapSearchResult.length &&
+                                <div className={'res-list'}>
+                                    {
+                                        GmapSearchResult.map((result, index) => {
+                                            const subtext = result.description
+                                            const title = result.structured_formatting.main_text
+                                            return <div className={'search-res-item'}
+                                                        key={index}
+                                                        onClick={e => {
+                                                            handleSelectSearchRes(result)
+                                                        }}>
+                                                <div className={'search-title'}>{title}</div>
+                                                <div className={'search-sub-title'}>{subtext}</div>
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             }
                         </div>
                     }

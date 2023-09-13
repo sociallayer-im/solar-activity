@@ -45,7 +45,7 @@ function AppRouter () {
                 <Route path="/regist" element={<Regist />} />
                 <Route path="/:groupname/calendar" element={<Calendar />} />
                 <Route path="/:groupname/create" element={<CreateEvent />} />
-                <Route path="/event/edit/:eventId" element={<CreateEvent />} />
+                <Route path="/:groupname/event/edit/:eventId" element={<CreateEvent />} />
                 <Route path="/checkin/:eventId" element={<EventCheckIn />} />
                 <Route path="/event/:eventId" element={<EventDetail />} />
                 <Route path="/search/:keyword" element={<Search />} />

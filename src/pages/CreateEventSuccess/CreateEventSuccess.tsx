@@ -10,6 +10,8 @@ import AppButton from "../../components/base/AppButton/AppButton";
 import saveCard from "../../utils/html2png";
 import copy from "../../utils/copy";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
+import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
+import useGetMeetingName from "../../hooks/getMeetingName";
 
 
 function CreateEventSuccess() {
@@ -20,6 +22,8 @@ function CreateEventSuccess() {
     const formatTime = useTime()
     const card = useRef<any>()
     const {showToast} = useContext(DialogsContext)
+    const {availableList, setEventGroup} = useContext(EventHomeContext)
+    const {getMeetingName} = useGetMeetingName()
 
     useEffect(() => {
         async function fetchData() {
@@ -33,6 +37,15 @@ function CreateEventSuccess() {
 
         fetchData()
     }, [eventId])
+
+    useEffect(() => {
+        if (event && availableList.length) {
+            const eventGroup = availableList.find(i => i.id === event.group_id)
+            if (eventGroup) {
+                setEventGroup(eventGroup)
+            }
+        }
+    }, [event, availableList])
 
     const isMobile = () => {
         return !!window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
@@ -82,9 +95,16 @@ function CreateEventSuccess() {
                         }
 
                         {
+                            event.location && <div className={'time'}>
+                                <i className={'icon-Outline'}/>
+                                <div>{event.location}{event.location_details? `(${JSON.parse(event.location_details).name})` : ''}</div>
+                            </div>
+                        }
+
+                        {
                             event.online_location && <div className={'time'}>
                                 <i className={'icon-link'}/>
-                                <div>{event.online_location}</div>
+                                <div>{getMeetingName(event.online_location)}</div>
                             </div>
                         }
 

@@ -1,4 +1,11 @@
 .event-location-input {
+  #map {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    display: block;
+  }
+
   .title {
     font-size: 14px;
     font-weight: 600;
@@ -49,7 +56,7 @@
       position: fixed;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0);
       left: 0;
       top: 0;
       z-index: 9;
@@ -63,16 +70,25 @@
     .search-res {
       position: absolute;
       width: 100%;
-      border-radius: 12px;
+      border-radius: 18px;
       background: var(--background-background-primary, #FFF);
       box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.12);
       z-index: 99;
-      max-height: 200px;
-      overflow: auto;
+      padding: 12px;
+      box-sizing: border-box;
+      overflow: hidden;
+
+
+      .res-list {
+        max-height: 200px;
+        overflow: auto;
+        margin-top: 12px;
+      }
 
       .search-res-item {
         padding: 12px;
         cursor: pointer;
+        border-radius: 6px;
 
         &:hover {
           background: #F5F8F6;
