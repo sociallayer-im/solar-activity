@@ -281,10 +281,10 @@ function EventDetail() {
                         }
 
                         {event.online_location &&
-                            <Link className={'detail-item'} to={getUrl(event.online_location) || '#'} target={'_blank'}>
+                            <div className={'detail-item'}>
                                 <i className={'icon-link'}/>
-                                <div>{getMeetingName(event.online_location)}</div>
-                            </Link>
+                                <div>{isJoined ? event.online_location : getMeetingName(event.online_location)}</div>
+                            </div>
                         }
 
                         {event.tags && !!event.tags.length &&
