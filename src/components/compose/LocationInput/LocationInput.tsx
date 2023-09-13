@@ -122,7 +122,7 @@ function LocationInput(props: LocationInputProps) {
                             return
                         }
                         sessionToken.current = token
-                        setGmapSearchResult(predictions)
+                        setGmapSearchResult(predictions.filter((r: any) => !!r.place_id))
                     });
                 }
             }, 200)
@@ -171,26 +171,26 @@ function LocationInput(props: LocationInputProps) {
 
     const handleSelectSearchRes = async (result: GMapSearchResult) => {
         const unload = showLoading()
-       try {
-           const lang = langType === 'cn' ? 'zh-CN' : 'en'
-           const placesList = document.getElementById("map") as HTMLElement
-           const map = new (window as any).google.maps.Map(placesList)
-           const service = new (window as any).google.maps.places.PlacesService(map)
-           service.getDetails({
-               sessionToken: sessionToken.current,
-               fields: ['geometry','formatted_address','name'],
-               placeId: result.place_id
-           }, (place: any, status: string) => {
-               console.log('placeplace detail', place)
-               setShowSearchRes(false)
-               setCustomLocationDetail(place)
-               setSearchKeyword('')
-               unload()
-           })
-       } catch (e) {
-           console.error(e)
-           unload()
-       }
+        try {
+            const lang = langType === 'cn' ? 'zh-CN' : 'en'
+            const placesList = document.getElementById("map") as HTMLElement
+            const map = new (window as any).google.maps.Map(placesList)
+            const service = new (window as any).google.maps.places.PlacesService(map)
+            service.getDetails({
+                sessionToken: sessionToken.current,
+                fields: ['geometry', 'formatted_address', 'name'],
+                placeId: result.place_id
+            }, (place: any, status: string) => {
+                console.log('placeplace detail', place)
+                setShowSearchRes(false)
+                setCustomLocationDetail(place)
+                setSearchKeyword('')
+                unload()
+            })
+        } catch (e) {
+            console.error(e)
+            unload()
+        }
     }
 
     return (<div className={'input-area event-location-input'}>
@@ -242,7 +242,10 @@ function LocationInput(props: LocationInputProps) {
                     }
                     <AppInput
                         readOnly
-                        onFocus={(e) => {setSearchKeyword(e.target.value); setShowSearchRes(true)}}
+                        onFocus={(e) => {
+                            setSearchKeyword(e.target.value);
+                            setShowSearchRes(true)
+                        }}
                         startEnhancer={() => <i className={'icon-Outline'}/>}
                         endEnhancer={() => <Delete size={24} onClick={resetSelect} className={'delete'}/>}
                         placeholder={'Select location'}
