@@ -31,7 +31,7 @@ function AppFlexTextArea(props: AppFlexTextAreaProps) {
     }
 
     return (
-        <>
+        <div className={'flex-text-area-wrapper'}>
             <div className={props.errorMsg ? 'flex-text-area error' : 'flex-text-area'}>
                 {!!props.icon &&
                     <div className={'flex-text-area-icon'}>
@@ -39,16 +39,16 @@ function AppFlexTextArea(props: AppFlexTextAreaProps) {
                     </div>
                 }
                 <div
+                    data-placeholder={props.placeholder}
                     ref={inputRef}
-                    className={'edit-box'}
+                    className={props.value ? 'edit-box' : 'edit-box empty'}
                     contentEditable
                     onInput={onChange}
                     onPaste={onChange}
-                    style={{maxHeight: props.maxHeight ? props.maxHeight + 'px' : 'initial'}}
-                    placeholder={props.placeholder || ''}/>
+                    style={{maxHeight: props.maxHeight ? props.maxHeight + 'px' : 'initial'}}/>
             </div>
             <div>{props.errorMsg}</div>
-        </>
+        </div>
     )
 }
 
