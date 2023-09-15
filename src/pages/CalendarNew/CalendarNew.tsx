@@ -23,6 +23,7 @@ const mouthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
 
 function Calendar() {
     const cache = new Map<string, EventWithProfile[]>()
+    const cacheProfile = new Map<number, Profile>()
 
     const {lang} = useContext(langContext)
     const {showLoading, showToast} = useContext(DialogsContext)
@@ -63,8 +64,15 @@ function Calendar() {
     }, [user.authToken])
 
     const getEventList = async (date?: Date) => {
-        async function getProfileInfo(id?: number, domain?: string) {
-            return await getProfile({id, domain})
+        async function getProfileInfo(id: number) {
+            const getCache = cacheProfile.get(id)
+            if (getCache) {
+                return getCache
+            } else {
+                const res = await getProfile({id})
+                cacheProfile.set(id, res!)
+                return res
+            }
         }
 
         async function fetchData(date: Date) {
@@ -93,9 +101,12 @@ function Calendar() {
             setCurrMonthEventList(getCache)
         } else {
             const events = await fetchData(target)
-            const profileList = await Promise.all(events.map((event) => {
-                return getProfileInfo(event.owner_id).catch(e => null)
-            }))
+
+            const profileList: Profile[] = []
+            for (let i = 0; i < events.length; i++) {
+                const profile = await getProfileInfo(events[i].owner_id).catch(e => null)
+                profileList.push(profile!)
+            }
 
             const eventWithProfile = events.map((event, index) => {
                 return {

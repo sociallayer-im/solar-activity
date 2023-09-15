@@ -68,13 +68,14 @@ function EventCalendar(props: EventCalendarProps) {
         getCalendarData(selected),
         getCalendarData(new Date(selected.getFullYear(), selected.getMonth() + 1, 1, 0, 0, 0, 0))
     ])
+    const [paddingRight, setPaddingRight] = useState(0)
 
     useEffect(() => {
         getWeek(today)
 
         const listener = (e: any) => {
-           console.log(e.target.scrollTop)
-           setFixed(e.target.scrollTop > 108)
+            const ifFixed = e.target.scrollTop > 107
+            setFixed(ifFixed)
         }
 
         const pagerContent = document.querySelector('#layout-content')
@@ -176,7 +177,8 @@ function EventCalendar(props: EventCalendarProps) {
                             }, 100)
                         }}>
                         {calendarDate.map((mouth: any, i) => {
-                            return <SwiperSlide key={new Date().getTime() + i} className={`swiper-slide ${mouth.month}`}>
+                            return <SwiperSlide key={new Date().getTime() + i}
+                                                className={`swiper-slide ${mouth.month}`}>
                                 <div className={'event-calendar-mouth'}>
                                     {
                                         mouth.weeks.map((week: Date[], index: number) => {
