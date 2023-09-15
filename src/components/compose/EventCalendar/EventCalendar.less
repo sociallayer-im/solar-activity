@@ -11,6 +11,7 @@
   .calendar-row {
     display: flex;
     flex-flow: row nowrap;
+    justify-content: space-around;
 
     .day-item {
       min-height: 50px;
@@ -81,6 +82,8 @@
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
+    width: 370px;
 
     .month-date {
       color: var(--fill-6-dark, #272928);
@@ -107,7 +110,7 @@
     padding-bottom: 40px;
   }
 
-  .fixed {
+  &.fixed {
     position: fixed;
     width: 100%;
     box-sizing: border-box;
@@ -118,6 +121,7 @@
     padding: 0 12px;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-flow: column;
   }
 }

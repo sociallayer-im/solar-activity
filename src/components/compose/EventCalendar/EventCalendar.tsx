@@ -73,7 +73,8 @@ function EventCalendar(props: EventCalendarProps) {
         getWeek(today)
 
         const listener = (e: any) => {
-            setFixed(e.target.scrollTop > 160)
+           console.log(e.target.scrollTop)
+           setFixed(e.target.scrollTop > 110)
         }
 
         const pagerContent = document.querySelector('#layout-content')
@@ -92,133 +93,139 @@ function EventCalendar(props: EventCalendarProps) {
         props.onSelectedDate && props.onSelectedDate(selected)
     }, [selected])
 
-    return (<div className={compactMode ? 'event-calendar' : 'event-calendar active'}>
-        <div className={fixed ? 'fixed' : ''}>
-            <div className={'action-bar'}>
-                <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
-                <div></div>
-            </div>
-            <div className={'day-name calendar-row'}>
+    let wrapperClass = 'event-calendar'
+
+    if (!compactMode) {
+        wrapperClass = wrapperClass + ' active'
+    }
+    if (fixed) {
+        wrapperClass = wrapperClass + ' fixed'
+    }
+
+    return (<div className={wrapperClass}>
+        <div className={'action-bar'}>
+            <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
+            <div></div>
+        </div>
+        <div className={'day-name calendar-row'}>
+            {
+                dayName.map((item, index) => {
+                    return <div className={'day-item'} key={index}>{item}</div>
+                })
+            }
+        </div>
+
+        {compactMode &&
+            <div className={'week-mode calendar-row'}>
                 {
-                    dayName.map((item, index) => {
-                        return <div className={'day-item'} key={index}>{item}</div>
+                    week.map((date, index) => {
+                        let className = 'day-item'
+                        if (date && selected.getTime() === date.getTime()) {
+                            className = className + ' active'
+                        }
+
+                        if (date && today.getTime() === date.getTime()) {
+                            className = className + ' curr'
+                        }
+
+                        if (props.hasEventDates && props.hasEventDates.find(item => {
+                            return item.getFullYear() === date.getFullYear()
+                                && item.getMonth() === date.getMonth()
+                                && item.getDate() === date.getDate()
+                        })) {
+                            className = className + ' has-event'
+                        }
+
+                        return <div
+                            onClick={() => {
+                                !!date && setSelected(date!)
+                            }}
+                            className={className}
+                            key={index}>{date.getDate()}</div>
                     })
                 }
             </div>
+        }
 
-            {compactMode &&
-                <div className={'week-mode calendar-row'}>
-                    {
-                        week.map((date, index) => {
-                            let className = 'day-item'
-                            if (date && selected.getTime() === date.getTime()) {
-                                className = className + ' active'
-                            }
+        {!compactMode &&
+            <div className={''}>
+                <Swiper
+                    modules={[Scrollbar, FreeMode, Mousewheel]}
+                    slidesPerView={'auto'}
+                    mousewheel={true}
+                    scrollbar={true}
+                    direction={'vertical'}
+                    observeSlideChildren
+                    onSwiper={(swiper) => {
+                        swiper.slideTo(1, 0, false)
+                    }}
+                    onSlideChange={(swiper) => {
+                        if (swiper.activeIndex === 1) return
+                        const currCalendarDate = calendarDate[swiper.activeIndex]
+                        const res = [
+                            getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month - 1, 1, 0, 0, 0, 0)),
+                            getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month, 1, 0, 0, 0, 0)),
+                            getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month + 1, 1, 0, 0, 0, 0))
+                        ]
 
-                            if (date && today.getTime() === date.getTime()) {
-                                className = className + ' curr'
-                            }
-
-                            if (props.hasEventDates && props.hasEventDates.find(item => {
-                                return item.getFullYear() === date.getFullYear()
-                                    && item.getMonth() === date.getMonth()
-                                    && item.getDate() === date.getDate()
-                            })) {
-                                className = className + ' has-event'
-                            }
-
-                            return <div
-                                onClick={() => {
-                                    !!date && setSelected(date!)
-                                }}
-                                className={className}
-                                key={index}>{date.getDate()}</div>
-                        })
-                    }
-                </div>
-            }
-
-            {!compactMode &&
-                <div className={''}>
-                    <Swiper
-                        modules={[Scrollbar, FreeMode, Mousewheel]}
-                        slidesPerView={'auto'}
-                        mousewheel={true}
-                        scrollbar={true}
-                        direction={'vertical'}
-                        observeSlideChildren
-                        onSwiper={(swiper) => {
+                        setTimeout(() => {
+                            setCalendarDate(res)
                             swiper.slideTo(1, 0, false)
-                        }}
-                        onSlideChange={(swiper) => {
-                            if (swiper.activeIndex === 1) return
-                            const currCalendarDate = calendarDate[swiper.activeIndex]
-                            const res = [
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month - 1, 1, 0, 0, 0, 0)),
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month, 1, 0, 0, 0, 0)),
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month + 1, 1, 0, 0, 0, 0))
-                            ]
+                        }, 100)
+                    }}>
+                    {calendarDate.map((mouth: any, i) => {
+                        return <SwiperSlide key={new Date().getTime() + i} className={`swiper-slide ${mouth.month}`}>
+                            <div className={'event-calendar-mouth'}>
+                                {
+                                    mouth.weeks.map((week: Date[], index: number) => {
+                                        return <div className={'calendar-row'} key={index}>
+                                            {
+                                                week.map((date, index2) => {
+                                                    let className = 'day-item'
+                                                    if (date && selected.getTime() === date.getTime()) {
+                                                        className = className + ' active'
+                                                    }
 
-                            setTimeout(() => {
-                                setCalendarDate(res)
-                                swiper.slideTo(1, 0, false)
-                            }, 100)
-                        }}>
-                        {calendarDate.map((mouth: any, i) => {
-                            return <SwiperSlide key={new Date().getTime() + i} className={`swiper-slide ${mouth.month}`}>
-                                <div className={'event-calendar-mouth'}>
-                                    {
-                                        mouth.weeks.map((week: Date[], index: number) => {
-                                            return <div className={'calendar-row'} key={index}>
-                                                {
-                                                    week.map((date, index2) => {
-                                                        let className = 'day-item'
-                                                        if (date && selected.getTime() === date.getTime()) {
-                                                            className = className + ' active'
-                                                        }
+                                                    if (date && today.getTime() === date.getTime()) {
+                                                        className = className + ' curr'
+                                                    }
 
-                                                        if (date && today.getTime() === date.getTime()) {
-                                                            className = className + ' curr'
-                                                        }
+                                                    if (date && props.hasEventDates && props.hasEventDates.find(item => {
+                                                        return item.getFullYear() === date.getFullYear()
+                                                            && item.getMonth() === date.getMonth()
+                                                            && item.getDate() === date.getDate()
+                                                    })) {
+                                                        className = className + ' has-event'
+                                                    }
 
-                                                        if (date && props.hasEventDates && props.hasEventDates.find(item => {
-                                                            return item.getFullYear() === date.getFullYear()
-                                                                && item.getMonth() === date.getMonth()
-                                                                && item.getDate() === date.getDate()
-                                                        })) {
-                                                            className = className + ' has-event'
-                                                        }
-
-                                                        return <div
-                                                            className={className}
-                                                            onClick={() => {
-                                                                !!date && setSelected(date!)
-                                                            }}
-                                                            key={index2}>
-                                                            {date ? date.getDate() : ''}
-                                                        </div>
-                                                    })
-                                                }
-                                            </div>
-                                        })
-                                    }
-                                </div>
-                            </SwiperSlide>
-                        })
-                        }
-                    </Swiper>
-                </div>
-            }
-
-            <div className={'toggle-btn'} onClick={() => {
-                setCompactMode(!compactMode)
-            }}>
-                {
-                    compactMode ? <ChevronDown size={24}/> : <ChevronUp size={24}/>
-                }
+                                                    return <div
+                                                        className={className}
+                                                        onClick={() => {
+                                                            !!date && setSelected(date!)
+                                                        }}
+                                                        key={index2}>
+                                                        {date ? date.getDate() : ''}
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
+                                    })
+                                }
+                            </div>
+                        </SwiperSlide>
+                    })
+                    }
+                </Swiper>
             </div>
-        </div>
+        }
 
+        <div className={'toggle-btn'} onClick={() => {
+            setCompactMode(!compactMode)
+        }}>
+            {
+                compactMode ? <ChevronDown size={24}/> : <ChevronUp size={24}/>
+            }
+        </div>
     </div>)
 }
 
