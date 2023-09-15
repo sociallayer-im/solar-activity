@@ -93,12 +93,11 @@ function EventCalendar(props: EventCalendarProps) {
     }, [selected])
 
     return (<div className={compactMode ? 'event-calendar' : 'event-calendar active'}>
-        <div className={'action-bar'}>
-            <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
-            <div></div>
-        </div>
-
         <div className={fixed ? 'fixed' : ''}>
+            <div className={'action-bar'}>
+                <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
+                <div></div>
+            </div>
             <div className={'day-name calendar-row'}>
                 {
                     dayName.map((item, index) => {

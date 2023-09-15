@@ -173,21 +173,7 @@ function Calendar() {
     const scrollIntoView = (id: string) => {
         const target = document.getElementById(id)
         if (target) {
-            // target.scrollIntoView({
-            //     behavior: 'smooth',
-            //     block: target.offsetTop,
-            //     inline: 'nearest'
-            // })
-            const targetHeight = target.offsetTop - 210
-            const step = 220 / 300
-            // const interval = setInterval(() => {
-            //     if (target.offsetTop > targetHeight) {
-            //         console.log(target.offsetTop ,targetHeight)
-            //         document.querySelector('#layout-content')!.scroll(0, target.offsetTop - step);
-            //     } else {
-            //         clearInterval(interval)
-            //     }
-            // }, 1)
+            const targetHeight = target.offsetTop - 260
             document.querySelector('#layout-content')!.scroll(0, targetHeight);
         }
     }
@@ -284,7 +270,6 @@ function Calendar() {
                             return <div key={index}>
                                 <div className={'date-marker'} id={`date-${item.date.getDate()}`}>
                                     <div>{item.date.getDate()} {mouthName[item.date.getMonth()]}.</div>
-                                    <div className={'split'}/>
                                 </div>
                                 <div className={'grouped-events'}>
                                     {
