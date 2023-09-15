@@ -33,6 +33,7 @@ import ListCheckinUser from "../../components/compose/ListCheckinUser/ListChecki
 import useShowImage from "../../hooks/showImage/showImage";
 import useCopy from "../../hooks/copy";
 import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
+import useGetMeetingName from "../../hooks/getMeetingName";
 
 function EventDetail() {
     const [css] = useStyletron()
@@ -49,6 +50,7 @@ function EventDetail() {
     const {showImage} = useShowImage()
     const {copy} = useCopy()
     const {eventGroups, setEventGroup, eventGroup, ready} = useContext(EventHomeContext)
+    const {getMeetingName, getUrl} = useGetMeetingName()
 
 
     const [tab, setTab] = useState(1)
@@ -190,7 +192,7 @@ function EventDetail() {
     }, [hoster, user.id])
 
     const gotoModify = () => {
-        navigate(`/event/edit/${event?.id}`)
+        navigate(`/${eventGroup?.username}/event/edit/${event?.id}`)
     }
 
     const goToProfile = (username: string, isGroup?: boolean) => {
@@ -261,22 +263,28 @@ function EventDetail() {
                                 }
                             </div>
                         }
-                        {(event.event_site || event.location) &&
+
+                        {event.event_site &&
+                            <div className={'detail-item'}>
+                                <i className={'icon-Outline'}/>
+                                <div>{event.event_site.title + ( event.event_site.location ? `(${event.event_site.location})` : '')}</div>
+                            </div>
+                        }
+
+                        { event.location &&
                             <div className={'detail-item'}>
                                 <i className={'icon-Outline'}/>
                                 <div>{
-                                    event.event_site
-                                        ? event.event_site.title + (event.event_site.location ? `(${event.event_site.location})` : '')
-                                        : event.location
+                                    event.location_details ? event.location + `(${JSON.parse(event.location_details).name})` : event.location
                                 }</div>
                             </div>
                         }
 
                         {event.online_location &&
-                            <Link className={'detail-item'} to={event.online_location} target={'_blank'}>
+                            <div className={'detail-item'}>
                                 <i className={'icon-link'}/>
-                                <div>{event.online_location}</div>
-                            </Link>
+                                <div>{isJoined ? event.online_location : getMeetingName(event.online_location)}</div>
+                            </div>
                         }
 
                         {event.tags && !!event.tags.length &&
@@ -503,7 +511,7 @@ function EventDetail() {
                                         {!canceled && isJoined && inProgress && !!event.online_location &&
                                             <AppButton
                                                 onClick={e => {
-                                                    window.open(event.online_location!, '_blank')
+                                                    window.open(getUrl(event.online_location!) || '#', '_blank')
                                                 }}
                                                 special>{lang['Activity_Detail_Btn_AttendOnline']}</AppButton>
                                         }

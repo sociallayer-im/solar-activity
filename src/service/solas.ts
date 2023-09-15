@@ -1529,6 +1529,7 @@ export interface Event {
     wechat_contact_group?: null | string,
     wechat_contact_person?: null | string,
     group_id?: null | number,
+    location_details: null | any,
 
     owner_id: number,
     created_at: string,

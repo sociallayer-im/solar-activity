@@ -134,14 +134,7 @@ function ListEventVertical() {
                 {!list.length ? <Empty/> :
                     <div className={'list'}>
                         {
-                            list.filter((item: Event) => {
-                               if (tab2Index === 'past') {
-                                   return true
-                               } else {
-                                   const now = new Date().getTime()
-                                   return new Date(item.ending_time!).getTime() >= now
-                               }
-                            }).map((item, index) => {
+                            list.map((item, index) => {
                                 return <CardEvent fixed={false} key={item.id} event={item}/>
                             })
                         }

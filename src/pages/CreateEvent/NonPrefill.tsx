@@ -28,7 +28,6 @@ import ReasonInput from '../../components/base/ReasonInput/ReasonInput'
 import SelectCreator from '../../components/compose/SelectCreator/SelectCreator'
 import AppDateInput from "../../components/base/AppDateInput/AppDateInput";
 import {Delete} from "baseui/icon";
-import {Select} from "baseui/select";
 import Toggle from "../../components/base/Toggle/Toggle";
 import IssuesInput from "../../components/base/IssuesInput/IssuesInput";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
@@ -36,6 +35,8 @@ import DialogIssuePrefill from "../../components/base/Dialog/DialogIssuePrefill/
 import {OpenDialogProps} from "../../components/provider/DialogProvider/DialogProvider";
 import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/UploadWecatQrcode";
 import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
+import LocationInput from "../../components/compose/LocationInput/LocationInput";
+import AppFlexTextArea from "../../components/base/AppFlexTextArea/AppFlexTextArea";
 
 interface Draft {
     cover: string,
@@ -43,7 +44,6 @@ interface Draft {
     content: string,
     location_type: 'online' | 'offline' | 'both',
     online_location: string,
-    event_site: { babel: string, id: number }[],
     max_participants: number,
     min_participants: number,
     enable_min_participants: boolean,
@@ -59,7 +59,6 @@ interface Draft {
     wechat_contact_group: string,
     wechat_contact_person: string,
     telegram_contact_group: string,
-    location: string,
 }
 
 interface CreateEventPageProps {
@@ -106,6 +105,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [wechatImage, setWechatImage] = useState('')
     const [wechatAccount, setWechatAccount] = useState('')
     const [customLocation, setCustomLocation] = useState('')
+    const [locationDetail, setLocationDetail] = useState('')
     const [telegram, setTelegram] = useState('')
     const [telegramError, setTelegramError] = useState('')
 
@@ -120,8 +120,6 @@ function CreateEvent(props: CreateEventPageProps) {
     const [hasDuration, setHasDuration] = useState(true)
     const [badgeDetail, setBadgeDetail] = useState<Badge | null>(null)
     const [labels, setLabels] = useState<string[]>([])
-    const [presetLocations, setPresetLocations] = useState<{ label: string, id: number }[]>([])
-    const [onlineUrlError, setOnlineUrlError] = useState('')
     const [startTimeError, setStartTimeError] = useState('')
     const isEditMode = !!props.eventId
     const [siteOccupied, setSiteOccupied] = useState(false)
@@ -163,7 +161,6 @@ function CreateEvent(props: CreateEventPageProps) {
                 content,
                 location_type: 'both',
                 online_location: onlineUrl,
-                event_site: eventSite,
                 max_participants: maxParticipants,
                 min_participants: minParticipants,
                 tags: label,
@@ -179,7 +176,6 @@ function CreateEvent(props: CreateEventPageProps) {
                 wechat_contact_group: wechatImage,
                 wechat_contact_person: wechatAccount,
                 telegram_contact_group: telegram,
-                location: customLocation,
             }
             window.localStorage.setItem('event_draft', JSON.stringify(draft))
         }
@@ -194,7 +190,6 @@ function CreateEvent(props: CreateEventPageProps) {
                 setTitle(draft.title)
                 setContent(draft.content)
                 setTelegram(draft.telegram_contact_group || '')
-                setCustomLocation(draft.location || '')
 
                 setOnlineUrl(draft.online_location || '')
 
@@ -230,7 +225,6 @@ function CreateEvent(props: CreateEventPageProps) {
                 setTimeout(() => {
                     // setStart(draft.start_time)
                     // setEnding(draft.end_time)
-                    setEventSite(draft.event_site || [])
                     setFormReady(true)
                 }, 500)
             } catch (e) {
@@ -245,7 +239,7 @@ function CreateEvent(props: CreateEventPageProps) {
         if (telegram) {
             const telegramGroupRegex = /^https?:\/\/t.me\/(joinchat\/)?[a-zA-Z0-9_-]+$/;
             const valid = telegramGroupRegex.test(telegram)
-            setTelegramError(valid? '' : 'Invalid Telegram Group Url')
+            setTelegramError(valid ? '' : 'Invalid Telegram Group Url')
         } else {
             setTelegramError('')
         }
@@ -259,31 +253,14 @@ function CreateEvent(props: CreateEventPageProps) {
     }, [joined, eventGroup])
 
     useEffect(() => {
-       if (start && ending) {
-              if (start > ending) {
+        if (start && ending) {
+            if (start > ending) {
                 setStartTimeError(lang['Activity_Form_Ending_Time_Error'])
-              } else {
+            } else {
                 setStartTimeError('')
-              }
-       }
-    }, [start, ending])
-
-    useEffect(() => {
-        const checkUrl = (url: string) => {
-            if (!url) {
-                setOnlineUrlError('')
-                return
-            }
-
-            try {
-                new URL(url)
-                setOnlineUrlError('')
-            } catch (e) {
-                setOnlineUrlError('Invalid Online address')
             }
         }
-        checkUrl(onlineUrl)
-    }, [onlineUrl])
+    }, [start, ending])
 
     useEffect(() => {
         async function fetchBadgeDetail() {
@@ -355,6 +332,12 @@ function CreateEvent(props: CreateEventPageProps) {
             if (event.wechat_contact_person) {
                 setWechatAccount(event.wechat_contact_person)
             }
+
+            if (event.location_details) {
+                setLocationDetail(event.location_details)
+            }
+
+            setFormReady(true)
         }
 
         async function fetchEventDetail() {
@@ -386,27 +369,12 @@ function CreateEvent(props: CreateEventPageProps) {
     }, [])
 
     useEffect(() => {
-        async function fetchLocation() {
-            if (eventGroup) {
-                const location = await getEventSide(eventGroup.id)
-                setPresetLocations(location.map((l) => ({
-                    label: l.title + (l.location ? `(${l.location})` : ''),
-                    id: l.id
-                })))
-            }
-        }
-
-        fetchLocation()
-    }, [eventGroup])
-
-    useEffect(() => {
         SaveDraft()
     }, [
         cover,
         title,
         content,
         onlineUrl,
-        eventSite,
         maxParticipants,
         minParticipants,
         guests,
@@ -422,8 +390,7 @@ function CreateEvent(props: CreateEventPageProps) {
         eventType,
         wechatImage,
         wechatAccount,
-        telegram,
-        customLocation,
+        telegram
     ])
 
     // 检查event_site在设置的event.start_time和event.ending_time否可用
@@ -510,11 +477,6 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        if (onlineUrlError) {
-            showToast('Invalid online address')
-            return
-        }
-
         if (new Date(start) > new Date(ending)) {
             showToast('start time should be earlier than ending time')
             return
@@ -560,6 +522,7 @@ function CreateEvent(props: CreateEventPageProps) {
             auth_token: user.authToken || '',
             location: customLocation,
             telegram_contact_group: telegram || null,
+            location_details: locationDetail
         }
 
         setCreating(true)
@@ -609,11 +572,6 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        if (onlineUrlError) {
-            showToast('Invalid online address')
-            return
-        }
-
         if (new Date(start) > new Date(ending)) {
             showToast('start time should be earlier than ending time')
             return
@@ -659,6 +617,7 @@ function CreateEvent(props: CreateEventPageProps) {
             wechat_contact_person: wechatAccount || undefined,
             location: customLocation,
             telegram_contact_group: telegram || null,
+            location_details: locationDetail
         }
 
         const unloading = showLoading(true)
@@ -756,49 +715,35 @@ function CreateEvent(props: CreateEventPageProps) {
                             {lang['Activity_Form_Ending_Time_Error']}
                         </div>}
 
+                        {!!eventGroup && ((isEditMode && formReady) || !isEditMode) &&
+                            <LocationInput
+                                initValue={isEditMode ? {
+                                    eventSite: eventSite[0] || [],
+                                    customLocation: customLocation,
+                                    metaData: locationDetail
+                                } : undefined}
+                                eventGroup={eventGroup}
+                                onChange={values => {
+                                    setEventSite(values.eventSite?.id ? [values.eventSite] : [])
+                                    setCustomLocation(values.customLocation)
+                                    setLocationDetail(values.metaData || '')
+                                }}/>
+
+                        }
+
                         {eventType === 'event' &&
                             <div className='input-area'>
                                 <div className='input-area-title'>{lang['Activity_Form_online_address']}</div>
-                                <AppInput
-                                    clearable
+                                <AppFlexTextArea
+                                    icon={<i className={'icon-link'}/>}
                                     value={onlineUrl}
-                                    errorMsg={onlineUrlError}
-                                    placeholder={'Url...'}
-                                    onChange={(e) => {
-                                        setOnlineUrl(e.target.value.trim())
-                                    }}/>
+                                    maxHeight={80}
+                                    onChange={(value) => {
+                                        setOnlineUrl(value)
+                                    }}
+                                    placeholder={'Url...'}/>
                             </div>
                         }
-
-                        <div className={'input-area'}>
-                            <div className='input-area-title'>{lang['Activity_Detail_Offline_location']}</div>
-                            <div className={'select-location'}>
-                                <i className={'icon-Outline'}/>
-                                <Select
-                                    clearable
-                                    options={presetLocations}
-                                    value={eventSite}
-                                    onChange={(params) => {
-                                        setEventSite(params.value)
-                                    }}
-                                ></Select>
-                            </div>
-                            {siteOccupied && <div id='SiteError' className={'event-size-error'}>
-                                {lang['Activity_Detail_site_Occupied']}
-                            </div>}
-                        </div>
-
-                        <div className='input-area'>
-                            <div className='input-area-title'>{lang['Activity_Detail_Offline_location_Custom']}</div>
-                            <AppInput
-                                clearable
-                                value={customLocation}
-                                errorMsg={''}
-                                placeholder={lang['Activity_Detail_Offline_location_Custom']}
-                                onChange={(e) => {
-                                    setCustomLocation(e.target.value)
-                                }}/>
-                        </div>
 
                         {eventType === 'event' &&
                             <div className={'input-area'}>
@@ -936,7 +881,7 @@ function CreateEvent(props: CreateEventPageProps) {
                             <div className='input-area-title'>{lang['Activity_Detail_Offline_Tg']}</div>
                             <div className='input-area-des'>{lang['Activity_Detail_Offline_Tg_des']}</div>
                             <AppInput
-                                startEnhancer={() => <i className={'icon icon-link'} />}
+                                startEnhancer={() => <i className={'icon icon-link'}/>}
                                 clearable
                                 value={telegram}
                                 errorMsg={telegramError}
