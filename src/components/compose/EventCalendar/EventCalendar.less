@@ -3,6 +3,27 @@
   height: 190px;
   transition: height, 100ms;
   overflow: hidden;
+  width: 100%;
+
+  &.fixed {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 46px;
+    box-sizing: border-box;
+    z-index: 99;
+    background: #F5F8F6;
+    padding: 0 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+  }
+
+  .inner {
+    margin: 0 auto;
+    max-width: 375px;
+  }
 
   &.active {
     height: 400px;
@@ -77,13 +98,13 @@
   }
 
   .action-bar {
-    padding: 12px 12px;
+    padding: 12px 6px;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
-    width: 370px;
+    width: 375px;
 
     .month-date {
       color: var(--fill-6-dark, #272928);
@@ -108,20 +129,5 @@
 
   .week-mode {
     padding-bottom: 40px;
-  }
-
-  &.fixed {
-    position: fixed;
-    width: 100%;
-    box-sizing: border-box;
-    top: 48px;
-    left: 0;
-    z-index: 99;
-    background: #F5F8F6;
-    padding: 0 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: column;
   }
 }
