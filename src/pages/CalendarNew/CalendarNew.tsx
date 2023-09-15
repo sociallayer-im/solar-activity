@@ -82,7 +82,6 @@ function Calendar() {
             })
             unload()
 
-            console.log(res)
             return res
         }
 
