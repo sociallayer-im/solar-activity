@@ -14,6 +14,7 @@ import Regist from '../pages/Regist'
 import CreateEvent from "../pages/CreateEvent";
 import CreateEventSuccess from "../pages/CreateEventSuccess/CreateEventSuccess";
 import Calendar from "../pages/Calendar/Calendar";
+import CalendarNew from "../pages/CalendarNew/CalendarNew";
 import EventCheckIn from "../pages/EventCheckIn/EventCheckIn";
 import Search from "../pages/Search";
 import PlatformLogin from "../pages/platformLogin/platformLogin";
@@ -43,7 +44,7 @@ function AppRouter () {
                 <Route path="/:groupname" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/regist" element={<Regist />} />
-                <Route path="/:groupname/calendar" element={<Calendar />} />
+                <Route path="/:groupname/calendar" element={<CalendarNew />} />
                 <Route path="/:groupname/create" element={<CreateEvent />} />
                 <Route path="/event/edit/:eventId" element={<CreateEvent />} />
                 <Route path="/checkin/:eventId" element={<EventCheckIn />} />

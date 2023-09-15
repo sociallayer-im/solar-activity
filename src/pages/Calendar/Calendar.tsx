@@ -193,9 +193,9 @@ function Calendar() {
         </div>
     })
 
-    if (initIndex > 6) {
-        initIndex = initIndex - 6
-    }
+    // if (initIndex > 6) {
+    //     initIndex = initIndex - 6
+    // }
 
     // start_time 和 end_time 相同的为同一组, 并且按照是否是自己的事件分组
     let groupedEvent: EventWithProfile[][] = []

@@ -11,15 +11,16 @@ interface AppSwiperProps {
     initIndex?: number,
     endEnhancer?: ReactNode,
     clickToSlide?: boolean,
+    boxWidth?: number
 }
 
-function Wrapper(props: { children: ReactNode, index: number, width: number, space: number, clickToSlide: boolean }) {
+function Wrapper(props: { children: ReactNode, index: number, width: number, space: number, clickToSlide: boolean, boxWidth?: number }) {
     const swiper = useSwiper()
     return <div className='swiper-inside-wrapper'  style={{width: props.width + 'px'}} onClick={e => {
         if (!props.clickToSlide) return
         setTimeout(() => {
             const windowWidth = window.innerWidth
-            const offset = Math.floor(windowWidth / (props.width + props.space) / 2)
+            const offset = Math.floor((props.boxWidth || 375) / (props.width + props.space) / 2)
             const index = props.index - offset
             console.log('swiper', swiper)
             console.log('offset', offset)
@@ -42,7 +43,7 @@ function AppSwiper(props: AppSwiperProps) {
                     const windowWidth = window.innerWidth
                     const offset = Math.floor(windowWidth / (props.itemWidth + props.space) / 2)
                     if (props.clickToSlide === undefined || props.clickToSlide) {
-                        swiper.slideTo(props.initIndex! - (offset - 5), 0, false)
+                        swiper.slideTo(props.initIndex! - (offset - 4), 0, false)
                     } else {
                         swiper.slideTo(props.initIndex, 0, false)
                     }
@@ -54,6 +55,7 @@ function AppSwiper(props: AppSwiperProps) {
         {props.items.map((item, index) => {
             return <SwiperSlide style={{width: props.itemWidth + 'px'}} key={index} virtualIndex={index}>
                 <Wrapper
+                    boxWidth={props.boxWidth}
                     clickToSlide={props.clickToSlide === undefined ? true : props.clickToSlide}
                     space={props.space}
                     index={index}
