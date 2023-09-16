@@ -129,7 +129,7 @@ function Calendar() {
                 }
 
                 const task = res.map(item => {
-                    return getProfileInfo(item.owner_id)
+                    return getProfileInfo(item.host_info? Number(item.host_info) : item.owner_id)
                 })
 
                 const eventWithProfile: EventWithProfile[] = []

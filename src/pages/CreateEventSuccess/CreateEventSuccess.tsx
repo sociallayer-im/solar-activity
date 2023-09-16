@@ -110,7 +110,7 @@ function CreateEventSuccess() {
 
                         <div className={'card-footer'}>
                             <div className={'left'}>
-                                <div>Scan the code <br/>and attend the event</div>
+                                <div>{lang['Card_Event_Success_1']} <br/>{lang['Card_Event_Success_2']}</div>
                                 <img src="/images/logo.svg" alt=""/>
                             </div>
                             <QRcode size={[63, 63]} text={'https://' + window.location.host + `/event/${eventId}`}/>

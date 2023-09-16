@@ -522,7 +522,8 @@ function CreateEvent(props: CreateEventPageProps) {
             auth_token: user.authToken || '',
             location: customLocation,
             telegram_contact_group: telegram || null,
-            location_details: locationDetail
+            location_details: locationDetail,
+            host_info: creator && creator.is_group ? creator.id + '' : undefined,
         }
 
         setCreating(true)

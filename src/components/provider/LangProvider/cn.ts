@@ -298,6 +298,9 @@ const langCN: LangConfig = {
   New_Year_3: '送你一枚徽章 扫码领取',
   Save_Card: '保存到相册',
 
+  Card_Event_Success_1: '扫描二维码',
+  Card_Event_Success_2: '参加活动',
+
   Group_invite_title: '邀请新成员',
   Group_invite_badge_name: slotLang('{groupName} 的成员'),
   Group_invite_message: '邀请信息',
