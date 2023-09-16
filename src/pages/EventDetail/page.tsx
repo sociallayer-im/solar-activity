@@ -239,7 +239,6 @@ function EventDetail() {
             !!event &&
             <div className={'event-detail'}>
                 <PageBack
-                    onClose={() => navigate(-1)}
                     menu={() => <div className={'event-share-btn'} onClick={e => {
                     copyLink()
                 }}><img src="/images/icon_share.svg" alt=""/></div>}/>

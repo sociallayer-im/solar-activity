@@ -636,7 +636,7 @@ function CreateEvent(props: CreateEventPageProps) {
             }
             unloading()
             showToast('update success')
-            navigate(`/event/${newEvent.id}`)
+            navigate(`/event/${newEvent.id}`, {replace: true})
         } catch (e: any) {
             unloading()
             console.error(e)

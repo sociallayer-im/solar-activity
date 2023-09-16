@@ -45,7 +45,7 @@ function PageBack(props: PageBackProp) {
     const navigate = useNavigate()
     const {lang} = useContext(LangContext)
     const {back, cleanCurrentHistory, history} = useContext(PageBackContext)
-    const [hideBackBtn, setHideBackBtn] = useState(true)
+    const [hideBackBtn, setHideBackBtn] = useState(false)
     const location = useLocation()
 
     const handleBack = () => {
@@ -56,7 +56,11 @@ function PageBack(props: PageBackProp) {
         } else if (props.onClose) {
             props.onClose()
         } else {
-            window.history.back()
+            if (document.referrer && (document.referrer.includes('solar') || document.referrer.includes('localhost'))) {
+                navigate(-1)
+            } else {
+                navigate('/')
+            }
         }
 
     }
@@ -76,7 +80,7 @@ function PageBack(props: PageBackProp) {
         //     ) && !props.onClose
         //
         // )
-        setHideBackBtn(window.history.length <=2 && !props.onClose)
+        // setHideBackBtn(window.history.length <=2 && !props.onClose)
     }, [history.length, location])
 
     return (
