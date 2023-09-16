@@ -3,13 +3,15 @@
   min-height: 100%;
 
   .center {
-    max-width: 450px;
+    max-width: 375px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 12px;
+    box-sizing: border-box;
   }
 
   .calendar-bar {
-    margin-top: 10px;
+    max-width: calc(375px - 24px);
+    margin: 10px auto;
   }
 
   .calendar-item {
@@ -127,9 +129,10 @@
   }
 
   .calendar-event-list {
-    max-width: 450px;
+    max-width: 375px;
     margin: 0 auto;
     padding: 20px;
+    box-sizing: border-box;
 
     .calendar-event-title {
       display: flex;

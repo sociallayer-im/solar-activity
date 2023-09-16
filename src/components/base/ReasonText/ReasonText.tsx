@@ -32,7 +32,7 @@ const ReasonText = forwardRef(function (props: ReasonTextProps, ref: any) {
             })
         }
 
-        const links = newShowText.match(/@[^\s]+/g)
+        // const links = newShowText.match(/@[^\s]+/g)
         // if (links) {
         //     // 去重
         //     const _links = [...new Set(links)]
