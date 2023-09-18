@@ -81,7 +81,7 @@ function Home() {
                     { (showMyAttend || showMyCreate) &&
                         <>
                             <div className={'center'}>
-                                <div className={'module-title'}>
+                                <div className={'module-title'} style={{marginBottom: '20px'}}>
                                     {lang['Activity_My_Event']}
                                 </div>
                             </div>

@@ -36,6 +36,10 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
         }
     }, [user.id])
 
+    useEffect(() => {
+        setEventDetail(props.event)
+    }, [props.event])
+
     const gotoDetail = () => {
         navigate(`/event/${props.event.id}`)
     }
