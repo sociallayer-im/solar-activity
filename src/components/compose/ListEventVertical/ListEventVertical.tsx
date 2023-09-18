@@ -110,18 +110,6 @@ function ListEventVertical() {
         refresh()
     }, [])
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         if (selectedEventInMap) {
-    //             document.getElementById(`marker-event-${selectedEventInMap.id}`)?.classList.add('active')
-    //         }
-    //     },200)
-    //
-    //     return () => {
-    //         clearInterval(interval)
-    //     }
-    // }, [selectedEventInMap])
-
     useEffect(() => {
         async function initMap(): Promise<void> {
             const googleMap = (window as any).google.maps
