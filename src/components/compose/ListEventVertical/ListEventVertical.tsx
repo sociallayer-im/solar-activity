@@ -50,22 +50,42 @@ function ListEventVertical() {
 
     const MarkerElement = useRef<any | null>(null)
     const MapEvent = useRef<any | null>(null)
-
-
-
     useEffect(() => {
         const loadMapLib = async () => {
             try {
-                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-                const {event} = await google.maps.importLibrary("core") as google.maps.CoreLibrary;
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary
+                const {event} = await google.maps.importLibrary("core") as google.maps.CoreLibrary
                 MarkerElement.current = AdvancedMarkerElement
                 MapEvent.current = event
-                setMapReady(true)
+
+                async function initMap(): Promise<void> {
+                    const googleMap = (window as any).google.maps
+                    if (MarkerElement.current && MapEvent.current && googleMap) {
+                        const { Map } = await googleMap.importLibrary("maps")
+                        GoogleMapRef.current = new Map(document.getElementById("gmap") as HTMLElement, {
+                            center: { lat: -34.397, lng: 150.644 },
+                            zoom: 12,
+                            language: 'en',
+                            disableDefaultUI: true,
+                            mapId: 'e2f9ddc0facd5a80'
+                        })
+
+                        GoogleMapRef.current!.addListener('mapcapabilities_changed', () => {
+                            const mapCapabilities = GoogleMapRef.current!.getMapCapabilities()
+                            if (mapCapabilities.isAdvancedMarkersAvailable) {
+                                setMapReady(true)
+                            }
+                        })
+                    }
+                }
+
+                initMap()
             } catch (e: any) {
                 console.error(e)
                 showToast(e.message)
             }
         }
+
         loadMapLib()
     },[])
 
@@ -132,25 +152,6 @@ function ListEventVertical() {
     useEffect(() => {
         setSearchParams({'mode': mode})
     }, [mode])
-
-    useEffect(() => {
-        async function initMap(): Promise<void> {
-            const googleMap = (window as any).google.maps
-            if (googleMap && mapDomRef.current && !GoogleMapRef.current) {
-                const { Map } = await googleMap.importLibrary("maps")
-                GoogleMapRef.current = new Map(document.getElementById("gmap") as HTMLElement, {
-                    center: { lat: -34.397, lng: 150.644 },
-                    zoom: 12,
-                    language: 'en',
-                    disableDefaultUI: true,
-                    mapId: 'e2f9ddc0facd5a80'
-                })
-                setMapReady(true)
-            }
-        }
-
-        initMap();
-    }, [(window as any).google, mapDomRef.current])
 
     useEffect(() => {
       if (list.length && mapReady) {
