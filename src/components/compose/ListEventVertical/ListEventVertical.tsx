@@ -53,6 +53,9 @@ function ListEventVertical() {
     const getEvent = async (page: number) => {
         // 获取当日0点时间戳
         const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
+        if (!eventGroup?.id) {
+            return []
+        }
 
         try {
             if (tab2Index !== 'past') {
@@ -88,8 +91,7 @@ function ListEventVertical() {
     }
 
     const {list, ref, refresh, loading} = scrollToLoad({
-        queryFunction: getEvent,
-        immediate: true,
+        queryFunction: getEvent
     })
 
     useEffect(() => {
@@ -99,16 +101,14 @@ function ListEventVertical() {
     }, [searchParams])
 
     useEffect(() => {
-        refresh()
+        if (eventGroup) {
+            refresh()
+        }
     }, [selectTag, tab2Index, eventGroup])
 
     useEffect(() => {
         setSearchParams({'mode': mode})
     }, [mode])
-
-    useEffect(() => {
-        refresh()
-    }, [])
 
     useEffect(() => {
         async function initMap(): Promise<void> {
@@ -139,11 +139,9 @@ function ListEventVertical() {
                 showEventInMapCenter(eventsWithLocation[0], true)
           }
 
-          setTimeout(() => {
-              showMarker(eventsWithLocation)
-          }, 100)
+          showMarker(eventsWithLocation)
       }
-    }, [list, mapReady])
+    }, [list])
 
     const findParent = (element: HTMLElement, className: string) :null | HTMLElement => {
         if (element.classList.contains(className)) {
@@ -186,6 +184,7 @@ function ListEventVertical() {
     }
 
     const showMarker = (events: Event[]) => {
+        console.trace('showMarkershowMarker')
         const eventHasLocation = events
 
         // 清除marker
