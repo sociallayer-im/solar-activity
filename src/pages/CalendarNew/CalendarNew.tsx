@@ -220,7 +220,7 @@ function Calendar() {
                             <div className={'left'}>
                                 <div
                                     className={'group-name'}>{eventGroup?.nickname || eventGroup?.username || '--'}</div>
-                                <div className={'group-name'}>{'活动日程表'}</div>
+                                <div className={'group-name'}>{'Event schedule'}</div>
                             </div>
                             <div className={'curr-date'}>
                                 <div className={'date'}>{now.getDate()}</div>
