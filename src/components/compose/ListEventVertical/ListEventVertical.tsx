@@ -24,9 +24,6 @@ import useTime from '../../../hooks/formatTime'
     // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
     // Add other bootstrap parameters as needed, using camel case.
 })
-const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-const {event} = await google.maps.importLibrary("core") as google.maps.CoreLibrary;
-
 
 function ListEventVertical() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -50,8 +47,32 @@ function ListEventVertical() {
     const [mapReady, setMapReady] = useState(false)
     const [selectedEventInMap, setSelectedEventInMap] = useState<null | Event>(null)
 
+
+    const MarkerElement = useRef<any | null>(null)
+    const MapEvent = useRef<any | null>(null)
+
+
+
+    useEffect(() => {
+        const loadMapLib = async () => {
+            try {
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+                const {event} = await google.maps.importLibrary("core") as google.maps.CoreLibrary;
+                MarkerElement.current = AdvancedMarkerElement
+                MapEvent.current = event
+                setMapReady(true)
+            } catch (e: any) {
+                console.error(e)
+                showToast(e.message)
+            }
+        }
+        loadMapLib()
+    },[])
+
     const getEvent = async (page: number) => {
         // 获取当日0点时间戳
+        const unload = showLoading()
+
         const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
         if (!eventGroup?.id) {
             return []
@@ -87,6 +108,8 @@ function ListEventVertical() {
             console.error(e)
             showToast(e.message)
             return []
+        } finally {
+            unload()
         }
     }
 
@@ -130,7 +153,7 @@ function ListEventVertical() {
     }, [(window as any).google, mapDomRef.current])
 
     useEffect(() => {
-      if (list.length && GoogleMapRef.current) {
+      if (list.length && mapReady) {
           const eventsWithLocation = list.filter(item => {
                 return !!item.location_details
           })
@@ -141,7 +164,7 @@ function ListEventVertical() {
 
           showMarker(eventsWithLocation)
       }
-    }, [list])
+    }, [list, mapReady])
 
     const findParent = (element: HTMLElement, className: string) :null | HTMLElement => {
         if (element.classList.contains(className)) {
@@ -184,7 +207,6 @@ function ListEventVertical() {
     }
 
     const showMarker = (events: Event[]) => {
-        console.trace('showMarkershowMarker')
         const eventHasLocation = events
 
         // 清除marker
@@ -217,13 +239,13 @@ function ListEventVertical() {
                 eventMarker.innerHTML = `<div class="title">${events[0].title}</div>
                                     <div class="time">${formatTime(events[0].start_time!)}</div>`
 
-                const markerView = new AdvancedMarkerElement({
+                const markerView = new MarkerElement.current({
                     map: GoogleMapRef.current,
                     position: JSON.parse(events[0].location_details).geometry.location,
                     content: eventMarker,
                 })
 
-                event.addListener(markerView, 'click', function (a: any) {
+                MapEvent.current.addListener(markerView, 'click', function (a: any) {
                     removeActive()
                     setSelectedEventInMap(events[0])
                     showEventInMapCenter(events[0])
@@ -245,13 +267,13 @@ function ListEventVertical() {
                     eventGroupMarker.appendChild(eventMarker)
                 })
 
-                const markerView = new AdvancedMarkerElement({
+                const markerView = new MarkerElement.current({
                     map: GoogleMapRef.current,
                     position: JSON.parse(events[0].location_details).geometry.location,
                     content: eventGroupMarker,
                 })
 
-                event.addListener(markerView, 'click', function (a: any) {
+                MapEvent.current.addListener(markerView, 'click', function (a: any) {
                     const eventId = Number(a.domEvent.target.getAttribute('data-event-id'))
                     const targetEvent = events.find(item => item.id === eventId)
                     setSelectedEventInMap(targetEvent!)
