@@ -29,6 +29,7 @@ function useScrollToLoad<T> (props: useScrollToLoadProps<T>) {
 
                 if (isInit) {
                     setIsEmpty(true)
+                    setList([])
                 }
             } else {
                 setList((pre) => {

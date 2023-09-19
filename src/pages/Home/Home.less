@@ -112,6 +112,21 @@
       }
     }
 
+    .toggle-compact {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      height: 16px;
+      margin-top: 6px;
+      cursor: pointer;
+    }
+
+    .toggle-compact.active {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
     .tab-contains {
       padding: 12px 20px;
       min-height: 247px;
@@ -166,6 +181,15 @@
   }
 }
 
+.no-event-on-map {
+  background: rgba(0,0,0, 0.3);
+  border-radius: 30px;
+  line-height: 30px;
+  padding: 0 20px;
+  height: 30px;
+  color: #fff
+}
+
 .switcher {
   display: flex;
   flex-flow: row nowrap;
@@ -179,7 +203,7 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    height: 29px;
+    height: 28px;
     flex-flow: row nowrap;
     align-items: center;
     width: 38px;
@@ -190,7 +214,8 @@
     font-size: 17px;
 
     .icon-menu {
-      font-size: 22px;
+      font-size: 23px;
+      transform: translateY(1px)
     }
   }
 
