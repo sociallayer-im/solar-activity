@@ -214,6 +214,14 @@ function EventDetail() {
     }
 
     const handleJoin = async () => {
+        const participantsAll = event?.participants || []
+        const participants = participantsAll.filter(item => item.status !== 'cancel')
+
+        if (event?.max_participant && event?.max_participant <= participants.length) {
+            showToast('The event at full strength')
+            return
+        }
+
         const unload = showLoading()
         try {
             const join = await joinEvent({id: Number(eventId), auth_token: user.authToken || ''})
