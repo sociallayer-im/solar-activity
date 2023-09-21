@@ -55,6 +55,7 @@ export interface EventCalendarProps {
     selectedDate?: Date
     hasEventDates?: Date[]
     onSelectedDate?: (date: Date) => any
+    onMonthChange?: (date: Date) => any
 }
 
 function EventCalendar(props: EventCalendarProps) {
@@ -170,6 +171,7 @@ function EventCalendar(props: EventCalendarProps) {
                                 getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month, 1, 0, 0, 0, 0)),
                                 getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month + 1, 1, 0, 0, 0, 0))
                             ]
+                            props.onMonthChange && props.onMonthChange(currCalendarDate.dates[0])
 
                             setTimeout(() => {
                                 setCalendarDate(res)

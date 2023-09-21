@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from 'react'
 import './CalendarNew.less'
 import langContext from "../../components/provider/LangProvider/LangContext";
-import {Event, getProfile, Profile, queryEvent, queryMyEvent} from "../../service/solas";
+import {Event, getDateList, getProfile, Profile, ProfileSimple, queryEvent, queryMyEvent} from "../../service/solas";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import Layout from "../../components/Layout/Layout";
 import {useParams, useSearchParams} from "react-router-dom";
@@ -15,15 +15,17 @@ import Empty from "../../components/base/Empty";
 
 
 interface EventWithProfile extends Event {
-    profile: Profile | null
+    profile: ProfileSimple | null
 }
 
 const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const mouthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const cache = new Map<string, EventWithProfile[]>()
+const cacheProfile = new Map<number, Profile>()
+const cacheDateHasEvent= new Map<number, Date[]>()
 
 function Calendar() {
-    const cache = new Map<string, EventWithProfile[]>()
-    const cacheProfile = new Map<number, Profile>()
+
 
     const {lang} = useContext(langContext)
     const {showLoading, showToast} = useContext(DialogsContext)
@@ -57,76 +59,80 @@ function Calendar() {
             } else {
                 setMyEvent([])
             }
-
         }
 
         fetchData2()
     }, [user.authToken])
 
-    const getEventList = async (date?: Date) => {
-        async function getProfileInfo(id: number) {
-            const getCache = cacheProfile.get(id)
-            if (getCache) {
-                return getCache
-            } else {
-                const res = await getProfile({id})
-                cacheProfile.set(id, res!)
-                return res
-            }
+    const getDateHasEvent = async (date?: Date) => {
+        const target = date || selectedDate
+        const mouthStart = new Date(target.getFullYear(), target.getMonth(), 1, 0, 0, 0, 0)
+        const mouthEnd = new Date(target.getFullYear(), target.getMonth() + 1, 0, 23, 59, 59, 999)
+
+        const checkCache = cacheDateHasEvent.get(mouthStart.getTime())
+        if (checkCache) {
+            return
         }
 
+        const res = await getDateList({
+            group_id: eventGroup!.id,
+            start_time_from: Math.floor(mouthStart.getTime() / 1000),
+            start_time_to: Math.floor(mouthEnd.getTime() / 1000),
+            page: 1,
+        })
+        setTheDateHasEvent([...theDateHasEvent, ...res])
+        cacheDateHasEvent.set(mouthStart.getTime(), res)
+    }
+
+    const getEventList = async (date?: Date) => {
         async function fetchData(date: Date) {
             const unload = showLoading()
-            const mouthStart = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0)
-            const mouthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999)
+            const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
+            const dateEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999)
 
             let res = await queryEvent({
                 group_id: eventGroup!.id,
                 event_order: 'start_time_asc',
                 page: 1,
                 tag: selectedLabel[0] || undefined,
-                start_time_from: Math.floor(mouthStart.getTime() / 1000),
-                start_time_to: Math.floor(mouthEnd.getTime() / 1000),
+                start_time_from: Math.floor(dateStart.getTime() / 1000),
+                start_time_to: Math.floor(dateEnd.getTime() / 1000),
             })
             unload()
-
             return res
         }
 
         const target = date || selectedDate
-        const mouthStart = new Date(target.getFullYear(), target.getMonth(), 1, 0, 0, 0, 0)
-        const getCache = cache.get(mouthStart.toISOString())
+        const dateStart = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0, 0)
+        const getCache = cache.get(dateStart.toISOString() + eventGroup?.username)
 
         if (getCache) {
             setCurrMonthEventList(getCache)
         } else {
             const events = await fetchData(target)
-
-            const profileList: Profile[] = []
-            for (let i = 0; i < events.length; i++) {
-                const profile = await getProfileInfo(events[i].owner_id).catch(e => null)
-                profileList.push(profile!)
-            }
-
             const eventWithProfile = events.map((event, index) => {
                 return {
                     ...event,
-                    profile: profileList[index]
+                    profile: event.event_owner
                 }
             })
 
-            const dateHasEvent = eventWithProfile.map((event) => {
-                return new Date(event.start_time!)
-            })
+
             setCurrMonthEventList(eventWithProfile)
-            setTheDateHasEvent([...dateHasEvent, ...theDateHasEvent])
-            cache.set(mouthStart.toISOString(), eventWithProfile)
+            cache.set(dateStart.toISOString() + eventGroup?.username, eventWithProfile)
+
         }
     }
 
     useEffect(() => {
         if (eventGroup) {
             getEventList()
+            getDateHasEvent()
+        }
+
+        return () => {
+            cache.clear()
+            cacheProfile.clear()
         }
     }, [selectedLabel, eventGroup])
 
@@ -134,8 +140,6 @@ function Calendar() {
         window.location.href = `/event/${id}`
     }
 
-    // 以下是归类和过滤event
-    let EventsToShow: EventWithProfile[][] = []
     let list = currMonthEventList.sort((a, b) => {
         return new Date(a.start_time!).getTime() - new Date(b.start_time!).getTime()
     })
@@ -194,21 +198,17 @@ function Calendar() {
         const month = date.getMonth()
         const currMonth = selectedDate.getMonth()
         const currYear = selectedDate.getFullYear()
-        if (year !== currYear || month !== currMonth) {
+        if (year !== currYear || month !== currMonth && eventGroup) {
+            getDateHasEvent(date)
+        }
+
+        if (eventGroup) {
             await getEventList(date)
         }
 
+
         setSearchParams({'date': date.getTime() + ''})
         setSelectedDate(date)
-        setTimeout(() => {
-            scrollIntoView(`date-${date.getDate()}`)
-        }, 100)
-    }
-
-    if (handleSelectedDate.length) {
-        setTimeout(() => {
-            scrollIntoView(`date-${selectedDate.getDate()}`)
-        }, 100)
     }
 
     return (
@@ -232,6 +232,11 @@ function Calendar() {
                         </div>
                         <div className={'calendar-wrapper'}>
                             <EventCalendar
+                                onMonthChange={async (date) =>{
+                                    if (eventGroup) {
+                                        await getDateHasEvent(date)
+                                    }
+                                }}
                                 hasEventDates={theDateHasEvent}
                                 selectedDate={selectedDate}
                                 onSelectedDate={async (date) => {
