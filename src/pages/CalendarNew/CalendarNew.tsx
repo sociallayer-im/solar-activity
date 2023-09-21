@@ -117,7 +117,6 @@ function Calendar() {
                 }
             })
 
-
             setCurrMonthEventList(eventWithProfile)
             cache.set(dateStart.toISOString() + eventGroup?.username, eventWithProfile)
 
@@ -133,6 +132,7 @@ function Calendar() {
         return () => {
             cache.clear()
             cacheProfile.clear()
+            cacheDateHasEvent.clear()
         }
     }, [selectedLabel, eventGroup])
 
