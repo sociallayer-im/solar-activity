@@ -237,7 +237,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         if (telegram) {
-            const telegramGroupRegex = /^https?:\/\/t.me\/(joinchat\/)?[a-zA-Z0-9_-]+$/;
+            const telegramGroupRegex = /^https?:\/\/t.me\//;
             const valid = telegramGroupRegex.test(telegram)
             setTelegramError(valid ? '' : 'Invalid Telegram Group Url')
         } else {
