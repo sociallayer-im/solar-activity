@@ -119,7 +119,6 @@ function Calendar() {
 
             setCurrMonthEventList(eventWithProfile)
             cache.set(dateStart.toISOString() + eventGroup?.username, eventWithProfile)
-
         }
     }
 
