@@ -67,7 +67,7 @@ function ListEventVertical() {
                             center: { lat: -34.397, lng: 150.644 },
                             zoom: 12,
                             language: 'en',
-                            disableDefaultUI: true,
+                            defaultUIZoom: 0.2,
                             mapId: 'e2f9ddc0facd5a80'
                         })
 
@@ -249,12 +249,11 @@ function ListEventVertical() {
 
         eventGrouped.map((events, index) => {
             if (events.length === 1) {
+                const time = formatTime(events[0].start_time!).split('.')[1] + '.' + formatTime(events[0].start_time!).split('.')[2]
                 const eventMarker = document.createElement('div');
-                console.log('indexindexindexindexindex', 1, index)
                 eventMarker.className = index === 0 ? 'event-map-marker active': 'event-map-marker'
                 eventMarker.id = `marker-event-${events[0].id}`
-                eventMarker.innerHTML = `<div class="title">${events[0].title}</div>
-                                    <div class="time">${formatTime(events[0].start_time!)}</div>`
+                eventMarker.innerHTML = `<div class="title"><span>${events[0].title}</span>${time}</div>`
 
                 const markerView = new MarkerElement.current({
                     map: GoogleMapRef.current,
@@ -274,13 +273,13 @@ function ListEventVertical() {
                 const eventGroupMarker = document.createElement('div');
                 eventGroupMarker.className = 'event-map-marker-group';
                 events.map((event,index_) => {
+                    const time = formatTime(event.start_time!).split('.')[1] + '.' + formatTime(event.start_time!).split('.')[2]
                     const eventMarker = document.createElement('div');
                     eventMarker.setAttribute('data-event-id', event.id + '')
                     eventMarker.className = 'event-map-marker';
                     eventMarker.className = (index=== 0 && index_===0) ? 'event-map-marker active': 'event-map-marker'
                     eventMarker.id = `marker-event-${event.id}`;
-                    eventMarker.innerHTML = `<div class="title" data-event-id="${event.id}">${event.title}</div>
-                                    <div class="time" data-event-id="${event.id}">${formatTime(event.start_time!)}</div>`
+                    eventMarker.innerHTML = `<div class="title" data-event-id="${event.id}"><span data-event-id="${event.id}">${event.title}</span>${time.split(' ')[0]}</div>`
                     eventGroupMarker.appendChild(eventMarker)
                 })
 
@@ -310,14 +309,16 @@ function ListEventVertical() {
                          className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                         {lang['Activity_Coming']}
                     </div>
-                    <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
-                         className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
-                        {lang['Activity_Past']}
-                    </div>
+                    { mode !== 'map' &&
+                        <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
+                             className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
+                            {lang['Activity_Past']}
+                        </div>
+                    }
 
                     <div className={'mode-switch'}>
                         <div className={'switcher'}>
-                            <div onClick={() => {setMode('map')}}
+                            <div onClick={() => {setTab2Index('soon');setMode('map')}}
                                  className={mode === 'map' ? 'switcher-item active': 'switcher-item'}>
                                 <i className={'icon-location'} />
                             </div>
