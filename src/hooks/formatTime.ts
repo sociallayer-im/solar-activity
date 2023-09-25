@@ -19,7 +19,7 @@ const formatTime2 = (dateString: string) => {
     const hour = dateObject.getHours() >  12 ? dateObject.getHours() - 12 + '' : dateObject.getHours() + ''
     const min = dateObject.getMinutes() + ''
     const amOrPm = dateObject.getHours() > 12 ? 'PM' : 'AM'
-    return `${week[dateObject.getDay()]}, ${mon} ${date.padStart(2, '0')} AT ${hour.padStart(2, '0')}:${min.padStart(2, '0')} `  + amOrPm
+    return `${week[dateObject.getDay()]}, ${mon} ${date.padStart(2, '0')}, ${hour.padStart(2, '0')}:${min.padStart(2, '0')} `  + amOrPm
 }
 
 function useTime () {
