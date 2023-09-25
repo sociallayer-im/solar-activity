@@ -145,7 +145,7 @@ function CreateEvent(props: CreateEventPageProps) {
             const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
             unloading()
             showToast('Cancel success')
-            navigate(`/`)
+            navigate(`/`, {replace: true})
         } catch (e) {
             unloading()
             console.error(e)
@@ -247,7 +247,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined) {
-            navigate('/')
+            navigate('/', {replace: true})
             return
         }
     }, [joined, eventGroup])
