@@ -1981,9 +1981,15 @@ export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
 }
 
 export async function getEventGroup () {
+    const specialVersion = import.meta.env.VITE_SPECIAL_VERSION
+    console.log('[special version]: ', specialVersion)
+
+
     const res = await fetch.get({
         url: `${api}/event/group_list`,
-        data: {}
+        data: {
+            group_seven_enabled: specialVersion === '706' ?  'group_list' : undefined,
+        }
     })
 
     if (res.data.result === 'error') {

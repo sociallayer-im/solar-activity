@@ -70,7 +70,8 @@ function HomePageSwitcher() {
             }>
                 {eventGroup ?
                     leadingEvent?.id === eventGroup.id ?
-                        <img src={leadingEvent.logo} alt={''}/>
+                        leadingEvent.logo ? <img src={leadingEvent.logo} alt={''}/>
+                            : (eventGroup.nickname || eventGroup.username)
                         : (eventGroup.nickname || eventGroup.username)
                     : lang['Nav_Event_Page']
                 }
@@ -90,7 +91,8 @@ function HomePageSwitcher() {
                                             switchList()
                                         }}>
                                 {leadingEvent?.id === group.id ?
-                                    <img src={leadingEvent.logo} alt={''}/>
+                                    leadingEvent.logo ? <img src={leadingEvent.logo} alt={''}/>
+                                        : (group.nickname || group.username)
                                     : (group.nickname || group.username)}
                             </div>
                         })
