@@ -6,6 +6,7 @@ import AppInput from "../../base/AppInput";
 import {Delete} from "baseui/icon";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";
 import langContext from "../../provider/LangProvider/LangContext";
+import MapContext from "../../provider/MapProvider/MapContext";
 
 export interface LocationInputValue {
     customLocation: string,
@@ -31,6 +32,7 @@ export interface LocationInputProps {
 function LocationInput(props: LocationInputProps) {
     const {showToast, showLoading} = useContext(DialogsContext)
     const {langType, lang} = useContext(langContext)
+    const {AutoComplete, Section, MapLibReady, MapReady, MapError} = useContext(MapContext)
 
 
     const [eventSiteList, setEventSiteList] = useState<EventSites[]>([])
@@ -47,7 +49,7 @@ function LocationInput(props: LocationInputProps) {
 
     const mapService = useRef<any>(null)
     const delay = useRef<any>(null)
-    const sessionToken = useRef('')
+    const sessionToken = useRef<any>(null)
 
     useEffect(() => {
         async function fetchLocation() {
@@ -58,34 +60,8 @@ function LocationInput(props: LocationInputProps) {
         }
 
         function initGoogleMap() {
-            const apiKey = import.meta.env.VITE_GMAP_API_KEY
-            if (!apiKey) {
-                showToast('error', 'Google Map API key is not set.')
-                return
-            }
-
-            if (!document.getElementById('google-map')) {
-                const script = document.createElement('script')
-                const lang = langType === 'cn' ? 'zh-CN' : 'en'
-                script.id = 'google-map'
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=${lang}`
-                script.async = true
-                script.defer = true
-                document.body.appendChild(script)
-                script.onload = () => {
-                    mapService.current = new (window as any).google.maps.places.AutocompleteService()
-                }
-
-                script.onerror = () => {
-                    showToast('Google map script load failed.')
-                }
-            } else {
-                if ((window as any).google) {
-                    mapService.current = new (window as any).google.maps.places.AutocompleteService()
-                } else {
-                    showToast('Google map script load failed.')
-                }
-            }
+            if (!MapReady) return
+            mapService.current = new AutoComplete!()
         }
 
         fetchLocation()
@@ -94,7 +70,7 @@ function LocationInput(props: LocationInputProps) {
         return () => {
             mapService.current = null
         }
-    }, [])
+    }, [MapReady])
 
     useEffect(() => {
         const search = () => {
@@ -108,12 +84,13 @@ function LocationInput(props: LocationInputProps) {
             delay.current = setTimeout(() => {
                 if (searchKeyword && mapService.current && !searching) {
                     setSearching(true)
-                    const token = new (window as any).google.maps.places.AutocompleteSessionToken();
+                    console.log('SectionSectionSection Section', Section)
+                    const token = new Section!()
                     mapService.current.getQueryPredictions({
                         input: searchKeyword,
                         token: token,
                         language: langType === 'cn' ? 'zh-CN' : 'en'
-                    }, (predictions: any, status: any) => {
+                    } as any, (predictions: any, status: any) => {
                         setSearching(false)
                         console.log('predictions', predictions)
                         console.log('status', status)

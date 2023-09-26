@@ -14,17 +14,7 @@ import './ListEventVertical.less'
 import userContext from "../../provider/UserProvider/UserContext";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 import useTime from '../../../hooks/formatTime'
-
-let MapLibReady = false
-let MapError = false;
-
-// @ts-ignore
-(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.onload=()=>{MapLibReady=true};a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>{MapError=true;h=n(Error(p+" could not load."))};a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-    key: import.meta.env.VITE_GMAP_API_KEY,
-    v: "weekly",
-    // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
-    // Add other bootstrap parameters as needed, using camel case.
-})
+import MapContext from "../../provider/MapProvider/MapContext";
 
 function ListEventVertical() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -34,64 +24,34 @@ function ListEventVertical() {
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
     const {user} = useContext(userContext)
-    const {groupname} = useParams()
-    const {ready, eventGroup} = useContext(EventHomeContext)
+    const {eventGroup} = useContext(EventHomeContext)
     const GoogleMapRef = useRef<google.maps.Map | null>()
     const mapDomRef = useRef<any>()
     const formatTime = useTime()
     const markersRef = useRef<any[]>([])
+    const {Map, MapEvent, Marker, MapError, MapReady} = useContext(MapContext)
 
     const [selectTag, setSelectTag] = useState<string[]>([])
-    const [labels, setLabels] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
     const [mode, setMode] = useState<'list' | 'map'>(searchParams.get('mode') === 'map' ? 'map' : 'list')
-    const [mapReady, setMapReady] = useState(false)
-    const [mapLibReady, setMapLibReady] = useState(MapLibReady)
-    const [mapLibError, setMapLibError] = useState(MapError)
     const [selectedEventInMap, setSelectedEventInMap] = useState<null | Event>(null)
     const [compact, setCompact] = useState(true)
 
-
-    const MarkerElement = useRef<any | null>(null)
-    const MapEvent = useRef<any | null>(null)
     useEffect(() => {
-        const loadMapLib = async () => {
-            try {
-                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary
-                const {event} = await google.maps.importLibrary("core") as google.maps.CoreLibrary
-                MarkerElement.current = AdvancedMarkerElement
-                MapEvent.current = event
-
-                async function initMap(): Promise<void> {
-                    const googleMap = (window as any).google.maps
-                    if (MarkerElement.current && MapEvent.current && googleMap) {
-                        const { Map } = await googleMap.importLibrary("maps")
-                        GoogleMapRef.current = new Map(document.getElementById("gmap") as HTMLElement, {
-                            center: { lat: -34.397, lng: 150.644 },
-                            zoom: 12,
-                            language: 'en',
-                            defaultUIZoom: 0.2,
-                            mapId: 'e2f9ddc0facd5a80'
-                        })
-
-                        GoogleMapRef.current!.addListener('mapcapabilities_changed', () => {
-                            const mapCapabilities = GoogleMapRef.current!.getMapCapabilities()
-                            if (mapCapabilities.isAdvancedMarkersAvailable) {
-                                setMapReady(true)
-                            }
-                        })
-                    }
-                }
-
-                initMap()
-            } catch (e: any) {
-                console.error(e)
-                showToast(e.message)
-            }
+        if (MapError) {
+            setMode('list')
         }
+    }, [MapError])
 
-        loadMapLib()
-    },[])
+    useEffect(() => {
+        if (MapReady && Map && MapEvent && mapDomRef.current) {
+            GoogleMapRef.current = new Map(mapDomRef.current as HTMLElement, {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 14,
+                mapId: 'e2f9ddc0facd5a80'
+            })
+        }
+    },[MapReady, mapDomRef])
 
     const getEvent = async (page: number) => {
         // 获取当日0点时间戳
@@ -158,16 +118,7 @@ function ListEventVertical() {
     }, [mode])
 
     useEffect(() => {
-        if (MapLibReady) {
-            setMapLibReady(true)
-        }
-        if (mapLibError) {
-            setMapLibError(true)
-        }
-    }, [MapLibReady, mapLibError])
-
-    useEffect(() => {
-      if (list.length && mapReady) {
+      if (list.length && MapReady) {
           const eventsWithLocation = list.filter(item => {
                 return !!item.location_details
           })
@@ -193,7 +144,7 @@ function ListEventVertical() {
                 })
           }
       }
-    }, [list, mapReady])
+    }, [list, MapReady])
 
     const findParent = (element: HTMLElement, className: string) :null | HTMLElement => {
         if (element.classList.contains(className)) {
@@ -225,7 +176,7 @@ function ListEventVertical() {
             const location = metadata.geometry.location
             GoogleMapRef.current!.setCenter(location)
             if (zoom) {
-                GoogleMapRef.current!.setZoom(12)
+                GoogleMapRef.current!.setZoom(14)
             }
 
            setTimeout(() => {
@@ -267,13 +218,13 @@ function ListEventVertical() {
                 eventMarker.id = `marker-event-${events[0].id}`
                 eventMarker.innerHTML = `<div class="title"><span>${events[0].title}</span>${time}</div>`
 
-                const markerView = new MarkerElement.current({
+                const markerView = new Marker!({
                     map: GoogleMapRef.current,
                     position: JSON.parse(events[0].location_details).geometry.location,
                     content: eventMarker,
                 })
 
-                MapEvent.current.addListener(markerView, 'click', function (a: any) {
+                MapEvent!.addListener(markerView, 'click', function (a: any) {
                     removeActive()
                     setSelectedEventInMap(events[0])
                     showEventInMapCenter(events[0])
@@ -295,13 +246,13 @@ function ListEventVertical() {
                     eventGroupMarker.appendChild(eventMarker)
                 })
 
-                const markerView = new MarkerElement.current({
+                const markerView = new Marker!({
                     map: GoogleMapRef.current,
                     position: JSON.parse(events[0].location_details).geometry.location,
                     content: eventGroupMarker,
                 })
 
-                MapEvent.current.addListener(markerView, 'click', function (a: any) {
+                MapEvent!.addListener(markerView, 'click', function (a: any) {
                     const eventId = Number(a.domEvent.target.getAttribute('data-event-id'))
                     const targetEvent = events.find(item => item.id === eventId)
                     setSelectedEventInMap(targetEvent!)
@@ -329,7 +280,7 @@ function ListEventVertical() {
                     }
 
 
-                    { mapLibReady &&
+                    { MapReady &&
                         <div className={'mode-switch'}>
                             <div className={'switcher'}>
                                 <div onClick={() => {setTab2Index('soon');setMode('map')}}
