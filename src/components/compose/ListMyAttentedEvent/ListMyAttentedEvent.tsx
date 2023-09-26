@@ -29,10 +29,10 @@ function ListMyAttentedEvent(props: {emptyCallBack?: () => any}) {
     return (<div>
         <HorizontalList
             queryFunction={ getMyEvent }
-            item={(itemData: Event) => <CardEvent event={itemData} attend />}
+            item={(itemData: Event) => <CardEvent event={itemData} attend={true} />}
             space={ 16 }
             itemWidth={ 300 }
-            itemHeight={ 164 }
+            itemHeight={ 162 }
         />
     </div>)
 }

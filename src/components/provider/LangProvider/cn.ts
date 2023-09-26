@@ -498,6 +498,9 @@ const langCN: LangConfig = {
   Meeting_Google_Title: 'Google会议',
   Meeting_Tencent_Title: '腾讯会议',
   Meeting_Others_Title: '线上会议',
+
+  Event_Card_Apply_Btn: '报名',
+  Event_Card_Applied: '已报名',
 }
 
 export default langCN

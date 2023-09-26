@@ -1,10 +1,9 @@
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import {useStyletron} from 'baseui'
+import {useNavigate, useSearchParams} from 'react-router-dom'
 import {useContext, useEffect, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {Event, getHotTags, getProfile, Profile, queryEvent, queryRecommendEvent} from "../../../service/solas";
+import {getHotTags, Participants, queryEvent, queryMyEvent} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
@@ -15,7 +14,7 @@ import userContext from "../../provider/UserProvider/UserContext";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 
 
-function ListEventVertical() {
+function ListEventVertical(props: {participants: Participants[]}) {
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -23,13 +22,12 @@ function ListEventVertical() {
     const {lang} = useContext(LangContext)
     const {showLoading, showToast} = useContext(DialogsContext)
     const {user} = useContext(userContext)
-    const {groupname} = useParams()
-    const {ready, eventGroup} = useContext(EventHomeContext)
+    const {eventGroup} = useContext(EventHomeContext)
 
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [labels, setLabels] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
-
+    const [myEvent, setMyEvent] = useState<Participants[]>([])
 
     useEffect(() => {
         if (searchParams.get('tab')) {
@@ -39,7 +37,7 @@ function ListEventVertical() {
 
     const getEvent = async (page: number) => {
         // 获取当日0点时间戳
-        const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
+        const todayZero = new Date(new Date().toLocaleDateString()).getTime() / 1000
 
         try {
             if (tab2Index !== 'past') {
@@ -47,7 +45,8 @@ function ListEventVertical() {
                     page,
                     start_time_from: todayZero,
                     event_order: 'start_time_asc',
-                    group_id: eventGroup?.id || undefined})
+                    group_id: eventGroup?.id || undefined
+                })
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -59,7 +58,8 @@ function ListEventVertical() {
                     page,
                     start_time_to: todayZero,
                     event_order: 'start_time_desc',
-                    group_id: eventGroup?.id || undefined})
+                    group_id: eventGroup?.id || undefined
+                })
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -94,11 +94,17 @@ function ListEventVertical() {
     return (
         <div className={'module-tabs'}>
             <div className={'tab-titles'}>
-                <div onClick={() => {setTab2Index('soon'); setSearchParams({tab: 'soon'})}}
+                <div onClick={() => {
+                    setTab2Index('soon');
+                    setSearchParams({tab: 'soon'})
+                }}
                      className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Coming']}
                 </div>
-                <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
+                <div onClick={() => {
+                    setTab2Index('past');
+                    setSearchParams({tab: 'past'})
+                }}
                      className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
                     {lang['Activity_Past']}
                 </div>
@@ -115,7 +121,7 @@ function ListEventVertical() {
                     value={searchKeyword}
                     startEnhancer={() => <Search/>}/>
             </div>
-            { !!eventGroup && eventGroup.group_event_tags &&
+            {!!eventGroup && eventGroup.group_event_tags &&
                 <div className={'tag-list'}>
                     <EventLabels
                         single
@@ -135,7 +141,7 @@ function ListEventVertical() {
                     <div className={'list'}>
                         {
                             list.map((item, index) => {
-                                return <CardEvent fixed={false} key={item.id} event={item}/>
+                                return <CardEvent participants={props.participants || []} fixed={false} key={item.id} event={item}/>
                             })
                         }
                         {!loading && <div ref={ref}></div>}

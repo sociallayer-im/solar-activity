@@ -199,7 +199,7 @@ const langEN = {
 
   Activity_Calendar: 'Event Calendar',
   Activity_Page_type: 'Activity',
-  Activity_State_Registered: 'Attending',
+  Activity_State_Registered: 'Applied',
   Activity_State_Created: 'Hosting',
   Activity_Online_Event: 'Online Event',
   Activity_Max_Participations: 'Up to #1 participations',
@@ -501,6 +501,9 @@ const langEN = {
   Meeting_Google_Title: 'Google Meeting',
   Meeting_Tencent_Title: 'Tencent Meeting',
   Meeting_Others_Title: 'Online meeting',
+
+  Event_Card_Apply_Btn: 'Apply',
+  Event_Card_Applied: 'Applied',
 }
 
 export type LangConfig = typeof langEN
