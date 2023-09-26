@@ -498,6 +498,13 @@ const langCN: LangConfig = {
   Meeting_Google_Title: 'Google会议',
   Meeting_Tencent_Title: '腾讯会议',
   Meeting_Others_Title: '线上会议',
+
+  Login_Phone_Title: '使用手机登录',
+  Login_Phone_alert: '请输入你的手机号',
+  Login_Phone_continue: '下一步',
+  Login_Phone_Placeholder: '您的手机号',
+  Login_Phone_input_Code_title: '验证码',
+  Login_Phone_input_Code_des: slotLang('输入你的手机 {phone} 接收到的验证码完成登录操作'),
 }
 
 export default langCN

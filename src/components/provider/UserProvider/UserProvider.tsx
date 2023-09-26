@@ -15,6 +15,7 @@ export interface User {
     userName: string | null,
     avatar: string | null,
     domain: string | null,
+    phone: string | null,
     email: string | null,
     wallet: string | null,
     twitter: string | null,
@@ -34,6 +35,7 @@ export interface UserProviderProps {
 
 const emptyUser: User = {
     id: 0,
+    phone: null,
     userName: null,
     avatar: null,
     domain: null,
@@ -59,7 +61,7 @@ function UserProvider (props: UserProviderProps) {
     }
 
 
-    const setProfile = async (props: { authToken: string, address?: string | undefined, email?: string | undefined }) => {
+    const setProfile = async (props: { authToken: string, address?: string | undefined, email?: string | undefined, phone?: string | undefined }) => {
         const unloading = showLoading()
         try {
             const profileInfo = await solas.getProfile(props)
@@ -69,6 +71,7 @@ function UserProvider (props: UserProviderProps) {
                 id: profileInfo?.id! || null,
                 twitter: profileInfo?.twitter || null,
                 domain: profileInfo?.domain || null,
+                phone: profileInfo?.phone || null,
                 userName: profileInfo?.domain ? profileInfo?.domain.split('.')[0]: null,
                 email:  profileInfo?.email || null,
                 avatar: profileInfo?.image_url || null,
@@ -144,6 +147,25 @@ function UserProvider (props: UserProviderProps) {
         setAuth(email, authToken)
     }
 
+    const phoneLogin = async () => {
+        const loginType = AuthStorage.getLastLoginType()
+        if (!loginType) return
+        if (loginType !== 'phone') return
+
+        console.log('Login ...')
+        console.log('Login type: ', loginType)
+
+        const emailAuthInfo = AuthStorage.getPhoneAuth()
+        if (!emailAuthInfo) return
+
+        const authToken = emailAuthInfo.authToken
+        const phone = emailAuthInfo.phone
+        console.log('Login phone: ', phone)
+        console.log('Storage token: ', authToken)
+        await setProfile({ phone, authToken })
+        setAuth(phone, authToken)
+    }
+
     const walletLogin = async () => {
         const loginType = AuthStorage.getLastLoginType()
         if (!loginType) return
@@ -210,6 +232,8 @@ function UserProvider (props: UserProviderProps) {
             await setProfile({ address: account, authToken })
         } else if (loginType === 'email') {
             await setProfile({ email: account, authToken })
+        }else if (loginType === 'phone') {
+            await setProfile({ phone: account, authToken })
         }
     }
 
@@ -234,7 +258,7 @@ function UserProvider (props: UserProviderProps) {
     }, [newProfile])
 
     return (
-        <UserContext.Provider value={{ user: userInfo, setUser, logOut, emailLogin, walletLogin, setProfile}}>
+        <UserContext.Provider value={{ user: userInfo, setUser, logOut, emailLogin, walletLogin, phoneLogin, setProfile}}>
             { props.children }
         </UserContext.Provider>
     )

@@ -501,6 +501,12 @@ const langEN = {
   Meeting_Google_Title: 'Google Meeting',
   Meeting_Tencent_Title: 'Tencent Meeting',
   Meeting_Others_Title: 'Online meeting',
+
+  Login_Phone_Title: 'Login with phone',
+  Login_Phone_alert: 'Enter your phone number to receive a verification code',
+  Login_Phone_Placeholder: 'Your phone number',
+  Login_Phone_input_Code_title: 'Verification code',
+  Login_Phone_input_Code_des: slotLang('Enter the code we sent to {phone} to complete your account set-up.'),
 }
 
 export type LangConfig = typeof langEN
