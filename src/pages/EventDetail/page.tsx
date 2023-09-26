@@ -427,6 +427,7 @@ function EventDetail() {
                                         }
                                         {!!hoster &&
                                             <ListCheckinUser
+                                                onChange={e=> {fetchData()}}
                                                 editable={false}
                                                 participants={participants}
                                                 isHost={isHoster}
