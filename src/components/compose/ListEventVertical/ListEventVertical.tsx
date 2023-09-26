@@ -216,7 +216,7 @@ function ListEventVertical() {
                 const eventMarker = document.createElement('div');
                 eventMarker.className = index === 0 ? 'event-map-marker active': 'event-map-marker'
                 eventMarker.id = `marker-event-${events[0].id}`
-                eventMarker.innerHTML = `<div class="title"><span>${events[0].title}</span>${time}</div>`
+                eventMarker.innerHTML = `<div class="title"><span>${events[0].title}</span>${time.split(' ')[0]}</div>`
 
                 const markerView = new Marker!({
                     map: GoogleMapRef.current,
@@ -235,6 +235,8 @@ function ListEventVertical() {
             else {
                 const eventGroupMarker = document.createElement('div');
                 eventGroupMarker.className = 'event-map-marker-group';
+                const eventGroupInner = document.createElement('div');
+                eventGroupInner.className = 'inner';
                 events.map((event,index_) => {
                     const time = formatTime(event.start_time!).split('.')[1] + '.' + formatTime(event.start_time!).split('.')[2]
                     const eventMarker = document.createElement('div');
@@ -243,8 +245,18 @@ function ListEventVertical() {
                     eventMarker.className = (index=== 0 && index_===0) ? 'event-map-marker active': 'event-map-marker'
                     eventMarker.id = `marker-event-${event.id}`;
                     eventMarker.innerHTML = `<div class="title" data-event-id="${event.id}"><span data-event-id="${event.id}">${event.title}</span>${time.split(' ')[0]}</div>`
-                    eventGroupMarker.appendChild(eventMarker)
+                    eventGroupInner.appendChild(eventMarker)
                 })
+
+                eventGroupMarker.appendChild(eventGroupInner)
+
+                if (events.length > 2) {
+                    const toggleBtn = document.createElement('div');
+                    toggleBtn.className = 'toggle-btn';
+                    toggleBtn.dataset.action = 'toggle';
+                    toggleBtn.innerHTML = `<i class="icon-Polygon-2" data-action="toggle"></i>`
+                    eventGroupMarker.appendChild(toggleBtn)
+                }
 
                 const markerView = new Marker!({
                     map: GoogleMapRef.current,
@@ -253,10 +265,23 @@ function ListEventVertical() {
                 })
 
                 MapEvent!.addListener(markerView, 'click', function (a: any) {
-                    const eventId = Number(a.domEvent.target.getAttribute('data-event-id'))
-                    const targetEvent = events.find(item => item.id === eventId)
-                    setSelectedEventInMap(targetEvent!)
-                    showEventInMapCenter(targetEvent!)
+                    const isEvent= a.domEvent.target.getAttribute('data-event-id')
+                    if (isEvent) {
+                        const eventId = Number(isEvent)
+                        const targetEvent = events.find(item => item.id === eventId)
+                        setSelectedEventInMap(targetEvent!)
+                        showEventInMapCenter(targetEvent!)
+                    }
+
+                    const isAction = a.domEvent.target.getAttribute('data-action')
+                    if (isAction) {
+                        const box = findParent(a.domEvent.target, 'event-map-marker-group')
+                        if (box!.className!.indexOf('active') > -1) {
+                            box!.classList.remove('active')
+                        } else {
+                            box!.classList.add('active')
+                        }
+                    }
                 })
 
                 markersRef.current.push(markerView)

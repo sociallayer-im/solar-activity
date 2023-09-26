@@ -242,21 +242,37 @@
 }
 
 .event-map-marker {
-  border-radius: 26px;
-  border: 1.4px solid #000;
-  background: #FFF;
-  color: #000;
-  font-size: 16px;
-  padding: 8px 20px;
+  color: #272928;
   height: auto;
   display: inline-flex;
   width: initial;
   box-sizing: border-box;
+  position: relative;
+  transform: translateY(-30px);
+
+  &:before {
+    content: '';
+    display: flex;
+    background: url("/images/map_marker.png") no-repeat;
+    width: 28px;
+    height: 48px;
+    background-size: 100%;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 40px);
+    z-index: -1;
+  }
 
   .title {
+    border-radius: 4px;
+    border: 0.5px solid var(--fill-6-dark, #272928);
+    padding: 8px;
+    background: #FFF;
     display: flex;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
+    position: relative;
     span {
       max-width: 120px;
       white-space: nowrap;
@@ -269,19 +285,88 @@
   }
 
   &.active {
-    border-color: var(--primary-color-brand-14, #6CD7B2);
-    background: var(--primary-color-brand-16, #9EFEDD);
+    .title {
+      border-color: #000;
+      background:  #000;
+      color: #fff;
+
+      span {
+        border-right-color:  #fff;
+      }
+    }
   }
 }
 
 .event-map-marker-group {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: flex-start;
+  &:before {
+    content: '';
+    display: flex;
+    background: url("/images/map_marker.png") no-repeat;
+    width: 28px;
+    height: 48px;
+    background-size: 100%;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 10px);
+    z-index: -1;
+  }
 
-  .event-map-marker {
-    margin-bottom: 1px;
+  .toggle-btn {
+    border-radius: 4px;
+    border: 0.5px solid var(--fill-6-dark, #272928);
+    padding: 8px;
+    background: #FFF;
+    transform: translateY(-30px);
+    display: flex;
+    justify-content: center;
+    color: var(--text-4-headline, #272928);
+    font-size: 12px;
+    font-weight: 400;
+
+    i {
+      transform: rotate(180deg) scale(0.55);
+      font-size: 10px;
+      transition: all  0.4s;
+    }
+
+    &:before {
+      content: 'More';
+    }
+  }
+
+  .inner {
+    max-height: 64px;
+    overflow: hidden;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    transform: translateY(-30px);
+    transition: all 0.2s;
+
+    .event-map-marker {
+      transform: none;
+
+      &:before {
+        display: none;
+      }
+    }
+  }
+
+  &.active {
+    .inner {
+      max-height: 300px ;
+    }
+    .toggle-btn {
+      &:before {
+        content: 'Less';
+      }
+
+      i {
+        transform: rotate(0deg) scale(0.55);
+      }
+    }
   }
 }
 
