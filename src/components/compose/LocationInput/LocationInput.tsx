@@ -189,10 +189,12 @@ function LocationInput(props: LocationInputProps) {
                             setIsCustom(true)
                             setEventSite([])
                             setCustomLocation(params.value[0].title)
-                            setSearchKeyword(params.value[0].title)
-                            setTimeout(() => {
-                                setShowSearchRes(true)
-                            }, 100)
+                               if (MapReady) {
+                                   setSearchKeyword(params.value[0].title)
+                                   setTimeout(() => {
+                                       setShowSearchRes(true)
+                                   }, 100)
+                               }
                             return
                         }
 
@@ -210,52 +212,58 @@ function LocationInput(props: LocationInputProps) {
                     value={customLocation}
                     onChange={(e) => setCustomLocation(e.currentTarget.value)}
                 />
-                <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location_Custom']}</div>
-                <div className={'custom-selector'}>
-                    {
-                        showSearchRes && <div className={'shell'} onClick={e => {
-                            setShowSearchRes(false)
-                        }}/>
-                    }
-                    <AppInput
-                        readOnly
-                        onFocus={(e) => {
-                            setSearchKeyword(e.target.value);
-                            setShowSearchRes(true)
-                        }}
-                        startEnhancer={() => <i className={'icon-Outline'}/>}
-                        endEnhancer={() => <Delete size={24} onClick={resetSelect} className={'delete'}/>}
-                        placeholder={'Select location'}
-                        value={customLocationDetail ? customLocationDetail.name : ''}
-                    />
-                    {showSearchRes &&
-                        <div className={'search-res'}>
+
+                { MapReady &&
+                    <>
+                        <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location_Custom']}</div>
+                        <div className={'custom-selector'}>
+                            {
+                                showSearchRes && <div className={'shell'} onClick={e => {
+                                    setShowSearchRes(false)
+                                }}/>
+                            }
                             <AppInput
-                                value={searchKeyword}
-                                onChange={e => setSearchKeyword(e.currentTarget.value)}
-                                placeholder={'Search location'}
+                                readOnly
+                                onFocus={(e) => {
+                                    setSearchKeyword(e.target.value);
+                                    setShowSearchRes(true)
+                                }}
+                                startEnhancer={() => <i className={'icon-Outline'}/>}
+                                endEnhancer={() => <Delete size={24} onClick={resetSelect} className={'delete'}/>}
+                                placeholder={'Select location'}
+                                value={customLocationDetail ? customLocationDetail.name : ''}
                             />
-                            {!!GmapSearchResult.length &&
-                                <div className={'res-list'}>
-                                    {
-                                        GmapSearchResult.map((result, index) => {
-                                            const subtext = result.description
-                                            const title = result.structured_formatting.main_text
-                                            return <div className={'search-res-item'}
-                                                        key={index}
-                                                        onClick={e => {
-                                                            handleSelectSearchRes(result)
-                                                        }}>
-                                                <div className={'search-title'}>{title}</div>
-                                                <div className={'search-sub-title'}>{subtext}</div>
-                                            </div>
-                                        })
+                            {showSearchRes &&
+                                <div className={'search-res'}>
+                                    <AppInput
+                                        value={searchKeyword}
+                                        onChange={e => setSearchKeyword(e.currentTarget.value)}
+                                        placeholder={'Search location'}
+                                    />
+                                    {!!GmapSearchResult.length &&
+                                        <div className={'res-list'}>
+                                            {
+                                                GmapSearchResult.map((result, index) => {
+                                                    const subtext = result.description
+                                                    const title = result.structured_formatting.main_text
+                                                    return <div className={'search-res-item'}
+                                                                key={index}
+                                                                onClick={e => {
+                                                                    handleSelectSearchRes(result)
+                                                                }}>
+                                                        <div className={'search-title'}>{title}</div>
+                                                        <div className={'search-sub-title'}>{subtext}</div>
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
                                     }
                                 </div>
                             }
                         </div>
-                    }
-                </div>
+                    </>
+                }
+
             </>
         }
     </div>)
