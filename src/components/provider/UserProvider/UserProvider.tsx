@@ -3,7 +3,7 @@ import {useAccount, useDisconnect, useSigner} from 'wagmi'
 import UserContext from './UserContext'
 import DialogsContext from '../DialogProvider/DialogsContext'
 import * as AuthStorage from '../../../utils/authStorage'
-import solas, {Group} from '../../../service/solas'
+import solas, {Group, myProfile} from '../../../service/solas'
 import { useNavigate } from 'react-router-dom'
 import useEvent, {EVENT} from '../../../hooks/globalEvent'
 
@@ -64,7 +64,7 @@ function UserProvider (props: UserProviderProps) {
     const setProfile = async (props: { authToken: string, address?: string | undefined, email?: string | undefined, phone?: string | undefined }) => {
         const unloading = showLoading()
         try {
-            const profileInfo = await solas.getProfile(props)
+            const profileInfo = await solas.myProfile({auth_token: props.authToken})
             console.log('Profile: ', profileInfo)
             setUser({
                 wallet: profileInfo?.address,

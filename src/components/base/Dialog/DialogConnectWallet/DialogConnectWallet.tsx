@@ -97,9 +97,9 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
             </div>
             { arrowPhoneLogin &&
                 <div className='connect-item' onClick={ handlePhoneLogin }>
-                    <img src="/images/email.svg" alt="email"/>
-                    <div className='connect-name'>Email</div>
-                    <div className='connect-des'>{ lang['Login_alert'] }</div>
+                    <img src="/images/phone_login.png" alt="email"/>
+                    <div className='connect-name'>Phone</div>
+                    <div className='connect-des'>{ lang['Login_Phone_Title'] }</div>
                 </div>
             }
         </div>
