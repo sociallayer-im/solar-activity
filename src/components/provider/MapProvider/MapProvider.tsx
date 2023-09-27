@@ -19,7 +19,7 @@ function MapProvider(props: { children: any }) {
     const interVal = useRef<any>(null)
 
     const Timing = () => {
-        let count = 1
+        let count = 2
         let interval: any
         return new Promise((resolve, _reject) => {
             interval = setInterval(() => {
