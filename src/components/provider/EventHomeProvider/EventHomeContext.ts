@@ -7,7 +7,7 @@ interface EventHomeContextType {
     userGroup: Profile[],
     ready: boolean,
     joined: boolean,
-    leadingEvent: null | {id: number, username: string, logo: string}
+    leadingEvent: null | {id: number, username: string, logo: string | null}
     eventGroup: Profile | null,
     setEventGroup: (group: Profile) => any,
     findGroup: (username: string) => any,

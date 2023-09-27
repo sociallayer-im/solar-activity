@@ -56,7 +56,7 @@ function Layout(props?: any) {
     return (
         <div className={ css(wrapper) }>
             <PageHeader />
-            <div className={ css(content)} >
+            <div className={css(content)} id={'layout-content'}>
                 {props.children}
             </div>
         </div>

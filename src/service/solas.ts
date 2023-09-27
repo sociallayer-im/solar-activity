@@ -57,6 +57,8 @@ export interface ProfileSimple {
     domain: string | null,
     image_url: string | null,
     email: string | null,
+    nickname?: string | null,
+    username?: string | null,
 }
 
 interface GetProfileProps {
@@ -1530,6 +1532,7 @@ export interface Event {
     wechat_contact_person?: null | string,
     group_id?: null | number,
     location_details: null | any,
+    event_owner: ProfileSimple,
 
     owner_id: number,
     created_at: string,
@@ -1978,9 +1981,15 @@ export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
 }
 
 export async function getEventGroup () {
+    const specialVersion = import.meta.env.VITE_SPECIAL_VERSION
+    console.log('[special version]: ', specialVersion)
+
+
     const res = await fetch.get({
         url: `${api}/event/group_list`,
-        data: {}
+        data: {
+            group_seven_enabled: specialVersion === '706' ?  'group_list' : undefined,
+        }
     })
 
     if (res.data.result === 'error') {
@@ -1990,8 +1999,31 @@ export async function getEventGroup () {
     return res.data.groups as Group[]
 }
 
+export interface GetDateListProps {
+    group_id: number,
+    start_time_from: number,
+    start_time_to: number,
+    page: number,
+}
+export async function getDateList (props: GetDateListProps) {
+    const res = await fetch.get({
+        url: `${api}/event/daylist`,
+        data: {...props, page: props.page || 1, event_order: 'start_time_asc'}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.map((dataStr: string) => {
+        const dateSplit = dataStr.split('-')
+        return new Date(Number(dateSplit[0]), Number(dateSplit[1]) - 1, Number(dateSplit[2]), 0, 0, 0)
+    }) as Date[]
+}
+
 
 export default {
+    getDateList,
     getEventGroup,
     punchIn,
     getEventCheckLog,

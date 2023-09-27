@@ -19,11 +19,17 @@ function EmailLoginForm (props: EmailLoginFormProps) {
     const [css] = useStyletron()
 
     const verifyAndSetEmail = (value: string) => {
-        setError(value && value.match(/^\w+\.*\w+@+\w+\.\w+$/i) ? '' : 'Invalid email address')
+        setError('')
         setEmail(value)
     }
 
     const sendEmail  = async () => {
+        const isEmail = email && email.includes('@') && email.includes('.')
+        if (!isEmail) {
+            setError(isEmail ? '' : 'Invalid email address')
+            return
+        }
+        
         const unload = showLoading()
         try {
             const requestEmailLoginCode = await solas.requestEmailCode(email)

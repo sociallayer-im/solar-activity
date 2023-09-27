@@ -36,7 +36,7 @@ function ListRecommendedEvent() {
                     item={(itemData: Event) => <CardEvent event={itemData}/>}
                     space={16}
                     itemWidth={300}
-                    itemHeight={164}
+                    itemHeight={162}
                     onRef={list}
                 />
             </div>

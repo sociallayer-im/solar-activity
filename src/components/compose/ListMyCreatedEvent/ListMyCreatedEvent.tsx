@@ -10,7 +10,7 @@ import CardEvent from "../../base/Cards/CardEvent/CardEvent";
 import HorizontalList from "../../base/HorizontalList/HorizontalList";
 
 
-function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
+function ListMyCreatedEvent(props: {emptyCallBack?: () => any, participants?: Participants[]}) {
     const [css] = useStyletron()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -32,10 +32,10 @@ function ListMyCreatedEvent(props: {emptyCallBack?: () => any}) {
     return (<div>
         <HorizontalList
             queryFunction={ getMyEvent }
-            item={(itemData: Event) => <CardEvent event={itemData} />}
+            item={(itemData: Event) => <CardEvent participants={props.participants || []} event={itemData} />}
             space={ 16 }
             itemWidth={ 300 }
-            itemHeight={ 164 }
+            itemHeight={ 162}
         />
     </div>)
 }

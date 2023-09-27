@@ -25,6 +25,7 @@ function Home() {
     const [tabIndex, setTabIndex] = useState('0')
     const [showMyCreate, setShowMyCreate] = useState(true)
     const [showMyAttend, setShowMyAttend] = useState(true)
+    const [myRegistered, setMyRegistered] = useState<Participants[]>([])
 
     useEffect(() => {
         const myEvent = async () => {
@@ -32,6 +33,7 @@ function Home() {
                 const res = await queryMyEvent({auth_token: user.authToken || ''})
                 const myRegistered = res.map((item: Participants) => item.event)
                 const res2 = await queryEvent({owner_id: user.id!, page: 1})
+                setMyRegistered(res)
                 setShowMyAttend(myRegistered.length > 0)
                 setShowMyCreate(res2.length > 0)
                 if (myRegistered.length > 0) {
@@ -95,7 +97,7 @@ function Home() {
 
                                     { showMyCreate ?
                                         <Tab title={lang['Activity_State_Created']}>
-                                            <ListMyCreatedEvent />
+                                            <ListMyCreatedEvent participants={myRegistered} />
                                         </Tab>: <></>
                                     }
                                 </AppSubTabs>
@@ -111,7 +113,7 @@ function Home() {
             }
 
             <div className={'center'}>
-                <ListEventVertical/>
+                <ListEventVertical participants={myRegistered} />
             </div>
 
             {

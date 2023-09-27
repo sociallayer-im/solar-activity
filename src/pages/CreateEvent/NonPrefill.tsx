@@ -145,7 +145,7 @@ function CreateEvent(props: CreateEventPageProps) {
             const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
             unloading()
             showToast('Cancel success')
-            navigate(`/`)
+            navigate(`/`, {replace: true})
         } catch (e) {
             unloading()
             console.error(e)
@@ -237,7 +237,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         if (telegram) {
-            const telegramGroupRegex = /^https?:\/\/t.me\/(joinchat\/)?[a-zA-Z0-9_-]+$/;
+            const telegramGroupRegex = /^https?:\/\/t.me\//;
             const valid = telegramGroupRegex.test(telegram)
             setTelegramError(valid ? '' : 'Invalid Telegram Group Url')
         } else {
@@ -247,7 +247,7 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         if (eventGroup && eventGroup.group_event_visibility !== 'public' && !joined) {
-            navigate('/')
+            navigate('/', {replace: true})
             return
         }
     }, [joined, eventGroup])
@@ -522,7 +522,8 @@ function CreateEvent(props: CreateEventPageProps) {
             auth_token: user.authToken || '',
             location: customLocation,
             telegram_contact_group: telegram || null,
-            location_details: locationDetail
+            location_details: locationDetail,
+            host_info: creator && creator.is_group ? creator.id + '' : undefined,
         }
 
         setCreating(true)
@@ -635,7 +636,7 @@ function CreateEvent(props: CreateEventPageProps) {
             }
             unloading()
             showToast('update success')
-            navigate(`/event/${newEvent.id}`)
+            navigate(`/event/${newEvent.id}`, {replace: true})
         } catch (e: any) {
             unloading()
             console.error(e)
@@ -911,7 +912,7 @@ function CreateEvent(props: CreateEventPageProps) {
                                        onClick={() => {
                                            handleSave()
                                        }}>
-                                {lang['Activity_Detail_Btn_Modify']}
+                                {lang['Profile_Edit_Save']}
                             </AppButton>
                             :
                             <AppButton kind={BTN_KIND.primary}

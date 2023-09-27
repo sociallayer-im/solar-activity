@@ -6,12 +6,6 @@ import {getEventGroup, Profile, queryUserGroup} from "../../../service/solas";
 import UserContext from "../UserProvider/UserContext";
 import DialogsContext from "../DialogProvider/DialogsContext";
 
-const leadingEvent = {
-    id: 1572,
-    username: 'muchiangmai',
-    logo: 'https://ik.imagekit.io/soladata/iosjmr58_gFa04c32n'
-}
-
 function EventHomeProvider(props: { children: any }) {
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -21,6 +15,7 @@ function EventHomeProvider(props: { children: any }) {
     const [ready, setReady] = useState(false)
     const [selectedEventGroup, setSelectedEventGroup] = useState<Profile | null>(null)
     const [joined, setJoined] = useState(true)
+    const [leadingEvent, setLeadingEvent] = useState<{id: number, username: string, logo: string | null} | null>(null)
     const {user} = useContext(UserContext)
     const {showToast, showLoading} = useContext(DialogsContext)
 
@@ -28,11 +23,24 @@ function EventHomeProvider(props: { children: any }) {
         const getEventGroupList = async () => {
             const unload = showLoading()
             const eventGroup = await getEventGroup()
-            if (leadingEvent) {
-                const leading = eventGroup.find(g => g.id === leadingEvent.id)
-                const listWithoutLeading = eventGroup.filter(g => g.id !== leadingEvent.id)
-                const toTop = [leading, ...listWithoutLeading]
-                setEventGroups(toTop as Profile[])
+            const leadingEventGroupId = import.meta.env.VITE_LEADING_EVENT_GROUP_ID
+            const leadingEventGroupLogo = import.meta.env.VITE_LEADING_EVENT_GROUP_LOGO
+            console.log('leadingEventGroupIdleadingEventGroupId', leadingEventGroupId)
+            if (leadingEventGroupId) {
+                const leading = eventGroup.find(g => g.id === Number(leadingEventGroupId))
+                console.log('leadingleadingleading', leading)
+                if (leading) {
+                    setLeadingEvent({
+                        id: Number(leadingEventGroupId),
+                        username: leading.username || '',
+                        logo: leadingEventGroupLogo
+                    })
+                    const listWithoutLeading = eventGroup.filter(g => g.id !== Number(leadingEventGroupId))
+                    const toTop = [leading, ...listWithoutLeading]
+                    setEventGroups(toTop as Profile[])
+                } else {
+                    setEventGroups(eventGroup as Profile[])
+                }
             } else {
                 setEventGroups(eventGroup as Profile[])
             }

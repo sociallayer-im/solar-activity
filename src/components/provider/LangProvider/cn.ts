@@ -298,6 +298,9 @@ const langCN: LangConfig = {
   New_Year_3: '送你一枚徽章 扫码领取',
   Save_Card: '保存到相册',
 
+  Card_Event_Success_1: '扫码参加活动',
+  Card_Event_Success_2: '',
+
   Group_invite_title: '邀请新成员',
   Group_invite_badge_name: slotLang('{groupName} 的成员'),
   Group_invite_message: '邀请信息',
@@ -495,6 +498,9 @@ const langCN: LangConfig = {
   Meeting_Google_Title: 'Google会议',
   Meeting_Tencent_Title: '腾讯会议',
   Meeting_Others_Title: '线上会议',
+
+  Event_Card_Apply_Btn: '报名',
+  Event_Card_Applied: '已报名',
 }
 
 export default langCN

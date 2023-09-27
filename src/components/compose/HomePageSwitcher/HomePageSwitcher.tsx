@@ -16,7 +16,15 @@ function HomePageSwitcher() {
     const {groupname} = useParams()
     const navigate = useNavigate()
     const location = useLocation()
-    const {eventGroups: groupList, ready, setEventGroup, findGroup, eventGroup, availableList, leadingEvent} = useContext(EventHomeContext)
+    const {
+        eventGroups: groupList,
+        ready,
+        setEventGroup,
+        findGroup,
+        eventGroup,
+        availableList,
+        leadingEvent
+    } = useContext(EventHomeContext)
 
     useEffect(() => {
         if (ready && location.pathname === '/') {
@@ -52,15 +60,23 @@ function HomePageSwitcher() {
 
     const home = import.meta.env.VITE_SOLAS_HOME
     return (<div className={'home-page-switcher'}>
-        <a href={home} className={'badge-page'}>{lang['Nav_Badge_Page']}</a>
-        <div className={ 'group-page active' } onClick={switchList}>
-            {eventGroup ?
-                leadingEvent?.id === eventGroup.id ?
-                    <img src={leadingEvent.logo} alt={''} />
-                    :  (eventGroup.nickname || eventGroup.username)
-                : lang['Nav_Event_Page']
-            }
-            <TriangleDown/>
+        <div className={'group-page active'}>
+            <div onClick={
+                e => {
+                    if (eventGroup) {
+                        setSelect(eventGroup)
+                    }
+                }
+            }>
+                {eventGroup ?
+                    leadingEvent?.id === eventGroup.id ?
+                        leadingEvent.logo ? <img src={leadingEvent.logo} alt={''}/>
+                            : (eventGroup.nickname || eventGroup.username)
+                        : (eventGroup.nickname || eventGroup.username)
+                    : lang['Nav_Event_Page']
+                }
+            </div>
+            <TriangleDown className={'toggle'} onClick={switchList} size={18} />
         </div>
         {showList &&
             <div className={'group-list'}>
@@ -74,9 +90,10 @@ function HomePageSwitcher() {
                                             setSelect(group)
                                             switchList()
                                         }}>
-                                { leadingEvent?.id === group.id ?
-                                    <img src={leadingEvent.logo} alt={''} />
-                                    :  (group.nickname || group.username)}
+                                {leadingEvent?.id === group.id ?
+                                    leadingEvent.logo ? <img src={leadingEvent.logo} alt={''}/>
+                                        : (group.nickname || group.username)
+                                    : (group.nickname || group.username)}
                             </div>
                         })
                     }

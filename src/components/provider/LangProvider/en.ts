@@ -199,7 +199,7 @@ const langEN = {
 
   Activity_Calendar: 'Event Calendar',
   Activity_Page_type: 'Activity',
-  Activity_State_Registered: 'Attending',
+  Activity_State_Registered: 'Applied',
   Activity_State_Created: 'Hosting',
   Activity_Online_Event: 'Online Event',
   Activity_Max_Participations: 'Up to #1 participations',
@@ -263,7 +263,7 @@ const langEN = {
   Activity_Detail_Btn_Modify: 'Edit',
   Activity_Detail_site_Occupied: 'The selected site is already occupied during the chosen time slot. Please choose a different site or a different time for the event.',
   Activity_Detail_Btn_Canceled: 'Canceled',
-  Activity_Detail_Btn_unjoin: 'Cancel Attend',
+  Activity_Detail_Btn_unjoin: 'Cancel',
   Activity_Detail_Btn_Cancel: 'Cancel Event',
   Activity_Detail_Btn_Checkin: 'Check-in',
   Activity_Detail_Btn_Attend: 'Apply to join',
@@ -300,6 +300,9 @@ const langEN = {
   New_Year_2: 'Reason for issuing :',
   New_Year_3: 'Send you a badge, scan <br> the code to get',
   Save_Card: 'Save to album',
+
+  Card_Event_Success_1: 'Scan the code',
+  Card_Event_Success_2: 'and attend the event',
 
   Group_invite_title: 'Invite',
   Group_invite_badge_name: slotLang('Member of {groupName}'),
@@ -498,6 +501,9 @@ const langEN = {
   Meeting_Google_Title: 'Google Meeting',
   Meeting_Tencent_Title: 'Tencent Meeting',
   Meeting_Others_Title: 'Online meeting',
+
+  Event_Card_Apply_Btn: 'Apply',
+  Event_Card_Applied: 'Applied',
 }
 
 export type LangConfig = typeof langEN

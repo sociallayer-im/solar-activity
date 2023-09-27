@@ -1,10 +1,9 @@
-import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
-import {useStyletron} from 'baseui'
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import {useNavigate, useSearchParams} from 'react-router-dom'
+import {useContext, useEffect, useState, useRef} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
-import {Event, getHotTags, getProfile, Profile, queryEvent, queryRecommendEvent} from "../../../service/solas";
+import {getHotTags, Participants, queryEvent, queryMyEvent, Event} from "../../../service/solas";
 import AppInput from "../../base/AppInput";
 import {Search} from "baseui/icon";
 import EventLabels from "../../base/EventLabels/EventLabels";
@@ -13,15 +12,14 @@ import scrollToLoad from "../../../hooks/scrollToLoad";
 import './ListEventVertical.less'
 import userContext from "../../provider/UserProvider/UserContext";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
-import useTime from '../../../hooks/formatTime'
+import {formatTime} from '../../../hooks/formatTime'
 import MapContext from "../../provider/MapProvider/MapContext";
-import HorizontalList from "../../base/HorizontalList/HorizontalList";
+
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Virtual } from 'swiper'
-import Slider from "../../base/HorizontalList/Slider";
 
-function ListEventVertical() {
+function ListEventVertical(props: {participants: Participants[]}) {
     const [searchParams, setSearchParams] = useSearchParams()
     const navigate = useNavigate()
     const [a, seta] = useState('')
@@ -32,9 +30,9 @@ function ListEventVertical() {
     const {eventGroup} = useContext(EventHomeContext)
     const GoogleMapRef = useRef<google.maps.Map | null>()
     const mapDomRef = useRef<any>()
-    const formatTime = useTime()
     const markersRef = useRef<any[]>([])
     const {Map, MapEvent, Marker, MapError, MapReady} = useContext(MapContext)
+
 
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
@@ -60,9 +58,7 @@ function ListEventVertical() {
     },[MapReady, mapDomRef])
 
     const getEvent = async (page: number) => {
-        // 获取当日0点时间戳
         const unload = showLoading()
-
         const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
         if (!eventGroup?.id) {
             return []
@@ -74,7 +70,8 @@ function ListEventVertical() {
                     page,
                     start_time_from: todayZero,
                     event_order: 'start_time_asc',
-                    group_id: eventGroup?.id || undefined})
+                    group_id: eventGroup?.id || undefined
+                })
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -86,7 +83,8 @@ function ListEventVertical() {
                     page,
                     start_time_to: todayZero,
                     event_order: 'start_time_desc',
-                    group_id: eventGroup?.id || undefined})
+                    group_id: eventGroup?.id || undefined
+                })
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -324,7 +322,6 @@ function ListEventVertical() {
                         </div>
                     }
 
-
                     { MapReady &&
                         <div className={'mode-switch'}>
                             <div className={'switcher'}>
@@ -339,7 +336,6 @@ function ListEventVertical() {
                             </div>
                         </div>
                     }
-
                 </div>
                 { !!eventGroup && eventGroup.group_event_tags && mode === 'map' && !compact &&
                 <div className={'center'}>
@@ -380,6 +376,7 @@ function ListEventVertical() {
                     value={searchKeyword}
                     startEnhancer={() => <Search/>}/>
             </div>
+
             { !!eventGroup && eventGroup.group_event_tags && mode == 'list' &&
                 <div className={'tag-list'}>
                     <EventLabels
@@ -399,8 +396,7 @@ function ListEventVertical() {
                 <div id={'gmap'} className={mode==='map' ? 'show': ''} ref={mapDomRef} />
                 { mode === 'map' && MapReady &&
                     <div className={'show-selected-event-in-map'}>
-                        {
-                            eventsWithLocation.length > 0 ?
+                        { eventsWithLocation.length > 0 ?
                             <Swiper
                                 data-testid='HorizontalList'
                                 modules={[Virtual]}
@@ -411,7 +407,7 @@ function ListEventVertical() {
                                     console.log('setSwiperRef==============', swiper)
                                     swiperRef.current = swiper
                                 }}
-                                style={{paddingLeft: '12px', paddingTop: '10px', height: '174px'}}
+                                style={{paddingLeft: '12px', paddingTop: '10px', height: '207px'}}
                                 onSlideChange={(swiper) => {
                                     const  index = swiper.activeIndex
                                     const targetEvent = eventsWithLocation[index]
@@ -421,12 +417,12 @@ function ListEventVertical() {
                                 {
                                     eventsWithLocation.map((data, index) => {
                                         return <SwiperSlide style={{width: '300px'}} key={index}>
-                                            <CardEvent fixed={false} key={data.id} event={data}/>
+                                            <CardEvent fixed={false} key={data.id} event={data} participants={props.participants}/>
                                         </SwiperSlide>
                                     })
                                 }
                             </Swiper>
-                            :  <div className={'no-event-on-map'}>No event to show on map</div>
+                            : <div className={'no-event-on-map'}>No event to show on map</div>
                         }
                     </div>
                 }
@@ -434,7 +430,7 @@ function ListEventVertical() {
                     <div className={'list'}>
                         {
                             list.map((item, index) => {
-                                return <CardEvent fixed={false} key={item.id} event={item}/>
+                                return <CardEvent participants={props.participants || []} fixed={false} key={item.id} event={item}/>
                             })
                         }
                         {!loading && <div ref={ref}></div>}
