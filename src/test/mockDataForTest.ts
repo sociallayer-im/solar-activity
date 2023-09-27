@@ -30,7 +30,8 @@ export const profiles: Profile[] = [
         location: 'zfd',
         group_event_visibility: 'public',
         group_event_enabled: true,
-        group_event_tags: null
+        group_event_tags: null,
+        phone: '123456789'
     },
     {
         address: '0x7682Ba569E3823Ca1B7317017F5769F8Aa8842D4',
@@ -58,7 +59,8 @@ export const profiles: Profile[] = [
         location: 'zfd',
         group_event_visibility: 'public',
         group_event_enabled: true,
-        group_event_tags: null
+        group_event_tags: null,
+        phone: '123456789'
     },
     {
         address: 'null',
@@ -86,7 +88,8 @@ export const profiles: Profile[] = [
         location: 'zfd',
         group_event_visibility: 'public',
         group_event_enabled: true,
-        group_event_tags: null
+        group_event_tags: null,
+        phone: '123456789'
     }
 ]
 
