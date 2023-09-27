@@ -912,7 +912,7 @@ function CreateEvent(props: CreateEventPageProps) {
                                        onClick={() => {
                                            handleSave()
                                        }}>
-                                {lang['Activity_Detail_Btn_Modify']}
+                                {lang['Profile_Edit_Save']}
                             </AppButton>
                             :
                             <AppButton kind={BTN_KIND.primary}

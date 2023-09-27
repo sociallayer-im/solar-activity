@@ -217,7 +217,7 @@ function EventDetail() {
         const participantsAll = event?.participants || []
         const participants = participantsAll.filter(item => item.status !== 'cancel')
 
-        if (event?.max_participant && event?.max_participant <= participants.length) {
+        if (event?.max_participant !== null && event?.max_participant !== undefined && event?.max_participant <= participants.length) {
             showToast('The event at full strength')
             return
         }

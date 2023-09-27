@@ -49,10 +49,11 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
     const handleJoin = async (e: any) => {
         e.stopPropagation()
-        const participantsAll = props.event.participants || []
+        const eventDetail = await queryEventDetail({id: props.event.id})
+        const participantsAll = eventDetail.participants || []
         const participants = participantsAll.filter(item => item.status !== 'cancel')
 
-        if (props.event?.max_participant && props.event?.max_participant <= participants.length) {
+        if (props.event?.max_participant !== null && props.event?.max_participant <= participants.length) {
             showToast('The event at full strength')
             return
         }
