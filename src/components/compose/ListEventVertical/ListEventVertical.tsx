@@ -1,6 +1,6 @@
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom'
 import {useStyletron} from 'baseui'
-import {useContext, useEffect, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import LangContext from "../../provider/LangProvider/LangContext";
 import Empty from "../../base/Empty";
 import CardEvent from "../../base/Cards/CardEvent/CardEvent";
@@ -15,6 +15,11 @@ import userContext from "../../provider/UserProvider/UserContext";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 import useTime from '../../../hooks/formatTime'
 import MapContext from "../../provider/MapProvider/MapContext";
+import HorizontalList from "../../base/HorizontalList/HorizontalList";
+
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Virtual } from 'swiper'
+import Slider from "../../base/HorizontalList/Slider";
 
 function ListEventVertical() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -34,8 +39,9 @@ function ListEventVertical() {
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
     const [mode, setMode] = useState<'list' | 'map'>(searchParams.get('mode') === 'map' ? 'map' : 'list')
-    const [selectedEventInMap, setSelectedEventInMap] = useState<null | Event>(null)
+    const [eventsWithLocation, setEventsWithLocation] = useState<Event[]>([])
     const [compact, setCompact] = useState(true)
+    const swiperRef = useRef<any>(null)
 
     useEffect(() => {
         if (MapError) {
@@ -118,30 +124,35 @@ function ListEventVertical() {
     }, [mode])
 
     useEffect(() => {
-      if (list.length && MapReady) {
+      if (list.length) {
           const eventsWithLocation = list.filter(item => {
                 return !!item.location_details
           })
 
-          if (eventsWithLocation[0]) {
-                showEventInMapCenter(eventsWithLocation[0], true)
-          } else {
-              setSelectedEventInMap(null)
-                if (markersRef) {
-                    markersRef.current.forEach(item => {
-                        item.setMap(null)
-                    })
-                }
-              return
-          }
+          setEventsWithLocation(eventsWithLocation)
 
-          showMarker(eventsWithLocation)
+          if (MapReady) {
+              if (eventsWithLocation[0]) {
+                  showEventInMapCenter(eventsWithLocation[0], true)
+              } else {
+                  if (markersRef) {
+                      markersRef.current.forEach(item => {
+                          item.setMap(null)
+                      })
+                  }
+                  return
+              }
+              showMarker(eventsWithLocation)
+          }
       } else {
-          setSelectedEventInMap(null)
-          if (markersRef) {
-                markersRef.current.forEach(item => {
-                    item.setMap(null)
-                })
+          setEventsWithLocation(eventsWithLocation)
+
+          if (MapReady) {
+              if (markersRef) {
+                  markersRef.current.forEach(item => {
+                      item.setMap(null)
+                  })
+              }
           }
       }
     }, [list, MapReady])
@@ -168,7 +179,6 @@ function ListEventVertical() {
 
     const showEventInMapCenter = (event: Event, zoom?: boolean) => {
         const eventLocation = event.location_details
-        setSelectedEventInMap(event)
         if (!eventLocation) return
 
         const metadata = JSON.parse(eventLocation)
@@ -226,8 +236,12 @@ function ListEventVertical() {
 
                 MapEvent!.addListener(markerView, 'click', function (a: any) {
                     removeActive()
-                    setSelectedEventInMap(events[0])
                     showEventInMapCenter(events[0])
+                    const swiperIndex = eventHasLocation.findIndex(item => {
+                        return item.id === events[0].id
+                    })
+                    console.log('==============================', swiperRef)
+                    swiperRef.current.slideTo(swiperIndex, 300, false)
                 })
 
                 markersRef.current.push(markerView)
@@ -268,9 +282,15 @@ function ListEventVertical() {
                     const isEvent= a.domEvent.target.getAttribute('data-event-id')
                     if (isEvent) {
                         const eventId = Number(isEvent)
-                        const targetEvent = events.find(item => item.id === eventId)
-                        setSelectedEventInMap(targetEvent!)
+                        const targetEvent = eventHasLocation.find(item => item.id === eventId)
                         showEventInMapCenter(targetEvent!)
+
+                        const swiperIndex = eventHasLocation.findIndex(item => {
+                            return item.id === targetEvent!.id
+                        })
+
+                        console.log('==============================', swiperRef)
+                        swiperRef.current.slideTo(swiperIndex, 300, false)
                     }
 
                     const isAction = a.domEvent.target.getAttribute('data-action')
@@ -377,12 +397,36 @@ function ListEventVertical() {
             }
             <div className={'tab-contains'}>
                 <div id={'gmap'} className={mode==='map' ? 'show': ''} ref={mapDomRef} />
-                { mode==='map' &&
+                { mode === 'map' && MapReady &&
                     <div className={'show-selected-event-in-map'}>
                         {
-                            selectedEventInMap ?
-                                <CardEvent fixed={false}  event={selectedEventInMap}/>
-                                : <div className={'no-event-on-map'}>No event to show on map</div>
+                            eventsWithLocation.length > 0 ?
+                            <Swiper
+                                data-testid='HorizontalList'
+                                modules={[Virtual]}
+                                spaceBetween={10}
+                                freeMode={true}
+                                centeredSlides={true}
+                                onSwiper={(swiper) => {
+                                    console.log('setSwiperRef==============', swiper)
+                                    swiperRef.current = swiper
+                                }}
+                                style={{paddingLeft: '12px', paddingTop: '10px', height: '174px'}}
+                                onSlideChange={(swiper) => {
+                                    const  index = swiper.activeIndex
+                                    const targetEvent = eventsWithLocation[index]
+                                    showEventInMapCenter(targetEvent)
+                                }}
+                                slidesPerView={'auto'} >
+                                {
+                                    eventsWithLocation.map((data, index) => {
+                                        return <SwiperSlide style={{width: '300px'}} key={index}>
+                                            <CardEvent fixed={false} key={data.id} event={data}/>
+                                        </SwiperSlide>
+                                    })
+                                }
+                            </Swiper>
+                            :  <div className={'no-event-on-map'}>No event to show on map</div>
                         }
                     </div>
                 }
