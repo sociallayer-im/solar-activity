@@ -504,6 +504,13 @@ const langEN = {
 
   Event_Card_Apply_Btn: 'Apply',
   Event_Card_Applied: 'Applied',
+
+  Login_Phone_Title: 'Login with phone',
+  Login_Phone_alert: 'Enter your phone number to receive a verification code',
+  Login_Phone_continue: 'Next',
+  Login_Phone_Placeholder: 'Your phone number',
+  Login_Phone_input_Code_title: 'Verification code',
+  Login_Phone_input_Code_des: slotLang('Enter the code we sent to {phone} to complete your account set-up.'),
 }
 
 export type LangConfig = typeof langEN

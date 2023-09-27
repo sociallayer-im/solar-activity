@@ -27,6 +27,7 @@ export interface Profile {
     id: number,
     image_url: string | null,
     email: string | null,
+    phone: string | null,
 
     twitter: string | null,
     telegram: string | null,
@@ -103,13 +104,14 @@ export async function requestEmailCode(email: string): Promise<void> {
     }
 }
 
-export interface EmailLoginRes {
+export interface LoginRes {
     auth_token: string,
     id: number,
     email: string
+    phone: null | string
 }
 
-export async function emailLogin(email: string, code: string): Promise<EmailLoginRes> {
+export async function emailLogin(email: string, code: string): Promise<LoginRes> {
     const res = await fetch.post({
         url: `${api}/profile/signin_with_email`,
         data: {email, code}
@@ -2021,8 +2023,48 @@ export async function getDateList (props: GetDateListProps) {
     }) as Date[]
 }
 
+export async function requestPhoneCode (phone: string): Promise<void> {
+    const res: any = await fetch.post({
+        url: `${api}/profile/send_msg`,
+        data: {phone}
+    })
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Request fail')
+    }
+}
+
+export async function phoneLogin (phone: string, code: string): Promise<LoginRes> {
+    const res = await fetch.post({
+        url: `${api}/profile/signin_with_phone`,
+        data: {phone, code}
+    })
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Verify fail')
+    }
+
+    return res.data
+}
+
+export async function myProfile (props: {auth_token: string}) {
+    checkAuth(props)
+
+    const res = await fetch.get({
+        url: `${api}/profile/my_profile`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.profile as Profile
+}
+
 
 export default {
+    phoneLogin,
+    requestPhoneCode,
+    myProfile,
     getDateList,
     getEventGroup,
     punchIn,

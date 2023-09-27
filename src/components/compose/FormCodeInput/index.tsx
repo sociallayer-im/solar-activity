@@ -1,11 +1,12 @@
 import {useContext, useState, useRef, useEffect} from 'react'
 import { useStyletron } from 'baseui'
-import solas, { EmailLoginRes } from '../../../service/solas'
+import solas, { LoginRes } from '../../../service/solas'
 import DialogsContext from '../../provider/DialogProvider/DialogsContext'
 
 export interface CodeInputFormProps {
-    onConfirm: (loginRes: EmailLoginRes) => any
-    loginEmail: string
+    onConfirm: (loginRes: LoginRes) => any
+    loginAccount: string
+    loginType: 'email' | 'phone'
 }
 
 const style = {
@@ -75,8 +76,13 @@ function CodeInputForm (props: CodeInputFormProps) {
                 })
 
                 try {
-                    const loginRes = await solas.emailLogin(props.loginEmail, code)
-                    props.onConfirm(loginRes)
+                    if (props.loginType === 'phone') {
+                        const loginRes = await solas.phoneLogin(props.loginAccount, code)
+                        props.onConfirm(loginRes)
+                    } else if (props.loginType === 'email') {
+                        const loginRes = await solas.emailLogin(props.loginAccount, code)
+                        props.onConfirm(loginRes)
+                    }
                 } catch (e: any) {
                     console.log(e)
                     showToast('Invalid code')

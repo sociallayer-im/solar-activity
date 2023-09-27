@@ -63,11 +63,19 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
         navigate('/login')
     }
 
+    const handlePhoneLogin = () => {
+        window.localStorage.setItem('fallback', window.location.href)
+        clean()
+        navigate('/login-phone')
+    }
+
     const loginWithSolar = () => {
         clean()
         const loginUrl = import.meta.env.VITE_SOLAS_HOME
         window.location.href = `${loginUrl}/platform/login?from=${window.location.protocol}//${window.location.host}/platform/login`
     }
+
+    const arrowPhoneLogin = import.meta.env.VITE_ALLOW_PHONE_LOGIN === 'true'
 
     return (
         <div className='dialog-connect-wallet'>
@@ -87,6 +95,13 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
                 <div className='connect-name'>Email</div>
                 <div className='connect-des'>{ lang['Login_alert'] }</div>
             </div>
+            { arrowPhoneLogin &&
+                <div className='connect-item' onClick={ handlePhoneLogin }>
+                    <img src="/images/phone_login.png" alt="email"/>
+                    <div className='connect-name'>Phone</div>
+                    <div className='connect-des'>{ lang['Login_Phone_Title'] }</div>
+                </div>
+            }
         </div>
     )
 }
