@@ -129,9 +129,11 @@ function Dashboard() {
             {showEventSiteList &&
                 <div className={'dashboard-dialog dashboard-event-site-list'}>
                     <div className={'center'}>
-                        <PageBack title={lang['Event_Site_Title']} onClose={() => {
-                            setShowEventSiteList(false)
-                        }}/>
+                       <div className={'dashboard-dialog-head'}>
+                           <PageBack title={lang['Event_Site_Title']} onClose={() => {
+                               setShowEventSiteList(false)
+                           }}/>
+                       </div>
                         <div className={'dialog-inner'}>
                             <div className={'dialog-des'}>
                                 Event sites are the default locations that creators can choose for their events.

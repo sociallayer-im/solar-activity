@@ -51,13 +51,22 @@
   top: 0;
   left: 0;
   height: calc(100vh - 48px);
-  overflow: auto;
+  overflow: hidden;
   background: #fff;
-  padding: 0 12px 100px 12px;
+  padding: 0 0 12px 0;
   box-sizing: border-box;
-  
+
+  .center {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+  }
+
+  .dashboard-dialog-head {
+    padding-bottom: 16px;
+  }
+
   .action-bar {
-    position: fixed;
     padding: 16px;
     width: 100%;
     box-sizing: border-box;
@@ -76,6 +85,9 @@
 
   .dialog-inner {
     padding: 20px 8px;
+    flex: 1;
+    overflow: auto;
+    box-sizing: border-box;
 
     .dialog-des {
       margin-bottom: 24px;
