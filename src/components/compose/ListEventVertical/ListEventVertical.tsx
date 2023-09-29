@@ -321,12 +321,10 @@ function ListEventVertical(props: {participants: Participants[]}) {
                          className={tab2Index === 'soon' ? 'module-title' : 'tab-title'}>
                         {lang['Activity_Coming']}
                     </div>
-                    { mode !== 'map' &&
-                        <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
-                             className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
-                            {lang['Activity_Past']}
-                        </div>
-                    }
+                    <div onClick={() => {setTab2Index('past'); setSearchParams({tab: 'past'})}}
+                         className={tab2Index === 'past' ? 'module-title' : 'tab-title'}>
+                        {lang['Activity_Past']}
+                    </div>
 
                     { MapReady &&
                         <div className={'mode-switch'}>
@@ -423,7 +421,7 @@ function ListEventVertical(props: {participants: Participants[]}) {
                                 {
                                     eventsWithLocation.map((data, index) => {
                                         return <SwiperSlide style={{width: '300px'}} key={index}>
-                                            <CardEvent fixed={false} key={data.id} event={data} participants={props.participants}/>
+                                            <CardEvent fixed={true} key={data.id} event={data} participants={props.participants}/>
                                         </SwiperSlide>
                                     })
                                 }
