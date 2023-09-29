@@ -55,7 +55,7 @@
   background: #fff;
   padding: 0 12px 100px 12px;
   box-sizing: border-box;
-
+  
   .action-bar {
     position: fixed;
     padding: 16px;
@@ -65,6 +65,13 @@
     bottom: 0;
     background: #fff;
     z-index: 99;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+
+    button {
+      width: 350px;
+    }
   }
 
   .dialog-inner {

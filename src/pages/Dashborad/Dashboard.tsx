@@ -128,43 +128,45 @@ function Dashboard() {
 
             {showEventSiteList &&
                 <div className={'dashboard-dialog dashboard-event-site-list'}>
-                    <PageBack title={lang['Event_Site_Title']} onClose={() => {
-                        setShowEventSiteList(false)
-                    }}/>
-                    <div className={'dialog-inner'}>
-                        <div className={'dialog-des'}>
-                            Event sites are the default locations that creators can choose for their events.
+                    <div className={'center'}>
+                        <PageBack title={lang['Event_Site_Title']} onClose={() => {
+                            setShowEventSiteList(false)
+                        }}/>
+                        <div className={'dialog-inner'}>
+                            <div className={'dialog-des'}>
+                                Event sites are the default locations that creators can choose for their events.
+                            </div>
+
+                            {
+                                eventSite.map((item, index) => {
+                                    return <EventSiteInput
+                                        key={index}
+                                        index={index + 1}
+                                        initValue={item}
+                                        error={errorInputItem.includes(index)}
+                                        onChange={newEventSite => {
+                                            const newEventSiteList = [...eventSite]
+                                            newEventSiteList[index] = newEventSite
+                                            setEventSite(newEventSiteList)
+                                        }}/>
+                                })
+                            }
+
+                            <div className={'add-event-site-btn'} onClick={addEmptyEventSite}>
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="14" cy="14" r="14" fill="#F5F8F6"/>
+                                    <path
+                                        d="M18.6667 13.3333H14.6667V9.33334C14.6667 9.15653 14.5965 8.98696 14.4715 8.86193C14.3465 8.73691 14.1769 8.66667 14.0001 8.66667C13.8233 8.66667 13.6537 8.73691 13.5287 8.86193C13.4037 8.98696 13.3334 9.15653 13.3334 9.33334V13.3333H9.33341C9.1566 13.3333 8.98703 13.4036 8.86201 13.5286C8.73699 13.6536 8.66675 13.8232 8.66675 14C8.66675 14.1768 8.73699 14.3464 8.86201 14.4714C8.98703 14.5964 9.1566 14.6667 9.33341 14.6667H13.3334V18.6667C13.3334 18.8435 13.4037 19.0131 13.5287 19.1381C13.6537 19.2631 13.8233 19.3333 14.0001 19.3333C14.1769 19.3333 14.3465 19.2631 14.4715 19.1381C14.5965 19.0131 14.6667 18.8435 14.6667 18.6667V14.6667H18.6667C18.8436 14.6667 19.0131 14.5964 19.1382 14.4714C19.2632 14.3464 19.3334 14.1768 19.3334 14C19.3334 13.8232 19.2632 13.6536 19.1382 13.5286C19.0131 13.4036 18.8436 13.3333 18.6667 13.3333Z"
+                                        fill="#272928"/>
+                                </svg>
+                                Add an event site
+                            </div>
+
                         </div>
-
-                        {
-                            eventSite.map((item, index) => {
-                                return <EventSiteInput
-                                    key={index}
-                                    index={index + 1}
-                                    initValue={item}
-                                    error={errorInputItem.includes(index)}
-                                    onChange={newEventSite => {
-                                        const newEventSiteList = [...eventSite]
-                                        newEventSiteList[index] = newEventSite
-                                        setEventSite(newEventSiteList)
-                                    }}/>
-                            })
-                        }
-
-                        <div className={'add-event-site-btn'} onClick={addEmptyEventSite}>
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="14" cy="14" r="14" fill="#F5F8F6"/>
-                                <path
-                                    d="M18.6667 13.3333H14.6667V9.33334C14.6667 9.15653 14.5965 8.98696 14.4715 8.86193C14.3465 8.73691 14.1769 8.66667 14.0001 8.66667C13.8233 8.66667 13.6537 8.73691 13.5287 8.86193C13.4037 8.98696 13.3334 9.15653 13.3334 9.33334V13.3333H9.33341C9.1566 13.3333 8.98703 13.4036 8.86201 13.5286C8.73699 13.6536 8.66675 13.8232 8.66675 14C8.66675 14.1768 8.73699 14.3464 8.86201 14.4714C8.98703 14.5964 9.1566 14.6667 9.33341 14.6667H13.3334V18.6667C13.3334 18.8435 13.4037 19.0131 13.5287 19.1381C13.6537 19.2631 13.8233 19.3333 14.0001 19.3333C14.1769 19.3333 14.3465 19.2631 14.4715 19.1381C14.5965 19.0131 14.6667 18.8435 14.6667 18.6667V14.6667H18.6667C18.8436 14.6667 19.0131 14.5964 19.1382 14.4714C19.2632 14.3464 19.3334 14.1768 19.3334 14C19.3334 13.8232 19.2632 13.6536 19.1382 13.5286C19.0131 13.4036 18.8436 13.3333 18.6667 13.3333Z"
-                                    fill="#272928"/>
-                            </svg>
-                            Add an event site
+                        <div className={'action-bar'}>
+                            <AppButton special onClick={saveEventSite}>Save</AppButton>
                         </div>
-
-                    </div>
-                    <div className={'action-bar'}>
-                        <AppButton special onClick={saveEventSite}>Save</AppButton>
                     </div>
                 </div>
             }
