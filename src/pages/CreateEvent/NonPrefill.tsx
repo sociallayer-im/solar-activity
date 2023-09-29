@@ -114,9 +114,9 @@ function CreateEvent(props: CreateEventPageProps) {
     const [eventType, setEventType] = useState<'event' | 'checklog'>('event')
 
 
-    const [enableMaxParticipants, setEnableMaxParticipants] = useState(true)
+    const [enableMaxParticipants, setEnableMaxParticipants] = useState(false)
     const [enableMinParticipants, setEnableMinParticipants] = useState(false)
-    const [enableGuest, setEnableGuest] = useState(true)
+    const [enableGuest, setEnableGuest] = useState(false)
     const [hasDuration, setHasDuration] = useState(true)
     const [badgeDetail, setBadgeDetail] = useState<Badge | null>(null)
     const [labels, setLabels] = useState<string[]>([])
