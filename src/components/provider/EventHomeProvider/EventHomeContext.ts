@@ -11,6 +11,7 @@ interface EventHomeContextType {
     eventGroup: Profile | null,
     setEventGroup: (group: Profile) => any,
     findGroup: (username: string) => any,
+    isManager: boolean,
 }
 
 const EventHomeContext = createContext<EventHomeContextType>({
@@ -23,6 +24,7 @@ const EventHomeContext = createContext<EventHomeContextType>({
     eventGroup: null,
     setEventGroup: (group: Profile) => {},
     findGroup: (username: string) => {},
+    isManager: false,
 })
 
 export default EventHomeContext

@@ -19,6 +19,9 @@ import EventCheckIn from "../pages/EventCheckIn/EventCheckIn";
 import Search from "../pages/Search";
 import PlatformLogin from "../pages/platformLogin/platformLogin";
 
+import Dashboard from "../pages/Dashborad/Dashboard";
+
+
 
 // lazy load
 // const Home = lazy(() => import('../pages/Home'))
@@ -52,6 +55,8 @@ function AppRouter () {
                 <Route path="/search/:keyword" element={<Search />} />
                 <Route path="/success/:eventId" element={<CreateEventSuccess />} />
                 <Route path="/merge" element={<Merge />} />
+
+                <Route path="/:groupname/dashboard" element={<Dashboard />} />
 
                 <Route path="/platform/login" element={<PlatformLogin />} />
                 <Route path="/error" element={<Error />} />

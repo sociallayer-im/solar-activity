@@ -1711,7 +1711,8 @@ export interface EventSites {
     "about": string,
     "group_id": number,
     "owner_id": number,
-    "created_at": string
+    "created_at": string,
+    "location_details": null | string,
 }
 
 export async function getEventSide(groupId?: number): Promise<EventSites[]> {
@@ -2005,6 +2006,7 @@ export interface GetDateListProps {
     start_time_to: number,
     page: number,
 }
+
 export async function getDateList (props: GetDateListProps) {
     const res = await fetch.get({
         url: `${api}/event/daylist`,
@@ -2021,8 +2023,64 @@ export async function getDateList (props: GetDateListProps) {
     }) as Date[]
 }
 
+interface EditEventProps  extends  Partial<EventSites> {
+    auth_token: string,
+    event_site_id?: number,
+}
+
+export async function createEventSite (props: EditEventProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/create_event_site`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.event_site as EventSites
+}
+
+export async function updateEventSite (props: EditEventProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/update_event_site`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.event_site as EventSites
+}
+
+export interface CheckIsManagerProps {
+    profile_id: number,
+    group_id: number,
+}
+
+export async function checkIsManager (props: CheckIsManagerProps): Promise<boolean> {
+    const res = await fetch.get({
+        url: `${api}/group/is-member`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'query user activity fail')
+    }
+
+    return res.data.is_member && res.data.role === 'group_manager'
+}
+
 
 export default {
+    checkIsManager,
+    createEventSite,
+    updateEventSite,
     getDateList,
     getEventGroup,
     punchIn,

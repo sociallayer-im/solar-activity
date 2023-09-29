@@ -2,22 +2,25 @@ import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import EventHomeContext from "./EventHomeContext";
-import {getEventGroup, Profile, queryUserGroup} from "../../../service/solas";
+import {getEventGroup, Profile, queryUserGroup, checkIsManager} from "../../../service/solas";
 import UserContext from "../UserProvider/UserContext";
 import DialogsContext from "../DialogProvider/DialogsContext";
 
 function EventHomeProvider(props: { children: any }) {
     const [css] = useStyletron()
     const navigate = useNavigate()
+    const {user} = useContext(UserContext)
+    const {showToast, showLoading} = useContext(DialogsContext)
+
     const [eventGroups, setEventGroups] = useState<Profile[]>([])
     const [availableList, setAvailableList] = useState<Profile[]>([])
     const [userGroup, setUserGroup] = useState<Profile[]>([])
     const [ready, setReady] = useState(false)
     const [selectedEventGroup, setSelectedEventGroup] = useState<Profile | null>(null)
     const [joined, setJoined] = useState(true)
+    const [isManager, setIsManager] = useState(false)
     const [leadingEvent, setLeadingEvent] = useState<{id: number, username: string, logo: string | null} | null>(null)
-    const {user} = useContext(UserContext)
-    const {showToast, showLoading} = useContext(DialogsContext)
+
 
     useEffect(() => {
         const getEventGroupList = async () => {
@@ -73,6 +76,16 @@ function EventHomeProvider(props: { children: any }) {
             }
         }
 
+        async function checkManager () {
+            if (user.id && selectedEventGroup) {
+                const isManager = await checkIsManager({profile_id: user.id, group_id: selectedEventGroup.id})
+                setIsManager(isManager)
+            } else {
+                setIsManager(false)
+            }
+        }
+
+        checkManager()
         getAvailableList()
     }, [eventGroups, user.id])
 
@@ -100,6 +113,7 @@ function EventHomeProvider(props: { children: any }) {
             availableList,
             ready,
             joined,
+            isManager,
             leadingEvent
         }}>
             {props.children}

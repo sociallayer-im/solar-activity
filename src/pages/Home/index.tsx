@@ -20,7 +20,7 @@ function Home() {
     const navigate = useNavigate()
     const {lang} = useContext(LangContext)
     const {showToast} = useContext(DialogsContext)
-    const {eventGroup , ready, joined} = useContext(EventHomeContext)
+    const {eventGroup , ready, joined, isManager} = useContext(EventHomeContext)
 
     const [tabIndex, setTabIndex] = useState('0')
     const [showMyCreate, setShowMyCreate] = useState(true)
@@ -118,9 +118,17 @@ function Home() {
 
             {
                 !!user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public') &&
-                <div className={'create-event-btn'} onClick={e => {
-                    gotoCreateEvent()
-                }}>+ {lang['Activity_Create_Btn']}</div>
+                <div className={'home-action-bar'}>
+                    <div className={'create-event-btn'} onClick={e => {
+                        gotoCreateEvent()
+                    }}>+ {lang['Activity_Create_Btn']}</div>
+
+                    { (user.id === eventGroup.group_owner_id || isManager) &&
+                        <div className={'setting-btn'} onClick={e => {
+                            navigate(`/${eventGroup.username}/dashboard`)
+                        }}>+ {lang['Activity_Setting_Btn']}</div>
+                    }
+                </div>
             }
         </div>
     </Layout>

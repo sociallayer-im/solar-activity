@@ -223,6 +223,7 @@ const langEN = {
   Activity_Btn_Modify: 'Modify Event',
   Activity_Create_title: 'Create a Event',
   Activity_Create_Btn: 'Create Event',
+  Activity_Setting_Btn: 'Setting',
   Activity_Setting_title: 'Event Setting',
   Activity_Create_Done: 'Done',
   Activity_Create_Success: 'Create Successfully 🎉',
@@ -504,6 +505,16 @@ const langEN = {
 
   Event_Card_Apply_Btn: 'Apply',
   Event_Card_Applied: 'Applied',
+
+  Login_Phone_Title: 'Login with phone',
+  Login_Phone_alert: 'Enter your phone number to receive a verification code',
+  Login_Phone_continue: 'Next',
+  Login_Phone_Placeholder: 'Your phone number',
+  Login_Phone_input_Code_title: 'Verification code',
+  Login_Phone_input_Code_des: slotLang('Enter the code we sent to {phone} to complete your account set-up.'),
+
+  Event_Site_Title: 'Event Site',
+  Event_Site_Location_title: slotLang(' Location of Event site {1}'),
 }
 
 export type LangConfig = typeof langEN

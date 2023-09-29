@@ -144,25 +144,42 @@
 
   .create-event-btn {
     display: flex;
-    width: 326px;
     height: 56px;
     padding: 14px 0;
     justify-content: center;
     align-items: center;
     border-radius: 16px;
     background: linear-gradient(88.02deg, rgb(186, 255, 173) -2.09%, rgb(161, 244, 230) 62.09%, rgb(128, 248, 192) 97.29%);
-    position: fixed;
-    z-index: 1;
-    bottom: 20px;
     box-sizing: border-box;
-    left: 50%;
-    transform: translateX(-50%);
     color: var(--text-4-headline, #272928);
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
     line-height: 28px;
     cursor: pointer;
+    flex: 1;
+  }
+
+  .setting-btn {
+    .create-event-btn;
+    background: #ECF2EE;
+    color: #272928;
+    max-width: 92px;
+    margin-left: 16px;
+
+  }
+
+  .home-action-bar {
+    position: fixed;
+    z-index: 1;
+    bottom: 20px;
+    max-width: 375px;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    padding: 0 12px;
+    box-sizing: border-box;
   }
 
   .show-selected-event-in-map {

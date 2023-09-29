@@ -1,0 +1,104 @@
+.dashboard-page {
+  min-height: 100vh;
+  background: #fff;
+  position: relative;
+
+  .center {
+    max-width: 375px;
+    margin: 0 auto;
+    padding: 0 12px;
+  }
+
+  .setting-form {
+    margin-top: 27px;
+  }
+
+  .setting-form-item {
+    border-radius: 16px;
+    background: var(--fill-1-light-disabled, #F8F9F8);
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 0 10px;
+    justify-content: space-between;
+    align-items: center;
+    height: 44px;
+
+    .label {
+      color: var(--text-4-headline, #272928);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .value {
+      display: flex;
+      color: var(--text-4-headline, #272928);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      align-items: center;
+
+      svg {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+
+.dashboard-dialog {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: calc(100vh - 48px);
+  overflow: auto;
+  background: #fff;
+  padding: 0 12px 100px 12px;
+  box-sizing: border-box;
+
+  .action-bar {
+    position: fixed;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    left: 0;
+    bottom: 0;
+    background: #fff;
+    z-index: 99;
+  }
+
+  .dialog-inner {
+    padding: 20px 8px;
+
+    .dialog-des {
+      margin-bottom: 24px;
+    }
+
+    .event-site-item {
+      margin-bottom: 40px;
+    }
+
+    .event-site-item-title {
+      margin-top: 12px;
+      color: var(--text-4-headline, #272928);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 22px; /* 157.143% */
+    }
+  }
+
+  .add-event-site-btn {
+    display: flex;
+    align-items: center;
+    color: var(--text-4-headline, #272928);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px; /* 157.143% */
+
+    svg {
+      margin-right: 4px;
+    }
+  }
+}

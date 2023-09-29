@@ -78,7 +78,6 @@ function MapProvider(props: { children: any }) {
                     setMapError('Load map fail')
                 }
             }).catch(e => {
-                alert('ok')
                 console.log(e)
                 setMapError('Load map fail')
             })

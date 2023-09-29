@@ -124,7 +124,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
     useEffect(() => {
       if (list.length) {
           const eventsWithLocation = list.filter(item => {
-                return !!item.location_details
+                const _item = item as Event
+              if (_item.event_site?.location_details) {
+                  _item.location_details = _item.event_site.location_details
+              }
+
+              return !!item.location_details
           })
 
           setEventsWithLocation(eventsWithLocation)
