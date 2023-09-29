@@ -257,6 +257,14 @@
   display: block;
 }
 
+.map-marker {
+  width: 28px;
+  height: auto;
+  display: block;
+  position: relative;
+  transform: translateY(3px);
+}
+
 .event-map-marker {
   color: #272928;
   height: auto;
@@ -265,20 +273,6 @@
   box-sizing: border-box;
   position: relative;
   transform: translateY(-30px);
-
-  &:before {
-    content: '';
-    display: flex;
-    background: url("/images/map_marker.png") no-repeat;
-    width: 28px;
-    height: 48px;
-    background-size: 100%;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translate(-50%, 40px);
-    z-index: -1;
-  }
 
   .title {
     border-radius: 4px;
@@ -315,19 +309,6 @@
 
 .event-map-marker-group {
   outline: none;
-  &:before {
-    content: '';
-    display: flex;
-    background: url("/images/map_marker.png") no-repeat;
-    width: 28px;
-    height: 48px;
-    background-size: 100%;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translate(-50%, 10px);
-    z-index: -1;
-  }
 
   .toggle-btn {
     border-radius: 4px;

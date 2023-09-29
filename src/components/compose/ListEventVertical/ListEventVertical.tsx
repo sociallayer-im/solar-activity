@@ -224,6 +224,19 @@ function ListEventVertical(props: {participants: Participants[]}) {
             }
         })
 
+        // 绘制marker
+        eventGrouped.map((events, index) => {
+            const content = document.createElement('img');
+            content.setAttribute('src', '/images/map_marker.png')
+            content.className = 'map-marker'
+
+            const markerView = new Marker!({
+                map: GoogleMapRef.current,
+                position: JSON.parse(events[0].location_details).geometry.location,
+                content: content,
+            })
+        })
+
         eventGrouped.map((events, index) => {
             if (events.length === 1) {
                 const time = formatTime(events[0].start_time!).split('.')[1] + '.' + formatTime(events[0].start_time!).split('.')[2]
@@ -244,7 +257,6 @@ function ListEventVertical(props: {participants: Participants[]}) {
                     const swiperIndex = eventHasLocation.findIndex(item => {
                         return item.id === events[0].id
                     })
-                    console.log('==============================', swiperRef)
                     swiperRef.current.slideTo(swiperIndex, 300, false)
                 })
 
