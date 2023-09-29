@@ -35,7 +35,7 @@ function LocationInput(props: LocationInputProps) {
 
     const [eventSiteList, setEventSiteList] = useState<EventSites[]>([])
     const [isCustom, setIsCustom] = useState(!!props?.initValue?.customLocation || false)
-    const [eventSite, setEventSite] = useState<{ id: number, title: string, isCreatable?: boolean }[]>([])
+    const [eventSite, setEventSite] = useState<{ id: number, title: string, isCreatable?: boolean }[]>(props?.initValue?.eventSite ? [{id: props?.initValue.eventSite.id, title: props.initValue.eventSite.title}] : [])
     const [customLocation, setCustomLocation] = useState(props?.initValue?.customLocation || '')
 
     const [searchKeyword, setSearchKeyword] = useState('')
