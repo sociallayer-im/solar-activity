@@ -78,7 +78,6 @@ function Dashboard() {
                             return createEventSite({...e, auth_token: user.authToken || '', owner_id: user.id || 0})
                         }
                     })
-                console.log('task.length', task.length)
                 await Promise.all(task)
                 unload()
                 showToast('Save event site success')

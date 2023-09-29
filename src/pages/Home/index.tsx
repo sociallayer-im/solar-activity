@@ -126,7 +126,7 @@ function Home() {
                     { (user.id === eventGroup.group_owner_id || isManager) &&
                         <div className={'setting-btn'} onClick={e => {
                             navigate(`/${eventGroup.username}/dashboard`)
-                        }}>+ {lang['Activity_Setting_Btn']}</div>
+                        }}>{lang['Activity_Setting_Btn']}</div>
                     }
                 </div>
             }
