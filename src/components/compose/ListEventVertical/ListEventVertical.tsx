@@ -16,6 +16,7 @@ import {formatTime} from '../../../hooks/formatTime'
 import MapContext from "../../provider/MapProvider/MapContext";
 
 
+
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Virtual } from 'swiper'
 
@@ -33,13 +34,13 @@ function ListEventVertical(props: {participants: Participants[]}) {
     const markersRef = useRef<any[]>([])
     const {Map, MapEvent, Marker, MapError, MapReady} = useContext(MapContext)
 
-
     const [selectTag, setSelectTag] = useState<string[]>([])
     const [searchKeyword, setSearchKeyWork] = useState<string>('')
     const [mode, setMode] = useState<'list' | 'map'>(searchParams.get('mode') === 'map' ? 'map' : 'list')
     const [eventsWithLocation, setEventsWithLocation] = useState<Event[]>([])
     const [compact, setCompact] = useState(true)
     const swiperRef = useRef<any>(null)
+
 
     useEffect(() => {
         if (MapError) {

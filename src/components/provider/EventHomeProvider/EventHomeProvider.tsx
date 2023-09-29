@@ -9,8 +9,6 @@ import DialogsContext from "../DialogProvider/DialogsContext";
 function EventHomeProvider(props: { children: any }) {
     const [css] = useStyletron()
     const navigate = useNavigate()
-    const {user} = useContext(UserContext)
-    const {showToast, showLoading} = useContext(DialogsContext)
 
     const [eventGroups, setEventGroups] = useState<Profile[]>([])
     const [availableList, setAvailableList] = useState<Profile[]>([])
@@ -18,8 +16,11 @@ function EventHomeProvider(props: { children: any }) {
     const [ready, setReady] = useState(false)
     const [selectedEventGroup, setSelectedEventGroup] = useState<Profile | null>(null)
     const [joined, setJoined] = useState(true)
+
     const [isManager, setIsManager] = useState(false)
     const [leadingEvent, setLeadingEvent] = useState<{id: number, username: string, logo: string | null} | null>(null)
+    const {user} = useContext(UserContext)
+    const {showToast, showLoading} = useContext(DialogsContext)
 
 
     useEffect(() => {

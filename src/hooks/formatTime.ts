@@ -8,6 +8,7 @@ export const formatTime = (dateString: string) => {
     return `${year}.${mon.padStart(2, '0')}.${date.padStart(2, '0')} ${hour.padStart(2, '0')}:${min.padStart(2, '0')}`
 }
 
+
 export const formatTime2 = (dateString: string) => {
     // format like:THU, SEP 26 AT 9 PM
     const dateObject = new Date(dateString)

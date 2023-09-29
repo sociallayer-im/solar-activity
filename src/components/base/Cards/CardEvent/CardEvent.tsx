@@ -39,7 +39,6 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
         }
     }, [user.id])
 
-
     useEffect(() => {
         setEventDetail(props.event)
     }, [props.event])

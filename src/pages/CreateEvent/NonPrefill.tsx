@@ -12,7 +12,7 @@ import solas, {
     Badge,
     cancelEvent,
     CreateEventProps,
-    Event,
+    Event, EventSites,
     getEventSide,
     getHotTags,
     getProfile,
@@ -96,7 +96,7 @@ function CreateEvent(props: CreateEventPageProps) {
     const [content, setContent] = useState('')
     const [locationType, setLocationType] = useState<'online' | 'offline' | 'both'>('offline')
     const [onlineUrl, setOnlineUrl] = useState('')
-    const [eventSite, setEventSite] = useState<any>([])
+    const [eventSite, setEventSite] = useState<EventSites | null>(null)
     const [maxParticipants, setMaxParticipants] = useState<number>(10) // default 10
     const [minParticipants, setMinParticipants] = useState<number>(3) // default 3
     const [guests, setGuests] = useState<string[]>([''])
@@ -287,7 +287,7 @@ function CreateEvent(props: CreateEventPageProps) {
             }
             setLocationType(event.location_type)
             setOnlineUrl(event.online_location || '')
-            setEventSite(event.event_site ? [{label: event.event_site.title, id: event.event_site.id}] : [])
+            setEventSite(event.event_site ? event.event_site : null)
             if (event.max_participant) {
                 setMaxParticipants(event.max_participant)
                 setEnableMaxParticipants(true)
@@ -396,12 +396,11 @@ function CreateEvent(props: CreateEventPageProps) {
     // 检查event_site在设置的event.start_time和event.ending_time否可用
     useEffect(() => {
         async function getEventBySiteAndDate() {
-            if (eventSite[0] && start && ending) {
+            if (eventSite && start && ending) {
                 const startDate = new Date(new Date(start).getFullYear(), new Date(start).getMonth(), new Date(start).getDate(), 0, 0, 0)
                 const endDate = new Date(new Date(ending).getFullYear(), new Date(ending).getMonth(), new Date(ending).getDate(), 23, 59, 59)
-                console.log('eventSite', eventSite[0])
                 let events = await queryEvent({
-                    event_site_id: eventSite[0].id,
+                    event_site_id: eventSite.id,
                     start_time_from: startDate.getTime() / 1000,
                     start_time_to: endDate.getTime() / 1000,
                     page: 1
@@ -515,7 +514,7 @@ function CreateEvent(props: CreateEventPageProps) {
             badge_id: badgeId,
             group_id: eventGroup.id,
             online_location: onlineUrl || null,
-            event_site_id: eventSite[0] ? eventSite[0].id : null,
+            event_site_id: eventSite?.id || null,
             event_type: eventType,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
@@ -607,7 +606,7 @@ function CreateEvent(props: CreateEventPageProps) {
             start_time: start,
             location_type: 'both',
             ending_time: hasDuration ? ending : null,
-            event_site_id: eventSite[0] ? eventSite[0].id : null,
+            event_site_id: eventSite?.id|| null,
             max_participant: enableMaxParticipants ? maxParticipants : null,
             min_participant: enableMinParticipants ? minParticipants : null,
             badge_id: badgeId,
@@ -719,13 +718,13 @@ function CreateEvent(props: CreateEventPageProps) {
                         {!!eventGroup && ((isEditMode && formReady) || !isEditMode) &&
                             <LocationInput
                                 initValue={isEditMode ? {
-                                    eventSite: eventSite[0] || [],
+                                    eventSite: eventSite,
                                     customLocation: customLocation,
                                     metaData: locationDetail
                                 } : undefined}
                                 eventGroup={eventGroup}
                                 onChange={values => {
-                                    setEventSite(values.eventSite?.id ? [values.eventSite] : [])
+                                    setEventSite(values.eventSite?.id ? values.eventSite : null )
                                     setCustomLocation(values.customLocation)
                                     setLocationDetail(values.metaData || '')
                                 }}/>
