@@ -50,6 +50,7 @@ export interface Profile {
     group_event_enabled: boolean,
     group_event_visibility?: 'public' | 'protected' | 'private'
     group_event_tags: string[] | null,
+    group_map_enabled: boolean,
 }
 
 export interface ProfileSimple {
@@ -418,7 +419,8 @@ export interface Group extends Profile {
     username: string
     domain: string,
     nickname: string,
-    group_event_tags: string[] | null
+    group_event_tags: string[] | null,
+    group_map_enabled: boolean,
 }
 
 export interface QueryUserGroupProps {

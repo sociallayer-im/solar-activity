@@ -338,7 +338,7 @@ function ListEventVertical(props: {participants: Participants[]}) {
                         {lang['Activity_Past']}
                     </div>
 
-                    { MapReady &&
+                    { MapReady && eventGroup?.group_map_enabled &&
                         <div className={'mode-switch'}>
                             <div className={'switcher'}>
                                 <div onClick={() => {setTab2Index('soon');setMode('map')}}
