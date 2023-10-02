@@ -60,7 +60,8 @@ function ListEventVertical(props: {participants: Participants[]}) {
 
     const getEvent = async (page: number) => {
         const unload = showLoading()
-        const todayZero  = new Date(new Date().toLocaleDateString()).getTime() / 1000
+        const now = new Date()
+        const todayZero  = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).getTime() / 1000
         if (!eventGroup?.id) {
             return []
         }
