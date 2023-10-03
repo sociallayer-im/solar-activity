@@ -49,6 +49,7 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
         if (isLoading) {
             console.error('Connector is loading')
         }
+
         if (pendingConnector) {
             console.error('pendingConnector: ' + pendingConnector?.id)
             console.error('connector id: ' + connector.id)
@@ -95,7 +96,7 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
     return (
         <div className='dialog-connect-wallet'>
             {connectors.map((connector) => (
-                <div className={ !connector.ready ? 'connect-item disable': 'connect-item' }
+                <div className={ (!connector.ready || isLoading || pendingConnector?.id === connector.id)  ? 'connect-item disable': 'connect-item' }
                     key={connector.id}
                     onClick={() => handleConnectWallet(connector)}>
                     <img src={ `/images/${connector.name.toLowerCase()}.png` } alt={connector.name} />
