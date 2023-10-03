@@ -282,7 +282,7 @@ const langEN = {
   Activity_Detail_Btn_AttendOnline: 'Attend online',
   Activity_Detail_min_participants_Alert: slotLang('When the number of participants is less than {1}, the activity may be cancelled. Check-in is available half an hour before the start of the event.'),
   Activity_quantity_Input: 'custom',
-  Activity_Detail_Expired: 'Ended',
+  Activity_Detail_Expired: 'Past',
   Activity_Detail_Created: 'Hosting',
   Activity_Detail_Wechat: 'Join WeChat group',
   Activity_Detail_Account: 'Or add WeChat account: ',
