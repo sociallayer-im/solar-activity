@@ -28,9 +28,9 @@ function HomeUserPanel() {
     const mouth = new Date().getMonth()
     const year = new Date().getFullYear()
     const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const monthName = langType === 'en'
-        ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][mouth]
-        : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月'][mouth]
+    const monthName = langType === 'cn'
+        ? ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月'][mouth]
+        : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][mouth]
 
     // 根据时间显示不同问候语
     const greet = () => {

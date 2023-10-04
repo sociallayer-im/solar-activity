@@ -46,9 +46,16 @@ function LangProvider (props: LangProviderProps) {
             return
         }
 
-        const lang = navigator.language
-        switchLang(lang === 'zh-CN' ? LangType.cn : LangType.en)
-        switchLang(lang === 'th' ? LangType.th : LangType.en)
+        if (navigator.language === 'zh-CN') {
+            switchLang(LangType.cn)
+            return
+        }
+        if (navigator.language === 'th') {
+            switchLang(LangType.th)
+            return
+        }
+
+        switchLang(LangType.en)
     }, [])
 
    return (

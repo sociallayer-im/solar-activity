@@ -26,7 +26,7 @@ interface DateItem {
     monthName: string,
 }
 
-const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
 
 function Calendar() {
     const navigate = useNavigate()
@@ -44,9 +44,10 @@ function Calendar() {
     const {groupname} = useParams()
     const {eventGroup, setEventGroup, findGroup, ready} = useContext(EventHomeContext)
 
-    const monthName = langType === 'en'
-        ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月']
+    const monthName = langType === 'cn'
+        ? ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月']
+        : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
     const now = new Date()
     const selectedDateFromParams = searchParams.get('time') ? new Date(Number(searchParams.get('time'))) : now
