@@ -497,6 +497,6 @@ let langTHData: any = {
     Selector_issue_type_amount: 'จำนวน Badge',
 }
 
-let langTH = Object.assign(langEN, langTHData)
+let langTH : LangConfig = Object.assign({}, langEN, langTHData)
 
 export default langTH
