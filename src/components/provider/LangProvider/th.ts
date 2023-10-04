@@ -1,4 +1,5 @@
 import { LangConfig } from './en'
+import langEN from './en'
 
 function slotLang(str: string) {
   return function (slots: any[]): string {
@@ -10,7 +11,7 @@ function slotLang(str: string) {
   }
 }
 
-const langTH: LangConfig = {
+let langTHData: any = {
     Nav_Wallet_Connect: 'เข้าสู้ระบบ',
     Nav_Wallet_Disconnect: 'ออกจากระบบ',
     Nav_Badge_Page: 'Badge',
@@ -165,7 +166,7 @@ const langTH: LangConfig = {
     Landing_Sub_Tittle_2: 'สามารถทำอะไรได้บ้าง?',
     Landing_Sub_Tittle_3: 'วิธีการส่ง Badge คืออะไร?',
     Landing_Des_1: 'dApp ที่ทุกคนสามารถส่ง Badge ให้กับทุกคน, สร้างตัวตนดิจิทัลของบุคคลตามค่าที่เป็นศูนย์, ไม่ได้ประเมินค่า การออก Badge ไม่ต้องผ่านการตรวจสอบหรือการอนุมัติจากบุคคลที่สาม, และ Badge ',
-    Landing_DeLanding_Des_2: 'แสดงความรู้สึกของคุณต่อผู้อื่นโดยการมอบ Badge และค้นพบผู้ที่มีใจความคิดเห็นเดียวกันผ่านBadge',
+    Landing_Des_2: 'แสดงความรู้สึกของคุณต่อผู้อื่นโดยการมอบ Badge และค้นพบผู้ที่มีใจความคิดเห็นเดียวกันผ่านBadge',
     Landing_Des_3: 'คลิก \'เริ่มต้น\' เพื่อสร้างตัวตนของคุณบน Blockchain ไปที่หน้าโปรไฟล์และมอบ Badge สำหรับผู้ใช้แรก ๆ, Social Layer จะจ่ายค่า Gas Fee ',
     Landing_Des_4: 'สำหรับข้อมูลเพิ่มเติม: ',
     Landing_White_Paper: 'Social Layer whitepaper',
@@ -279,7 +280,7 @@ const langTH: LangConfig = {
     Activity_Detail_Offline_Tg_des: 'ลิงก์กลุ่มจะแสดงหลังจากผู้เข้าร่วมได้สมัครเข้าร่วม.',
     Activity_Detail_Online_address: 'ที่อยู่เข้าร่วมออนไลน์',
     Activity_Detail_Btn_AttendOnline: 'เข้าร่วมออนไลน์',
-    Activity_Detail_min_participants_Alert: 'เมื่อจำนวนผู้เข้าร่วมน้อยกว่า {1}, กิจกรรมอาจถูกยกเลิก การเช็คอินเปิดให้บริการครึ่งชั่วโมงก่อนเริ่มกิจกรรม.',
+    Activity_Detail_min_participants_Alert: slotLang('เมื่อจำนวนผู้เข้าร่วมน้อยกว่า {1}, กิจกรรมอาจถูกยกเลิก การเช็คอินเปิดให้บริการครึ่งชั่วโมงก่อนเริ่มกิจกรรม.'),
     Activity_quantity_Input: 'กำหนดเอง',
     Activity_Detail_Expired: 'สิ้นสุดแล้ว',
     Activity_Detail_Created: 'Host',
@@ -495,5 +496,7 @@ const langTH: LangConfig = {
     Selector_issue_type_badge: 'ส่ง Badge',
     Selector_issue_type_amount: 'จำนวน Badge',
 }
+
+let langTH = Object.assign(langEN, langTHData)
 
 export default langTH
