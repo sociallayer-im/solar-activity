@@ -50,22 +50,15 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
             console.error('Connector is loading')
         }
 
-        if (pendingConnector) {
-            console.error('pendingConnector: ' + pendingConnector?.id)
-            console.error('connector id: ' + connector.id)
-        }
-
         if (error) {
             console.error('connector error: ' + error)
         }
 
-        console.log('connector', connector)
-
-        // if (isLoading && pendingConnector?.id === connector.id) return
-
         if (!isDisconnected) {
             disconnect()
         }
+
+        window.localStorage.removeItem('wagmi.cache')
 
        setTimeout(() => {
            setLastLoginType('wallet')
@@ -96,7 +89,7 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
     return (
         <div className='dialog-connect-wallet'>
             {connectors.map((connector) => (
-                <div className={ (!connector.ready || isLoading || pendingConnector?.id === connector.id)  ? 'connect-item disable': 'connect-item' }
+                <div className={ (!connector.ready || isLoading)  ? 'connect-item disable': 'connect-item' }
                     key={connector.id}
                     onClick={() => handleConnectWallet(connector)}>
                     <img src={ `/images/${connector.name.toLowerCase()}.png` } alt={connector.name} />
