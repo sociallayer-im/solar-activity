@@ -74,6 +74,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
                     event_order: 'start_time_asc',
                     group_id: eventGroup?.id || undefined
                 })
+
+                res = res.filter(item => {
+                    const endTime = new Date(item.ending_time!).getTime()
+                    return endTime >= new Date().getTime()
+                })
+
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])
@@ -87,6 +93,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
                     event_order: 'start_time_desc',
                     group_id: eventGroup?.id || undefined
                 })
+
+                res = res.filter(item => {
+                    const endTime = new Date(item.ending_time!).getTime()
+                    return endTime < new Date().getTime()
+                })
+
                 if (selectTag[0]) {
                     res = res.filter(item => {
                         return item.tags?.includes(selectTag[0])

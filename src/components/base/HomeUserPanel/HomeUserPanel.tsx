@@ -82,7 +82,7 @@ function HomeUserPanel() {
         }
         { groupname === 'muchiangmai' &&
             <a href='https://t.me/muchiangmai' className={'beast-banner'} target={'_blank'}>
-                <img src="https://ik.imagekit.io/soladata/p96bmixh_OcSF5rMl0" alt=""/>
+                <img src="https://ik.imagekit.io/soladata/66a04ydx_ynF4PkjXk" alt=""/>
             </a>
         }
         <div className={'center'}>
