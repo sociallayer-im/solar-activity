@@ -11,6 +11,7 @@ import EventSiteInput from "../../components/compose/SiteEventInput/EventSiteInp
 import AppButton from "../../components/base/AppButton/AppButton";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import UserContext from "../../components/provider/UserProvider/UserContext";
+import DashboardInfo from "../../components/base/DashboardInfo/DashboardInfo";
 
 function Dashboard() {
     const [css] = useStyletron()
@@ -124,6 +125,10 @@ function Dashboard() {
                         </div>
                     </div>
                 </div>
+
+                {!!eventGroup &&
+                    <DashboardInfo groupid={eventGroup.id}/>
+                }
             </div>
 
             {showEventSiteList &&

@@ -2117,11 +2117,32 @@ export async function myProfile (props: {auth_token: string}) {
     return res.data.profile as Profile
 }
 
+export interface EventStats {
+    total_events: number,
+    total_event_hosts: number,
+    total_participants: number,
+    total_issued_badges: number,
+}
+
+export async function getEventStats (props: {id: number, days: number}) {
+    const res = await fetch.get({
+        url: `${api}/event/stats`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data as EventStats
+}
+
 
 export default {
     checkIsManager,
     createEventSite,
     updateEventSite,
+    getEventStats,
     phoneLogin,
     requestPhoneCode,
     myProfile,
