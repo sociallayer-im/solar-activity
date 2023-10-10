@@ -26,10 +26,11 @@ export interface GMapSearchResult {
 export interface LocationInputProps {
     initValue?: LocationInputValue,
     eventGroup: Profile,
-    onChange?: (value: LocationInputValue) => any
+    onChange?: (value: LocationInputValue) => any,
+    arrowAlias?: boolean,
 }
 
-function LocationInput(props: LocationInputProps) {
+function LocationInput({arrowAlias = true, ...props}: LocationInputProps) {
     const {showToast, showLoading} = useContext(DialogsContext)
     const {langType, lang} = useContext(langContext)
     const {AutoComplete, Section, MapLibReady, MapReady, MapError} = useContext(MapContext)
@@ -172,9 +173,14 @@ function LocationInput(props: LocationInputProps) {
 
     return (<div className={'input-area event-location-input'}>
         <input type="text" id={'map'}/>
-        <div className={'input-area-title'}>{lang['Activity_Form_Where']}</div>
-        <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location']}</div>
-        {!isCustom &&
+        { arrowAlias &&
+           <>
+               <div className={'input-area-title'}>{lang['Activity_Form_Where']}</div>
+               <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location']}</div>
+           </>
+        }
+
+        {!isCustom && arrowAlias &&
             <div className={'selector'}>
                 <i className={'icon-Outline'}/>
                 <Select
@@ -203,19 +209,24 @@ function LocationInput(props: LocationInputProps) {
                 />
             </div>
         }
-        {isCustom &&
-            <>
-                <AppInput
-                    startEnhancer={() => <i className={'icon-edit'}/>}
-                    endEnhancer={() => <Delete size={24} onClick={reset} className={'delete'}/>}
-                    placeholder={'Enter location'}
-                    value={customLocation}
-                    onChange={(e) => setCustomLocation(e.currentTarget.value)}
-                />
 
-                { MapReady &&
+        {(isCustom || !arrowAlias) &&
+            <>
+                { arrowAlias &&
+                    <AppInput
+                        startEnhancer={() => <i className={'icon-edit'}/>}
+                        endEnhancer={() => <Delete size={24} onClick={reset} className={'delete'}/>}
+                        placeholder={'Enter location'}
+                        value={customLocation}
+                        onChange={(e) => setCustomLocation(e.currentTarget.value)}
+                    />
+                }
+
+                { MapReady  &&
                     <>
-                        <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location_Custom']}</div>
+                        { arrowAlias &&
+                            <div className={'input-area-sub-title'}>{lang['Activity_Detail_Offline_location_Custom']}</div>
+                        }
                         <div className={'custom-selector'}>
                             {
                                 showSearchRes && <div className={'shell'} onClick={e => {
@@ -233,6 +244,7 @@ function LocationInput(props: LocationInputProps) {
                                 placeholder={'Select location'}
                                 value={customLocationDetail ? customLocationDetail.name : ''}
                             />
+
                             {showSearchRes &&
                                 <div className={'search-res'}>
                                     <AppInput

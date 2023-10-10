@@ -521,7 +521,9 @@ const langCN: LangConfig = {
   Setting_Events: '事件',
   Setting_Badge: '颁发徽章',
   Setting_Banner: '横幅',
-  Setting_Banner_Link: '链接（选填）'
+  Setting_Location: '默认地点',
+  Setting_Banner_Link: '链接（选填）',
+  Setting_Permission: '创建和参加权限',
 }
 
 export default langCN

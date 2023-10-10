@@ -1,7 +1,6 @@
 import {useContext, useEffect, useRef, useState} from 'react'
-import {EventSites, getEventSide, Profile} from "../../../service/solas";
+import {EventSites} from "../../../service/solas";
 import './EventSiteInput.less'
-import {Select} from "baseui/select";
 import AppInput from "../../base/AppInput";
 import {Delete} from "baseui/icon";
 import DialogsContext from "../../provider/DialogProvider/DialogsContext";

@@ -524,7 +524,9 @@ const langEN = {
   Setting_Events: 'Events',
   Setting_Badge: 'Badges received',
   Setting_Banner: 'Banner',
-  Setting_Banner_Link: 'Link (Optional)'
+  Setting_Location: 'Default location',
+  Setting_Banner_Link: 'Link (Optional)',
+  Setting_Permission: 'Permission to create and apply'
 }
 
 export type LangConfig = typeof langEN

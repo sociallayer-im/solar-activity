@@ -51,12 +51,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
     useEffect(() => {
         if (MapReady && Map && MapEvent && mapDomRef.current) {
             GoogleMapRef.current = new Map(mapDomRef.current as HTMLElement, {
-                center: { lat: -34.397, lng: 150.644 },
+                center: eventGroup && eventGroup.group_location_details ?  JSON.parse(eventGroup.group_location_details).geometry.location : { lat: -34.397, lng: 150.644 },
                 zoom: 14,
                 mapId: 'e2f9ddc0facd5a80'
             })
         }
-    },[MapReady, mapDomRef])
+    },[MapReady, mapDomRef, eventGroup])
 
     const getEvent = async (page: number) => {
         const unload = showLoading()

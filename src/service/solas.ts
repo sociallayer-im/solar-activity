@@ -53,6 +53,7 @@ export interface Profile {
     group_map_enabled: boolean,
     banner_image_url:null | string
     banner_link_url: null | string
+    group_location_details: null | string
 }
 
 export interface ProfileSimple {
