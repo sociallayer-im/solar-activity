@@ -117,7 +117,7 @@ function Home() {
             </div>
 
             {
-                !!user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public') &&
+                !!user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public' || isManager) &&
                 <div className={'home-action-bar'}>
                     <div className={'create-event-btn'} onClick={e => {
                         gotoCreateEvent()

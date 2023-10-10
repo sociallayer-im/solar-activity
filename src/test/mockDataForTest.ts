@@ -33,6 +33,8 @@ export const profiles: Profile[] = [
         group_event_tags: null,
         phone: '123456789',
         group_map_enabled: false,
+        banner_image_url:null,
+        banner_link_url: null
     },
     {
         address: '0x7682Ba569E3823Ca1B7317017F5769F8Aa8842D4',
@@ -63,6 +65,8 @@ export const profiles: Profile[] = [
         group_event_tags: null,
         phone: '123456789',
         group_map_enabled: false,
+        banner_image_url:null,
+        banner_link_url: null
     },
     {
         address: 'null',
@@ -92,7 +96,8 @@ export const profiles: Profile[] = [
         group_event_enabled: true,
         group_event_tags: null,
         phone: '123456789',
-        group_map_enabled: false,
+        group_map_enabled: false, banner_image_url:null,
+        banner_link_url: null
     }
 ]
 
