@@ -4,7 +4,7 @@ import {useState, useContext, useEffect} from 'react'
 import {EventStats, getEventStats} from "../../../service/solas";
 import './DashboardInfo.less'
 import {Select} from "baseui/select";
-import {s} from "msw/lib/glossary-de6278a9";
+import LangContext from "../../provider/LangProvider/LangContext";
 
 const daysOptions = [
     {label: 'Last 24 hours', id: 1},
@@ -15,10 +15,9 @@ const daysOptions = [
 ]
 
 function DashboardInfo(props: {groupid: number}) {
-    const [css] = useStyletron()
-    const navigate = useNavigate()
     const [days, setDays] = useState<{label: string, id: number}[]>([daysOptions[0]])
     const [info, setInfo] = useState<EventStats | null>(null)
+    const {lang} = useContext(LangContext)
 
     useEffect(() => {
         getEventStats({id: props.groupid, days: days[0].id}).then((res) => {
@@ -30,7 +29,7 @@ function DashboardInfo(props: {groupid: number}) {
         { !!info &&
             <div className={'dashboard-info'}>
                 <div className={'dashboard-title'}>
-                    <div>Dashboard</div>
+                    <div>{lang['Setting_Dashboard']}</div>
                     <Select
                         value={days}
                         clearable={false}
@@ -42,19 +41,19 @@ function DashboardInfo(props: {groupid: number}) {
                     />
                 </div>
                 <div className={'dashboard-info-item'}>
-                    <div className={'label'}>Number of participants</div>
+                    <div className={'label'}>{lang['Setting_Participants']}</div>
                     <div className={'value'}>{info.total_participants}</div>
                 </div>
                 <div className={'dashboard-info-item'}>
-                    <div className={'label'}>Number of hosts</div>
+                    <div className={'label'}>{lang['Setting_Hosts']}</div>
                     <div className={'value'}>{info.total_event_hosts}</div>
                 </div>
                 <div className={'dashboard-info-item'}>
-                    <div className={'label'}>Events</div>
+                    <div className={'label'}>{lang['Setting_Events']}</div>
                     <div className={'value'}>{info.total_events}</div>
                 </div>
                 <div className={'dashboard-info-item'}>
-                    <div className={'label'}>Badges received</div>
+                    <div className={'label'}>{lang['Setting_Badge']}</div>
                     <div className={'value'}>{info.total_issued_badges}</div>
                 </div>
             </div>

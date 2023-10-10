@@ -108,12 +108,12 @@ function Dashboard() {
     return (<Layout>
         <div className={'dashboard-page'}>
             <div className={'center'}>
-                <PageBack title={'Organization Setting'}/>
+                <PageBack title={lang['Setting_Title']}/>
                 <div className={'setting-form'}>
                     <div className={'setting-form-item'} onClick={e => {
                         setShowEventSiteList(true)
                     }}>
-                        <div className={'label'}>Event site</div>
+                        <div className={'label'}>{lang['Setting_Event_site']}</div>
                         <div className={'value'}>
                             <span>{eventSite.length}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

@@ -512,6 +512,14 @@ const langCN: LangConfig = {
 
   Event_Site_Title: '活动空间',
   Event_Site_Location_title: slotLang('空间{1}的地点'),
+
+  Setting_Title: '组织设置',
+  Setting_Event_site: '活动空间',
+  Setting_Dashboard: '仪表盘',
+  Setting_Participants: '参与人',
+  Setting_Hosts: '发起人',
+  Setting_Events: '事件',
+  Setting_Badge: '颁发徽章',
 }
 
 export default langCN

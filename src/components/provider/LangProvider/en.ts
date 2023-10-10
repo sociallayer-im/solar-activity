@@ -515,6 +515,14 @@ const langEN = {
 
   Event_Site_Title: 'Event Site',
   Event_Site_Location_title: slotLang(' Location of Event site {1}'),
+
+  Setting_Title: 'Organization Settings',
+  Setting_Event_site: 'Event site',
+  Setting_Dashboard: 'Dashboard',
+  Setting_Participants: 'Number of participants',
+  Setting_Hosts: 'Number of hosts',
+  Setting_Events: 'Events',
+  Setting_Badge: 'Badges received',
 }
 
 export type LangConfig = typeof langEN
