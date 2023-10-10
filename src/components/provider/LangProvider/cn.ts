@@ -520,6 +520,8 @@ const langCN: LangConfig = {
   Setting_Hosts: '发起人',
   Setting_Events: '事件',
   Setting_Badge: '颁发徽章',
+  Setting_Banner: '横幅',
+  Setting_Banner_Link: '链接（选填）'
 }
 
 export default langCN

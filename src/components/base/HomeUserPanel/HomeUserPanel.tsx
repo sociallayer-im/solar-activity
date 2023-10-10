@@ -10,7 +10,6 @@ import AppButton from "../AppButton/AppButton";
 import {useParams} from "react-router-dom";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 
-
 function HomeUserPanel() {
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -75,14 +74,9 @@ function HomeUserPanel() {
                 </div>
             </div>
         </div>
-        { groupname === 'shanhaiwoo' &&
-            <Link to={'/merge'} className={'beast-banner'}>
-                <img src="/images/merge/beast_ad.jpg" alt=""/>
-            </Link>
-        }
-        { groupname === 'muchiangmai' &&
-            <a href='https://t.me/muchiangmai' className={'beast-banner'} target={'_blank'}>
-                <img src="https://ik.imagekit.io/soladata/66a04ydx_ynF4PkjXk" alt=""/>
+        {  eventGroup?.banner_image_url &&
+            <a href={eventGroup?.banner_link_url || undefined} className={'beast-banner'} target={'_blank'}>
+                <img src={eventGroup.banner_image_url} alt=""/>
             </a>
         }
         <div className={'center'}>

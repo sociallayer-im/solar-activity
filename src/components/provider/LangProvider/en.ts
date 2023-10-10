@@ -523,6 +523,8 @@ const langEN = {
   Setting_Hosts: 'Number of hosts',
   Setting_Events: 'Events',
   Setting_Badge: 'Badges received',
+  Setting_Banner: 'Banner',
+  Setting_Banner_Link: 'Link (Optional)'
 }
 
 export type LangConfig = typeof langEN

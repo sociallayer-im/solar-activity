@@ -1,5 +1,3 @@
-import {useNavigate} from 'react-router-dom'
-import {useStyletron} from 'baseui'
 import {useState, useContext, useEffect} from 'react'
 import {EventStats, getEventStats} from "../../../service/solas";
 import './DashboardInfo.less'

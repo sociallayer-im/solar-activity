@@ -51,6 +51,8 @@ export interface Profile {
     group_event_visibility?: 'public' | 'protected' | 'private'
     group_event_tags: string[] | null,
     group_map_enabled: boolean,
+    banner_image_url:null | string
+    banner_link_url: null | string
 }
 
 export interface ProfileSimple {
@@ -1096,9 +1098,8 @@ export async function queryPendingInvite(receiverId: number): Promise<Invite[]> 
     return res.data.group_invites
 }
 
-export interface UpdateGroupProps {
+export interface UpdateGroupProps extends Partial<Profile> {
     id: number,
-    image_url: string
     auth_token: string
 }
 
@@ -1106,7 +1107,7 @@ export async function updateGroup(props: UpdateGroupProps) {
     checkAuth(props)
     const res = await fetch.post({
         url: `${api}/group/update`,
-        data: props
+        data: {...props}
     })
 
     if (res.data.result === 'error') {
