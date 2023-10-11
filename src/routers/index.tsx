@@ -18,6 +18,10 @@ import CalendarNew from "../pages/CalendarNew/CalendarNew";
 import EventCheckIn from "../pages/EventCheckIn/EventCheckIn";
 import Search from "../pages/Search";
 import PlatformLogin from "../pages/platformLogin/platformLogin";
+import LoginPhone from "../pages/LoginPhone";
+
+import Dashboard from "../pages/Dashborad/Dashboard";
+
 
 
 // lazy load
@@ -52,6 +56,9 @@ function AppRouter () {
                 <Route path="/search/:keyword" element={<Search />} />
                 <Route path="/success/:eventId" element={<CreateEventSuccess />} />
                 <Route path="/merge" element={<Merge />} />
+                <Route path="/login-phone" element={<LoginPhone />} />
+
+                <Route path="/:groupname/dashboard" element={<Dashboard />} />
 
                 <Route path="/platform/login" element={<PlatformLogin />} />
                 <Route path="/error" element={<Error />} />

@@ -4,7 +4,7 @@ import langContext from "../../components/provider/LangProvider/LangContext";
 import {Event, getDateList, getProfile, Profile, ProfileSimple, queryEvent, queryMyEvent} from "../../service/solas";
 import DialogsContext from "../../components/provider/DialogProvider/DialogsContext";
 import Layout from "../../components/Layout/Layout";
-import {useParams, useSearchParams} from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 import EventCalendar from "../../components/compose/EventCalendar/EventCalendar";
 import EventLabels from "../../components/base/EventLabels/EventLabels";
@@ -12,6 +12,7 @@ import UserContext from "../../components/provider/UserProvider/UserContext";
 import {getLabelColor} from "../../hooks/labelColor";
 import usePicture from "../../hooks/pictrue";
 import Empty from "../../components/base/Empty";
+import PageBack from "../../components/base/PageBack";
 
 
 interface EventWithProfile extends Event {
@@ -25,8 +26,7 @@ const cacheProfile = new Map<number, Profile>()
 const cacheDateHasEvent= new Map<number, Date[]>()
 
 function Calendar() {
-
-
+    const navigate = useNavigate()
     const {lang} = useContext(langContext)
     const {showLoading, showToast} = useContext(DialogsContext)
     const {setEventGroup, availableList, ready, eventGroup} = useContext(EventHomeContext)
@@ -119,7 +119,6 @@ function Calendar() {
 
             setCurrMonthEventList(eventWithProfile)
             cache.set(dateStart.toISOString() + eventGroup?.username, eventWithProfile)
-
         }
     }
 
@@ -216,6 +215,11 @@ function Calendar() {
             <div className={'calender-new'}>
                 <div className={'calendar-head'}>
                     <div className={'center'}>
+                      <div className={'page-back'}>
+                          <PageBack onClose={() => {
+                              navigate(`/${eventGroup?.username || ''}`)
+                          }} />
+                      </div>
                         <div className={'calendar-head-title'}>
                             <div className={'left'}>
                                 <div

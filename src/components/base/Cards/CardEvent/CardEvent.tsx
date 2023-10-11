@@ -1,12 +1,12 @@
 import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
-import {Event, Participants, queryEventDetail} from "../../../../service/solas";
+import {Event, joinEvent, Participants, queryEventDetail} from "../../../../service/solas";
 import './CardEvent.less'
 import useTime from "../../../../hooks/formatTime";
 import langContext from "../../../provider/LangProvider/LangContext";
 import userContext from "../../../provider/UserProvider/UserContext";
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import DialogsContext from "../../../provider/DialogProvider/DialogsContext";
 
 export interface CardEventProps {
     event: Event,
@@ -23,8 +23,8 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
     const {lang} = useContext(langContext)
     const [isCreated, setIsCreated] = useState(false)
     const {user} = useContext(userContext)
-
-    const hasRegistered = props.participants?.some(item => item.event.id === props.event.id) || props.attend
+    const {showToast, showLoading} = useContext(DialogsContext)
+    const [hasRegistered, setHasRegistered] = useState(props.participants?.some(item => item.event.id === props.event.id))
 
     const now = new Date().getTime()
     const endTime = new Date(eventDetail.ending_time!).getTime()
@@ -33,8 +33,47 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
     useEffect(() => {
         if (user.id) {
             setIsCreated(props.event.owner_id === user.id)
+        } else {
+            setHasRegistered(false)
+            setIsCreated(false)
         }
     }, [user.id])
+
+    useEffect(() => {
+        setEventDetail(props.event)
+    }, [props.event])
+
+    useEffect(() => {
+        if (props.participants) {
+            setHasRegistered(props.participants?.some(item => item.event.id === props.event.id))
+        } else {
+            setHasRegistered(false)
+        }
+    }, [props.participants])
+
+    const handleJoin = async (e: any) => {
+        e.stopPropagation()
+        const eventDetail = await queryEventDetail({id: props.event.id})
+        const participantsAll = eventDetail.participants || []
+        const participants = participantsAll.filter(item => item.status !== 'cancel')
+
+        if (props.event?.max_participant !== null && props.event?.max_participant <= participants.length) {
+            showToast('The event at full strength')
+            return
+        }
+
+        const unload = showLoading()
+        try {
+            const join = await joinEvent({id: Number(props.event.id), auth_token: user.authToken || ''})
+            unload()
+            showToast('Apply success')
+            setHasRegistered(true)
+        } catch (e: any) {
+            console.error(e)
+            unload()
+            showToast(e.message)
+        }
+    }
 
     const gotoDetail = () => {
         navigate(`/event/${props.event.id}`)
@@ -42,50 +81,56 @@ function CardEvent({fixed=true, ...props}: CardEventProps) {
 
     const hasMarker = isExpired || !!hasRegistered || isCreated
 
+    const largeCard = fixed || (hasMarker && !fixed)
 
-    return (<div className={'event-card'} onClick={e => {
+    return (<div className={largeCard ? 'event-card large': 'event-card'} onClick={e => {
         gotoDetail()
     }}>
-        {(fixed || hasMarker && !fixed) &&
+        {largeCard &&
             <div className={'markers'}>
                 {isExpired && <div className={'marker expired'}>{lang['Activity_Detail_Expired']}</div>}
-                {hasRegistered && !isExpired && <div className={'marker registered'}>{lang['Activity_State_Registered']}</div>}
+                {(hasRegistered || props.attend) && <div className={'marker registered'}>{lang['Activity_State_Registered']}</div>}
                 {isCreated && <div className={'marker created'}>{lang['Activity_Detail_Created']}</div>}
             </div>
         }
 
         <div className={(fixed || hasMarker && !fixed) ? 'info marker': 'info'}>
             <div className={'left'}>
-                <div className={'title'}>{eventDetail.title}</div>
+                <div className={'details'}>
+                    <div className={'title'}>{eventDetail.title}</div>
 
-                {!!eventDetail.start_time &&
-                    <div className={'detail'}>
-                        <i className={'icon-calendar'}/>
-                        <span>{formatTime(eventDetail.start_time)}</span>
-                    </div>
+                    {!!eventDetail.start_time &&
+                        <div className={'detail'}>
+                            <i className={'icon-calendar'}/>
+                            <span>{formatTime(eventDetail.start_time)}</span>
+                        </div>
+                    }
+
+                    {!!eventDetail.location &&
+                        <div className={'detail'}>
+                            <i className={'icon-Outline'}/>
+                            <span>{eventDetail.location}</span>
+                        </div>
+                    }
+
+                    {!!eventDetail.event_site &&
+                        <div className={'detail'}>
+                            <i className={'icon-Outline'}/>
+                            <span>{eventDetail.event_site.title}</span>
+                        </div>
+                    }
+
+                    {!!eventDetail.online_location &&
+                        <div className={'detail'}>
+                            <i className={'icon-link'}/>
+                            <span>{eventDetail.online_location}</span>
+                        </div>
+                    }
+                </div>
+
+                { !!user.id && !hasRegistered && !isExpired && !fixed &&
+                    <div className={'card-apply-btn'} onClick={handleJoin}>{lang['Event_Card_Apply_Btn']}</div>
                 }
-
-                {!!eventDetail.location &&
-                    <div className={'detail'}>
-                        <i className={'icon-Outline'}/>
-                        <span>{eventDetail.location}</span>
-                    </div>
-                }
-
-                {!!eventDetail.event_site &&
-                    <div className={'detail'}>
-                        <i className={'icon-Outline'}/>
-                        <span>{eventDetail.event_site.title}</span>
-                    </div>
-                }
-
-                {!!eventDetail.online_location &&
-                    <div className={'detail'}>
-                        <i className={'icon-link'}/>
-                        <span>{eventDetail.online_location}</span>
-                    </div>
-                }
-
             </div>
             <div className={(fixed || hasMarker && !fixed) ? 'post marker': 'post'}>
                 <img src={props.event.cover} alt=""/>

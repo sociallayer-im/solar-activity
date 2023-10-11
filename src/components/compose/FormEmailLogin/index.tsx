@@ -9,30 +9,47 @@ import DialogsContext from '../../provider/DialogProvider/DialogsContext'
 
 export interface EmailLoginFormProps {
     onConfirm: (email: string) => any
+    inputType?: 'email' | 'phone'
 }
 
 function EmailLoginForm (props: EmailLoginFormProps) {
-    const [email, setEmail] = useState('')
+    const [account, setAccount] = useState('')
     const [error, setError] = useState('')
     const { lang } = useContext(langContext)
     const { showLoading, showToast } = useContext(DialogsContext)
     const [css] = useStyletron()
 
-    const verifyAndSetEmail = (value: string) => {
-        setError(value && value.match(/^\w+\.*\w+@+\w+\.\w+$/i) ? '' : 'Invalid email address')
-        setEmail(value)
+    const handleChange = (value: string) => {
+        setError('')
+        setAccount(value)
     }
 
     const sendEmail  = async () => {
+        let requestFc: any = null
+
+        if (props.inputType !== 'phone') {
+            if (!account && account.includes('@') && account.includes('.')) {
+                setError('Invalid email address')
+                return
+            }
+            requestFc = solas.requestEmailCode
+        } else {
+            if (!account.match(/^\d{11}$/)) {
+                setError('Invalid phone number')
+                return
+            }
+            requestFc = solas.requestPhoneCode
+        }
+
         const unload = showLoading()
         try {
-            const requestEmailLoginCode = await solas.requestEmailCode(email)
-            props.onConfirm(email)
+            const requestEmailLoginCode = await requestFc(account)
+            props.onConfirm(account)
             unload()
         } catch (e: any) {
             unload()
             console.log('[sendEmail]: ', e)
-            showToast(e.message || 'Send email fail')
+            showToast(e.message || 'Send code fail')
         }
     }
 
@@ -40,9 +57,9 @@ function EmailLoginForm (props: EmailLoginFormProps) {
         <AppInput
             clearable={ true }
             errorMsg={ error }
-            value={email}
-            onChange={ (e) => { verifyAndSetEmail(e.target.value) } }
-            placeholder={ lang['Login_Placeholder'] }></AppInput>
+            value={account}
+            onChange={ (e) => { handleChange(e.target.value.toLowerCase()) } }
+            placeholder={ props.inputType === 'phone' ? lang['Login_Phone_Placeholder'] : lang['Login_Placeholder'] }></AppInput>
         <div className={css({ marginTop: '34px' })}>
             <AppButton
                 onClick={ sendEmail }

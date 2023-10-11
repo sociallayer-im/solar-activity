@@ -69,13 +69,13 @@ function EventCalendar(props: EventCalendarProps) {
         getCalendarData(selected),
         getCalendarData(new Date(selected.getFullYear(), selected.getMonth() + 1, 1, 0, 0, 0, 0))
     ])
-    const [paddingRight, setPaddingRight] = useState(0)
 
     useEffect(() => {
         getWeek(today)
 
+
         const listener = (e: any) => {
-            const ifFixed = e.target.scrollTop > 107
+            const ifFixed = e.target.scrollTop > 103
             setFixed(ifFixed)
         }
 
@@ -101,138 +101,137 @@ function EventCalendar(props: EventCalendarProps) {
         wrapperClass = wrapperClass + ' active'
     }
 
-    if (fixed) {
-        wrapperClass = wrapperClass + ' fixed'
-    }
 
     return (<div className={wrapperClass}>
-        <div className={'inner'}>
-            <div className={'action-bar'}>
-                <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
-                <div></div>
-            </div>
-            <div className={'day-name calendar-row'}>
-                {
-                    dayName.map((item, index) => {
-                        return <div className={'day-item'} key={index}>{item}</div>
-                    })
-                }
-            </div>
+      <div className={fixed ? 'fixed-bar fixed' : 'fixed-bar'}>
+          <div className={'inner'}>
+              <div className={'action-bar'}>
+                  <div className={'month-date'}> {MouthName[calendarDate[1].month]} {calendarDate[1].year}</div>
+                  <div></div>
+              </div>
+              <div className={'day-name calendar-row'}>
+                  {
+                      dayName.map((item, index) => {
+                          return <div className={'day-item'} key={index}>{item}</div>
+                      })
+                  }
+              </div>
 
-            {compactMode &&
-                <div className={'week-mode calendar-row'}>
-                    {
-                        week.map((date, index) => {
-                            let className = 'day-item'
-                            if (date && selected.getTime() === date.getTime()) {
-                                className = className + ' active'
-                            }
+              {compactMode &&
+                  <div className={'week-mode calendar-row'}>
+                      {
+                          week.map((date, index) => {
+                              let className = 'day-item'
+                              if (date && selected.getTime() === date.getTime()) {
+                                  className = className + ' active'
+                              }
 
-                            if (date && today.getTime() === date.getTime()) {
-                                className = className + ' curr'
-                            }
+                              if (date && today.getTime() === date.getTime()) {
+                                  className = className + ' curr'
+                              }
 
-                            if (props.hasEventDates && props.hasEventDates.find(item => {
-                                return item.getFullYear() === date.getFullYear()
-                                    && item.getMonth() === date.getMonth()
-                                    && item.getDate() === date.getDate()
-                            })) {
-                                className = className + ' has-event'
-                            }
+                              if (props.hasEventDates && props.hasEventDates.find(item => {
+                                  return item.getFullYear() === date.getFullYear()
+                                      && item.getMonth() === date.getMonth()
+                                      && item.getDate() === date.getDate()
+                              })) {
+                                  className = className + ' has-event'
+                              }
 
-                            return <div
-                                onClick={() => {
-                                    !!date && setSelected(date!)
-                                }}
-                                className={className}
-                                key={index}>{date.getDate()}</div>
-                        })
-                    }
-                </div>
-            }
+                              return <div
+                                  onClick={() => {
+                                      !!date && setSelected(date!)
+                                  }}
+                                  className={className}
+                                  key={index}>{date.getDate()}</div>
+                          })
+                      }
+                  </div>
+              }
 
-            {!compactMode &&
-                <div className={''}>
-                    <Swiper
-                        modules={[Scrollbar, FreeMode, Mousewheel]}
-                        slidesPerView={'auto'}
-                        mousewheel={true}
-                        scrollbar={true}
-                        direction={'vertical'}
-                        observeSlideChildren
-                        onSwiper={(swiper) => {
-                            swiper.slideTo(1, 0, false)
-                        }}
-                        onSlideChange={(swiper) => {
-                            if (swiper.activeIndex === 1) return
-                            const currCalendarDate = calendarDate[swiper.activeIndex]
-                            const res = [
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month - 1, 1, 0, 0, 0, 0)),
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month, 1, 0, 0, 0, 0)),
-                                getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month + 1, 1, 0, 0, 0, 0))
-                            ]
-                            props.onMonthChange && props.onMonthChange(currCalendarDate.dates[0])
+              {!compactMode &&
+                  <div className={''}>
+                      <Swiper
+                          modules={[Scrollbar, FreeMode, Mousewheel]}
+                          slidesPerView={'auto'}
+                          mousewheel={true}
+                          scrollbar={true}
+                          direction={'vertical'}
+                          observeSlideChildren
+                          onSwiper={(swiper) => {
+                              swiper.slideTo(1, 0, false)
+                          }}
+                          onSlideChange={(swiper) => {
+                              if (swiper.activeIndex === 1) return
+                              const currCalendarDate = calendarDate[swiper.activeIndex]
+                              const res = [
+                                  getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month - 1, 1, 0, 0, 0, 0)),
+                                  getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month, 1, 0, 0, 0, 0)),
+                                  getCalendarData(new Date(currCalendarDate.year, currCalendarDate.month + 1, 1, 0, 0, 0, 0))
+                              ]
+                              props.onMonthChange && props.onMonthChange(currCalendarDate.dates[0])
 
-                            setTimeout(() => {
-                                setCalendarDate(res)
-                                swiper.slideTo(1, 0, false)
-                            }, 100)
-                        }}>
-                        {calendarDate.map((mouth: any, i) => {
-                            return <SwiperSlide key={new Date().getTime() + i}
-                                                className={`swiper-slide ${mouth.month}`}>
-                                <div className={'event-calendar-mouth'}>
-                                    {
-                                        mouth.weeks.map((week: Date[], index: number) => {
-                                            return <div className={'calendar-row'} key={index}>
-                                                {
-                                                    week.map((date, index2) => {
-                                                        let className = 'day-item'
-                                                        if (date && selected.getTime() === date.getTime()) {
-                                                            className = className + ' active'
-                                                        }
+                              setTimeout(() => {
+                                  setCalendarDate(res)
+                                  swiper.slideTo(1, 0, false)
+                              }, 100)
+                          }}>
+                          {calendarDate.map((mouth: any, i) => {
+                              return <SwiperSlide key={new Date().getTime() + i}
+                                                  className={`swiper-slide ${mouth.month}`}>
+                                  <div className={'event-calendar-mouth'}>
+                                      {
+                                          mouth.weeks.map((week: Date[], index: number) => {
+                                              return <div className={'calendar-row'} key={index}>
+                                                  {
+                                                      week.map((date, index2) => {
+                                                          let className = 'day-item'
+                                                          if (date && selected.getTime() === date.getTime()) {
+                                                              className = className + ' active'
+                                                          }
 
-                                                        if (date && today.getTime() === date.getTime()) {
-                                                            className = className + ' curr'
-                                                        }
+                                                          if (date && today.getTime() === date.getTime()) {
+                                                              className = className + ' curr'
+                                                          }
 
-                                                        if (date && props.hasEventDates && props.hasEventDates.find(item => {
-                                                            return item.getFullYear() === date.getFullYear()
-                                                                && item.getMonth() === date.getMonth()
-                                                                && item.getDate() === date.getDate()
-                                                        })) {
-                                                            className = className + ' has-event'
-                                                        }
+                                                          if (date && props.hasEventDates && props.hasEventDates.find(item => {
+                                                              return item.getFullYear() === date.getFullYear()
+                                                                  && item.getMonth() === date.getMonth()
+                                                                  && item.getDate() === date.getDate()
+                                                          })) {
+                                                              className = className + ' has-event'
+                                                          }
 
-                                                        return <div
-                                                            className={className}
-                                                            onClick={() => {
-                                                                !!date && setSelected(date!)
-                                                            }}
-                                                            key={index2}>
-                                                            {date ? date.getDate() : ''}
-                                                        </div>
-                                                    })
-                                                }
-                                            </div>
-                                        })
-                                    }
-                                </div>
-                            </SwiperSlide>
-                        })
-                        }
-                    </Swiper>
-                </div>
-            }
+                                                          return <div
+                                                              className={className}
+                                                              onClick={() => {
+                                                                  !!date && setSelected(date!)
+                                                              }}
+                                                              key={index2}>
+                                                              {date ? date.getDate() : ''}
+                                                          </div>
+                                                      })
+                                                  }
+                                              </div>
+                                          })
+                                      }
+                                  </div>
+                              </SwiperSlide>
+                          })
+                          }
+                      </Swiper>
+                  </div>
+              }
 
-            <div className={'toggle-btn'} onClick={() => {
-                setCompactMode(!compactMode)
-            }}>
-                {
-                    compactMode ? <ChevronDown size={24}/> : <ChevronUp size={24}/>
-                }
-            </div>
-        </div>
+              <div className={'toggle-btn'} onClick={() => {
+                  setCompactMode(!compactMode)
+              }}>
+                  {
+                      compactMode ? <ChevronDown size={24}/> : <ChevronUp size={24}/>
+                  }
+              </div>
+          </div>
+      </div>
     </div>)
 }
 

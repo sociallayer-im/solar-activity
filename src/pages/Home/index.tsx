@@ -20,11 +20,12 @@ function Home() {
     const navigate = useNavigate()
     const {lang} = useContext(LangContext)
     const {showToast} = useContext(DialogsContext)
-    const {eventGroup , ready, joined} = useContext(EventHomeContext)
+    const {eventGroup , ready, joined, isManager} = useContext(EventHomeContext)
 
     const [tabIndex, setTabIndex] = useState('0')
     const [showMyCreate, setShowMyCreate] = useState(true)
     const [showMyAttend, setShowMyAttend] = useState(true)
+    const [myRegistered, setMyRegistered] = useState<Participants[]>([])
 
     useEffect(() => {
         const myEvent = async () => {
@@ -32,6 +33,7 @@ function Home() {
                 const res = await queryMyEvent({auth_token: user.authToken || ''})
                 const myRegistered = res.map((item: Participants) => item.event)
                 const res2 = await queryEvent({owner_id: user.id!, page: 1})
+                setMyRegistered(res)
                 setShowMyAttend(myRegistered.length > 0)
                 setShowMyCreate(res2.length > 0)
                 if (myRegistered.length > 0) {
@@ -81,7 +83,7 @@ function Home() {
                     { (showMyAttend || showMyCreate) &&
                         <>
                             <div className={'center'}>
-                                <div className={'module-title'}>
+                                <div className={'module-title'} style={{marginBottom: '20px'}}>
                                     {lang['Activity_My_Event']}
                                 </div>
                             </div>
@@ -95,7 +97,7 @@ function Home() {
 
                                     { showMyCreate ?
                                         <Tab title={lang['Activity_State_Created']}>
-                                            <ListMyCreatedEvent />
+                                            <ListMyCreatedEvent participants={myRegistered} />
                                         </Tab>: <></>
                                     }
                                 </AppSubTabs>
@@ -111,14 +113,22 @@ function Home() {
             }
 
             <div className={'center'}>
-                <ListEventVertical/>
+                <ListEventVertical participants={myRegistered} />
             </div>
 
             {
-                !!user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public') &&
-                <div className={'create-event-btn'} onClick={e => {
-                    gotoCreateEvent()
-                }}>+ {lang['Activity_Create_Btn']}</div>
+                !!user.id && eventGroup && ready && (joined || eventGroup.group_event_visibility === 'public' || isManager) &&
+                <div className={'home-action-bar'}>
+                    <div className={'create-event-btn'} onClick={e => {
+                        gotoCreateEvent()
+                    }}>+ {lang['Activity_Create_Btn']}</div>
+
+                    { (user.id === eventGroup.group_owner_id || isManager) &&
+                        <div className={'setting-btn'} onClick={e => {
+                            navigate(`/${eventGroup.username}/dashboard`)
+                        }}>{lang['Activity_Setting_Btn']}</div>
+                    }
+                </div>
             }
         </div>
     </Layout>

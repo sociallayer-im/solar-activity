@@ -26,14 +26,16 @@ function useScrollToLoad<T> (props: useScrollToLoadProps<T>) {
             const newData = await props.queryFunction(page)
             if (!newData.length) {
                 hasMore.current = false
-            }
 
-            if ( isInit && !newData.length) {
-                setIsEmpty(true)
+                if (isInit) {
+                    setIsEmpty(true)
+                    setList([])
+                }
+            } else {
+                setList((pre) => {
+                    return isInit ? newData : [...pre, ...newData]
+                } )
             }
-            setList((pre) => {
-                return isInit ? newData : [...pre, ...newData]
-            } )
         } finally {
             setLoading(false)
         }

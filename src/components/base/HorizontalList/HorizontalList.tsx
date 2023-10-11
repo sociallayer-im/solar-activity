@@ -15,6 +15,7 @@ export interface HorizontalList<T> {
     space: number,
     itemWidth: number
     itemHeight?: number
+    initData?: T[]
     onRef?: React.RefObject<HorizontalListMethods>
     queryFunction?: (page: number) => Promise<T[]>
     sortFunction?: (list: T[]) => T[]

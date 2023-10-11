@@ -1,8 +1,7 @@
 .event-calendar {
-  position: relative;
   height: 190px;
   overflow: hidden;
-  transition: height 0.3s ease-in-out;
+  transition: height 0.1s ease-in-out;
   width: 100%;
 
   &.fixed {
@@ -19,11 +18,29 @@
     align-items: center;
     flex-flow: column;
     padding-right: 12px;
+
+  }
+
+  .fixed {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 46px;
+    box-sizing: border-box;
+    z-index: 99;
+    background: #F5F8F6;
+    padding: 0 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    padding-right: 12px;
   }
 
   .inner {
     margin: 0 auto;
     max-width: 375px;
+    position: relative;
   }
 
   &.active {

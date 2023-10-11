@@ -199,7 +199,7 @@ const langEN = {
 
   Activity_Calendar: 'Event Calendar',
   Activity_Page_type: 'Activity',
-  Activity_State_Registered: 'Attending',
+  Activity_State_Registered: 'Applied',
   Activity_State_Created: 'Hosting',
   Activity_Online_Event: 'Online Event',
   Activity_Max_Participations: 'Up to #1 participations',
@@ -223,6 +223,7 @@ const langEN = {
   Activity_Btn_Modify: 'Modify Event',
   Activity_Create_title: 'Create a Event',
   Activity_Create_Btn: 'Create Event',
+  Activity_Setting_Btn: 'Setting',
   Activity_Setting_title: 'Event Setting',
   Activity_Create_Done: 'Done',
   Activity_Create_Success: 'Create Successfully 🎉',
@@ -263,7 +264,7 @@ const langEN = {
   Activity_Detail_Btn_Modify: 'Edit',
   Activity_Detail_site_Occupied: 'The selected site is already occupied during the chosen time slot. Please choose a different site or a different time for the event.',
   Activity_Detail_Btn_Canceled: 'Canceled',
-  Activity_Detail_Btn_unjoin: 'Cancel Attend',
+  Activity_Detail_Btn_unjoin: 'Cancel',
   Activity_Detail_Btn_Cancel: 'Cancel Event',
   Activity_Detail_Btn_Checkin: 'Check-in',
   Activity_Detail_Btn_Attend: 'Apply to join',
@@ -281,7 +282,7 @@ const langEN = {
   Activity_Detail_Btn_AttendOnline: 'Attend online',
   Activity_Detail_min_participants_Alert: slotLang('When the number of participants is less than {1}, the activity may be cancelled. Check-in is available half an hour before the start of the event.'),
   Activity_quantity_Input: 'custom',
-  Activity_Detail_Expired: 'Ended',
+  Activity_Detail_Expired: 'Past',
   Activity_Detail_Created: 'Hosting',
   Activity_Detail_Wechat: 'Join WeChat group',
   Activity_Detail_Account: 'Or add WeChat account: ',
@@ -512,6 +513,35 @@ const langEN = {
   Form_Repeat_Day: 'Every day',
   Form_Repeat_Week: 'Every week',
   Form_Repeat_Month: 'Every Month',
+
+  Event_Card_Apply_Btn: 'Apply',
+  Event_Card_Applied: 'Applied',
+
+  Login_Phone_Title: 'Login with phone',
+  Login_Phone_alert: 'Enter your phone number to receive a verification code',
+  Login_Phone_continue: 'Next',
+  Login_Phone_Placeholder: 'Your phone number',
+  Login_Phone_input_Code_title: 'Verification code',
+  Login_Phone_input_Code_des: slotLang('Enter the code we sent to {phone} to complete your account set-up.'),
+
+  Event_Site_Title: 'Event Site',
+  Event_Site_Location_title: slotLang(' Location of Event site {1}'),
+
+  Setting_Title: 'Organization Settings',
+  Setting_Event_site: 'Event site',
+  Setting_Dashboard: 'Dashboard',
+  Setting_Participants: 'Number of participants',
+  Setting_Hosts: 'Number of hosts',
+  Setting_Events: 'Events',
+  Setting_Badge: 'Badges received',
+  Setting_Banner: 'Banner',
+  Setting_Location: 'Default location',
+  Setting_Banner_Link: 'Link (Optional)',
+  Setting_Permission: 'Permission to create and apply',
+
+  Event_Today: 'Today',
+  Event_Tomorrow: 'Tomorrow',
+  Event_Label_All: 'All',
 }
 
 export type LangConfig = typeof langEN

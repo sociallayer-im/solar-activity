@@ -223,6 +223,7 @@ const langCN: LangConfig = {
   Activity_Btn_Modify: '修改活动',
   Activity_Create_title: '发布活动',
   Activity_Create_Btn: '发布活动',
+  Activity_Setting_Btn: '设置',
   Activity_Setting_title: '修改活动',
   Activity_Create_Done: '完成',
   Activity_Create_Success: '创建成功 🎉',
@@ -509,6 +510,35 @@ const langCN: LangConfig = {
   Form_Repeat_Day: '每天',
   Form_Repeat_Week: '每周',
   Form_Repeat_Month: '每月',
+
+  Event_Card_Apply_Btn: '报名',
+  Event_Card_Applied: '已报名',
+
+  Login_Phone_Title: '使用手机登录',
+  Login_Phone_alert: '请输入你的手机号',
+  Login_Phone_continue: '下一步',
+  Login_Phone_Placeholder: '您的手机号',
+  Login_Phone_input_Code_title: '验证码',
+  Login_Phone_input_Code_des: slotLang('输入你的手机 {phone} 接收到的验证码完成登录操作'),
+
+  Event_Site_Title: '活动空间',
+  Event_Site_Location_title: slotLang('空间{1}的地点'),
+
+  Setting_Title: '组织设置',
+  Setting_Event_site: '活动空间',
+  Setting_Dashboard: '仪表盘',
+  Setting_Participants: '参与人',
+  Setting_Hosts: '发起人',
+  Setting_Events: '事件',
+  Setting_Badge: '颁发徽章',
+  Setting_Banner: '横幅',
+  Setting_Location: '默认地点',
+  Setting_Banner_Link: '链接（选填）',
+  Setting_Permission: '创建和参加权限',
+
+  Event_Today: '今天',
+  Event_Tomorrow: '明天',
+  Event_Label_All: '全部',
 }
 
 export default langCN

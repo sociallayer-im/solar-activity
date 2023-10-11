@@ -26,6 +26,7 @@ export interface Profile {
     id: number,
     image_url: string | null,
     email: string | null,
+    phone: string | null,
 
     twitter: string | null,
     telegram: string | null,
@@ -48,6 +49,10 @@ export interface Profile {
     group_event_enabled: boolean,
     group_event_visibility?: 'public' | 'protected' | 'private'
     group_event_tags: string[] | null,
+    group_map_enabled: boolean,
+    banner_image_url: null | string
+    banner_link_url: null | string
+    group_location_details: null | string
 }
 
 export interface ProfileSimple {
@@ -102,13 +107,14 @@ export async function requestEmailCode(email: string): Promise<void> {
     }
 }
 
-export interface EmailLoginRes {
+export interface LoginRes {
     auth_token: string,
     id: number,
     email: string
+    phone: null | string
 }
 
-export async function emailLogin(email: string, code: string): Promise<EmailLoginRes> {
+export async function emailLogin(email: string, code: string): Promise<LoginRes> {
     const res = await fetch.post({
         url: `${api}/profile/signin_with_email`,
         data: {email, code}
@@ -415,7 +421,8 @@ export interface Group extends Profile {
     username: string
     domain: string,
     nickname: string,
-    group_event_tags: string[] | null
+    group_event_tags: string[] | null,
+    group_map_enabled: boolean,
 }
 
 export interface QueryUserGroupProps {
@@ -1091,9 +1098,8 @@ export async function queryPendingInvite(receiverId: number): Promise<Invite[]> 
     return res.data.group_invites
 }
 
-export interface UpdateGroupProps {
+export interface UpdateGroupProps extends Partial<Profile> {
     id: number,
-    image_url: string
     auth_token: string
 }
 
@@ -1101,7 +1107,7 @@ export async function updateGroup(props: UpdateGroupProps) {
     checkAuth(props)
     const res = await fetch.post({
         url: `${api}/group/update`,
-        data: props
+        data: {...props}
     })
 
     if (res.data.result === 'error') {
@@ -1496,7 +1502,7 @@ export interface EventCheckInProps {
     profile_id: number,
 }
 
-export async function eventCheckIn (props: EventCheckInProps) {
+export async function eventCheckIn(props: EventCheckInProps) {
     checkAuth(props)
     const res: any = await fetch.post({
         url: `${api}/event/check`,
@@ -1603,7 +1609,7 @@ export async function queryEvent(props: QueryEventProps): Promise<Event[]> {
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
+    return res.data.events.filter((item: any) => item.status !== 'cancel') as Event[]
 }
 
 export interface QueryRecommendEventProps {
@@ -1662,7 +1668,7 @@ export interface QueryMyEventProps {
     page?: number
 }
 
-export async function queryMyEvent({page=1, ...props}: QueryMyEventProps): Promise<Participants[]> {
+export async function queryMyEvent({page = 1, ...props}: QueryMyEventProps): Promise<Participants[]> {
     checkAuth(props)
 
     const res: any = await fetch.get({
@@ -1674,7 +1680,7 @@ export async function queryMyEvent({page=1, ...props}: QueryMyEventProps): Promi
         throw new Error(res.data.message || 'Query event fail')
     }
 
-    return res.data.participants.filter((item: any) => item.status !=='cancel') as Participants[]
+    return res.data.participants.filter((item: any) => item.status !== 'cancel') as Participants[]
 }
 
 export interface CancelEventProps {
@@ -1713,7 +1719,8 @@ export interface EventSites {
     "about": string,
     "group_id": number,
     "owner_id": number,
-    "created_at": string
+    "created_at": string,
+    "location_details": null | string,
 }
 
 export async function getEventSide(groupId?: number): Promise<EventSites[]> {
@@ -1730,7 +1737,7 @@ export interface JoinEventProps {
     auth_token: string,
 }
 
-export async function joinEvent (props: JoinEventProps) {
+export async function joinEvent(props: JoinEventProps) {
     checkAuth(props)
     const res: any = await fetch.post({
         url: `${api}/event/join`,
@@ -1744,7 +1751,7 @@ export async function joinEvent (props: JoinEventProps) {
     return res.data.participant as Participants
 }
 
-export async function unJoinEvent (props: JoinEventProps) {
+export async function unJoinEvent(props: JoinEventProps) {
     checkAuth(props)
     const res: any = await fetch.post({
         url: `${api}/event/cancel`,
@@ -1758,17 +1765,17 @@ export async function unJoinEvent (props: JoinEventProps) {
     return res.data.participant as Participants
 }
 
-export async function searchEvent (keyword: string) {
+export async function searchEvent(keyword: string) {
     const res: any = await fetch.get({
         url: `${api}/event/search`,
-        data: {title: keyword }
+        data: {title: keyword}
     })
 
     if (res.data.result === 'error') {
         throw new Error(res.data.message || 'Join event fail')
     }
 
-    return res.data.events.filter((item: any) => item.status !=='cancel') as Event[]
+    return res.data.events.filter((item: any) => item.status !== 'cancel') as Event[]
 }
 
 interface InviteGuestProp {
@@ -1777,7 +1784,7 @@ interface InviteGuestProp {
     auth_token: string,
 }
 
-export async function inviteGuest (props: InviteGuestProp) {
+export async function inviteGuest(props: InviteGuestProp) {
     checkAuth(props)
 
     const task = props.domains.map(item => {
@@ -1808,7 +1815,7 @@ export async function inviteGuest (props: InviteGuestProp) {
     }
 }
 
-export function createSite (authToken: string) {
+export function createSite(authToken: string) {
     return fetch.post({
         url: `${api}/event/create_event_site`,
         data: {
@@ -1825,7 +1832,7 @@ export interface SetEventBadgeProps {
     auth_token: string,
 }
 
-export async function setEventBadge (props: SetEventBadgeProps) {
+export async function setEventBadge(props: SetEventBadgeProps) {
     checkAuth(props)
 
     const res = await fetch.post({
@@ -1843,7 +1850,7 @@ export interface SendEventBadgeProps {
     event_id: number,
 }
 
-export async function sendEventBadge (props: SendEventBadgeProps) {
+export async function sendEventBadge(props: SendEventBadgeProps) {
     checkAuth(props)
 
     const res = await fetch.post({
@@ -1872,7 +1879,7 @@ export interface CheckLog {
     created_at: string,
 }
 
-export async function getEventCheckLog (props: GetEventCheckLogProps) {
+export async function getEventCheckLog(props: GetEventCheckLogProps) {
 
     const res = await fetch.get({
         url: `${api}/event/list_checklogs`,
@@ -1893,7 +1900,7 @@ export interface PunchInProps {
     image_url?: string,
 }
 
-export async function punchIn (props: PunchInProps) {
+export async function punchIn(props: PunchInProps) {
     checkAuth(props)
 
     const res = await fetch.post({
@@ -1906,7 +1913,7 @@ export async function punchIn (props: PunchInProps) {
     }
 }
 
-export async function getShanhaiwooResource (profile_id: number) {
+export async function getShanhaiwooResource(profile_id: number) {
     const res = await fetch.get({
         url: `${api}/profile/shanhaiwoo_resource_count`,
         data: {profile_id}
@@ -1924,7 +1931,7 @@ export async function getShanhaiwooResource (profile_id: number) {
     }
 }
 
-export async function getDivineBeast (profile_id: number) {
+export async function getDivineBeast(profile_id: number) {
     const res = await fetch.get({
         url: `${api}/profile/shanhaiwoo_list`,
         data: {profile_id}
@@ -1941,10 +1948,10 @@ export interface DivineBeastMergeProps {
     auth_token: string,
     content: string,
     metadata: string,
-    image_url:string,
+    image_url: string,
 }
 
-export async function divineBeastMerge (props: DivineBeastMergeProps) {
+export async function divineBeastMerge(props: DivineBeastMergeProps) {
     checkAuth(props)
 
     const res = await fetch.post({
@@ -1963,11 +1970,11 @@ export interface DivineBeastRmergeProps {
     auth_token: string,
     badgelet_id: number,
     metadata: string,
-    image_url:string,
+    image_url: string,
     value: number,
 }
 
-export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
+export async function divineBeastRemerge(props: DivineBeastRmergeProps) {
     checkAuth(props)
 
     const res = await fetch.post({
@@ -1982,10 +1989,16 @@ export async function divineBeastRemerge (props: DivineBeastRmergeProps) {
     return res.data.badgelets as Badgelet[]
 }
 
-export async function getEventGroup () {
+export async function getEventGroup() {
+    const specialVersion = import.meta.env.VITE_SPECIAL_VERSION
+    console.log('[special version]: ', specialVersion)
+
+
     const res = await fetch.get({
         url: `${api}/event/group_list`,
-        data: {}
+        data: {
+            group_seven_enabled: specialVersion === '706' ? 'group_list' : undefined,
+        }
     })
 
     if (res.data.result === 'error') {
@@ -2001,7 +2014,8 @@ export interface GetDateListProps {
     start_time_to: number,
     page: number,
 }
-export async function getDateList (props: GetDateListProps) {
+
+export async function getDateList(props: GetDateListProps) {
     const res = await fetch.get({
         url: `${api}/event/daylist`,
         data: {...props, page: props.page || 1, event_order: 'start_time_asc'}
@@ -2017,13 +2031,13 @@ export async function getDateList (props: GetDateListProps) {
     }) as Date[]
 }
 
-export interface CreateRepeatEventProps extends  CreateEventProps {
+export interface CreateRepeatEventProps extends CreateEventProps {
     interval?: 'day' | 'week' | 'month',
     repeat_ending_time?: string,
     event_count?: number,
 }
 
-export async function createRepeatEvent (props: CreateRepeatEventProps) {
+export async function createRepeatEvent(props: CreateRepeatEventProps) {
     checkAuth(props)
     const res = await fetch.post({
         url: `${api}/repeat_event/create`,
@@ -2044,7 +2058,7 @@ export interface RepeatEventInviteProps {
     domains: string[],
 }
 
-export async function RepeatEventInvite (props: RepeatEventInviteProps) {
+export async function RepeatEventInvite(props: RepeatEventInviteProps) {
     checkAuth(props)
 
     const task = props.domains.map(item => {
@@ -2089,13 +2103,46 @@ export async function RepeatEventSetBadge(props: RepeatEventSetBadgeProps) {
     if (res.data.result === 'error') {
         throw new Error(res.data.message)
     }
-
     return res.data.events as Event[]
 }
 
 export interface RepeatEventUpdateProps extends CreateEventProps {
     selector: 'one' | 'after' | 'all',
     event_id?: number,
+}
+
+export async function createEventSite(props: EditEventSiteProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/create_event_site`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.event_site as EventSites
+}
+
+interface EditEventSiteProps extends Partial<EventSites> {
+    auth_token: string,
+    event_site_id?: number,
+}
+export async function updateEventSite(props: EditEventSiteProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/event/update_event_site`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.event_site as EventSites
 }
 
 export async function RepeatEventUpdate(props: RepeatEventUpdateProps) {
@@ -2110,6 +2157,82 @@ export async function RepeatEventUpdate(props: RepeatEventUpdateProps) {
     }
 
     return res.data.events as Event[]
+
+}
+
+export interface CheckIsManagerProps {
+    profile_id: number,
+    group_id: number,
+}
+
+export async function checkIsManager(props: CheckIsManagerProps): Promise<boolean> {
+    const res = await fetch.get({
+        url: `${api}/group/is-member`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'query user activity fail')
+    }
+
+    return res.data.is_member && res.data.role === 'group_manager'
+}
+
+export async function requestPhoneCode(phone: string): Promise<void> {
+    const res: any = await fetch.post({
+        url: `${api}/profile/send_msg`,
+        data: {phone}
+    })
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Request fail')
+    }
+}
+
+export async function phoneLogin(phone: string, code: string): Promise<LoginRes> {
+    const res = await fetch.post({
+        url: `${api}/profile/signin_with_phone`,
+        data: {phone, code}
+    })
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message || 'Verify fail')
+    }
+
+    return res.data
+}
+
+export async function myProfile(props: { auth_token: string }) {
+    checkAuth(props)
+
+    const res = await fetch.get({
+        url: `${api}/profile/my_profile`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.profile as Profile
+}
+
+export interface EventStats {
+    total_events: number,
+    total_event_hosts: number,
+    total_participants: number,
+    total_issued_badges: number,
+}
+
+export async function getEventStats(props: { id: number, days: number }) {
+    const res = await fetch.get({
+        url: `${api}/event/stats`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data as EventStats
 }
 
 
@@ -2117,6 +2240,13 @@ export default {
     RepeatEventUpdate,
     RepeatEventSetBadge,
     RepeatEventInvite,
+    checkIsManager,
+    createEventSite,
+    updateEventSite,
+    getEventStats,
+    phoneLogin,
+    requestPhoneCode,
+    myProfile,
     getDateList,
     getEventGroup,
     punchIn,

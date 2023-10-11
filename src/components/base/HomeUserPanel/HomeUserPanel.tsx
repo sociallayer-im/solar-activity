@@ -10,7 +10,6 @@ import AppButton from "../AppButton/AppButton";
 import {useParams} from "react-router-dom";
 import EventHomeContext from "../../provider/EventHomeProvider/EventHomeContext";
 
-
 function HomeUserPanel() {
     const [css] = useStyletron()
     const navigate = useNavigate()
@@ -28,9 +27,9 @@ function HomeUserPanel() {
     const mouth = new Date().getMonth()
     const year = new Date().getFullYear()
     const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const monthName = langType === 'en'
-        ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][mouth]
-        : ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月'][mouth]
+    const monthName = langType === 'cn'
+        ? ['一月', '二月', '三月', '四月', '五月', '六月', '七月', "八月", '九月', '十月', '十一月', '十二月'][mouth]
+        : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][mouth]
 
     // 根据时间显示不同问候语
     const greet = () => {
@@ -75,14 +74,9 @@ function HomeUserPanel() {
                 </div>
             </div>
         </div>
-        { groupname === 'shanhaiwoo' &&
-            <Link to={'/merge'} className={'beast-banner'}>
-                <img src="/images/merge/beast_ad.jpg" alt=""/>
-            </Link>
-        }
-        { groupname === 'muchiangmai' &&
-            <a href='https://t.me/muchiangmai' className={'beast-banner'} target={'_blank'}>
-                <img src="https://ik.imagekit.io/soladata/66q7ym0k_OrQZ4aFTo" alt=""/>
+        {  eventGroup?.banner_image_url &&
+            <a href={eventGroup?.banner_link_url || undefined} className={'beast-banner'} target={'_blank'}>
+                <img src={eventGroup.banner_image_url} alt=""/>
             </a>
         }
         <div className={'center'}>

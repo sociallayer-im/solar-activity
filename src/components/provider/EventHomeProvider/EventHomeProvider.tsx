@@ -2,37 +2,49 @@ import {useNavigate} from 'react-router-dom'
 import {useStyletron} from 'baseui'
 import {useContext, useEffect, useState} from 'react'
 import EventHomeContext from "./EventHomeContext";
-import {getEventGroup, Profile, queryUserGroup} from "../../../service/solas";
+import {getEventGroup, Profile, queryUserGroup, checkIsManager} from "../../../service/solas";
 import UserContext from "../UserProvider/UserContext";
 import DialogsContext from "../DialogProvider/DialogsContext";
-
-const leadingEvent = {
-    id: 1572,
-    username: 'muchiangmai',
-    logo: 'https://ik.imagekit.io/soladata/iosjmr58_gFa04c32n'
-}
 
 function EventHomeProvider(props: { children: any }) {
     const [css] = useStyletron()
     const navigate = useNavigate()
+
     const [eventGroups, setEventGroups] = useState<Profile[]>([])
     const [availableList, setAvailableList] = useState<Profile[]>([])
     const [userGroup, setUserGroup] = useState<Profile[]>([])
     const [ready, setReady] = useState(false)
     const [selectedEventGroup, setSelectedEventGroup] = useState<Profile | null>(null)
     const [joined, setJoined] = useState(true)
+
+    const [isManager, setIsManager] = useState(false)
+    const [leadingEvent, setLeadingEvent] = useState<{id: number, username: string, logo: string | null} | null>(null)
     const {user} = useContext(UserContext)
     const {showToast, showLoading} = useContext(DialogsContext)
+
 
     useEffect(() => {
         const getEventGroupList = async () => {
             const unload = showLoading()
             const eventGroup = await getEventGroup()
-            if (leadingEvent) {
-                const leading = eventGroup.find(g => g.id === leadingEvent.id)
-                const listWithoutLeading = eventGroup.filter(g => g.id !== leadingEvent.id)
-                const toTop = [leading, ...listWithoutLeading]
-                setEventGroups(toTop as Profile[])
+            const leadingEventGroupId = import.meta.env.VITE_LEADING_EVENT_GROUP_ID
+            const leadingEventGroupLogo = import.meta.env.VITE_LEADING_EVENT_GROUP_LOGO
+            console.log('leadingEventGroupIdleadingEventGroupId', leadingEventGroupId)
+            if (leadingEventGroupId) {
+                const leading = eventGroup.find(g => g.id === Number(leadingEventGroupId))
+                console.log('leadingleadingleading', leading)
+                if (leading) {
+                    setLeadingEvent({
+                        id: Number(leadingEventGroupId),
+                        username: leading.username || '',
+                        logo: leadingEventGroupLogo
+                    })
+                    const listWithoutLeading = eventGroup.filter(g => g.id !== Number(leadingEventGroupId))
+                    const toTop = [leading, ...listWithoutLeading]
+                    setEventGroups(toTop as Profile[])
+                } else {
+                    setEventGroups(eventGroup as Profile[])
+                }
             } else {
                 setEventGroups(eventGroup as Profile[])
             }
@@ -65,6 +77,16 @@ function EventHomeProvider(props: { children: any }) {
             }
         }
 
+        async function checkManager () {
+            if (user.id && selectedEventGroup) {
+                const isManager = await checkIsManager({profile_id: user.id, group_id: selectedEventGroup.id})
+                setIsManager(isManager)
+            } else {
+                setIsManager(false)
+            }
+        }
+
+        checkManager()
         getAvailableList()
     }, [eventGroups, user.id])
 
@@ -92,6 +114,7 @@ function EventHomeProvider(props: { children: any }) {
             availableList,
             ready,
             joined,
+            isManager,
             leadingEvent
         }}>
             {props.children}

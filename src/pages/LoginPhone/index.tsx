@@ -4,7 +4,7 @@ import EmailLoginForm from '../../components/compose/FormEmailLogin'
 import CodeInputForm from '../../components/compose/FormCodeInput'
 import LangContext from '../../components/provider/LangProvider/LangContext'
 import {useContext, useEffect, useState} from 'react'
-import solas, { LoginRes } from '../../service/solas'
+import { LoginRes } from '../../service/solas'
 import UserContext from '../../components/provider/UserProvider/UserContext'
 import { setAuth } from '../../utils/authStorage'
 import { useNavigate } from 'react-router-dom'
@@ -13,16 +13,15 @@ import PageBack from "../../components/base/PageBack";
 
 function Login () {
     const { lang } = useContext(LangContext)
-    const [loginEmail, setLoginEmail] = useState('')
-    const { setUser, user, emailLogin } = useContext(UserContext)
+    const [loginPhone, setLoginPhone] = useState('')
+    const { setUser, user, phoneLogin } = useContext(UserContext)
     const navigate = useNavigate()
     const { heightWithoutNav } = usePageHeight()
 
-    const setEmailAuth = async (loginRes: LoginRes) => {
-        window.localStorage.setItem('lastLoginType', 'email')
-        setAuth(loginRes.email, loginRes.auth_token)
-
-        await emailLogin()
+    const setPhoneAuth = async (loginRes: LoginRes) => {
+        window.localStorage.setItem('lastLoginType', 'phone')
+        setAuth(loginRes.phone!, loginRes.auth_token)
+        await phoneLogin()
     }
 
     useEffect(() => {
@@ -44,19 +43,19 @@ function Login () {
             <div className={'login-page-back'}><PageBack onClose={() => {navigate('/')}} /></div>
             <div className='login-page-bg'></div>
             <div className='login-page-wrapper' style={{height: `${heightWithoutNav}px`}}>
-                { !loginEmail ?
+                { !loginPhone ?
                     <div className='login-page-content' >
-                        <div className='title'>{ lang['Login_Title'] }</div>
-                        <div className='des'>{ lang['Login_alert'] }</div>
-                        <EmailLoginForm onConfirm={(email) => { setLoginEmail(email)} } />
+                        <div className='title'>{ lang['Login_Phone_Title'] }</div>
+                        <div className='des'>{ lang['Login_Phone_alert'] }</div>
+                        <EmailLoginForm inputType="phone" onConfirm={(phone) => { setLoginPhone(phone)} } />
                     </div>
                     :
                     <div className='login-page-content' >
-                        <div className='title'>{ lang['Login_input_Code_title'] }</div>
-                        <div className='des'>{ lang['Login_input_Code_des']([loginEmail]) }</div>
+                        <div className='title'>{ lang['Login_Phone_input_Code_title'] }</div>
+                        <div className='des'>{ lang['Login_Phone_input_Code_des']([loginPhone]) }</div>
                         <CodeInputForm
-                            loginType={'email'}
-                            loginAccount={ loginEmail } onConfirm={(loginRes) => { setEmailAuth(loginRes) } } />
+                            loginType={'phone'}
+                            loginAccount={ loginPhone } onConfirm={(loginRes) => { setPhoneAuth(loginRes) } } />
                     </div>
                 }
             </div>
