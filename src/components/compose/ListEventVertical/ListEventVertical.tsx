@@ -53,6 +53,14 @@ function ListEventVertical() {
                         return item.tags?.includes(selectTag[0])
                     })
                 }
+
+                res = res.sort((a, b) => {
+                    const start_time_a = new Date(a.start_time!).getTime()
+                    const start_time_b = new Date(b.start_time!).getTime()
+                    return start_time_a > start_time_b ?
+                        1: (start_time_a === start_time_b ? a.id - b.id : -1)
+                })
+
                 return res
             } else {
                 let res = await queryEvent({

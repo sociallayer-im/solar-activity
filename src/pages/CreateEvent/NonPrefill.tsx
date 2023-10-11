@@ -1,5 +1,5 @@
 import {useLocation, useNavigate, useSearchParams} from 'react-router-dom'
-import {useContext, useEffect, useState} from 'react'
+import {useContext, useEffect, useRef, useState} from 'react'
 import Layout from '../../components/Layout/Layout'
 import PageBack from '../../components/base/PageBack'
 import './CreateBadge.less'
@@ -12,14 +12,17 @@ import solas, {
     Badge,
     cancelEvent,
     CreateEventProps,
+    CreateRepeatEventProps,
     Event,
-    getEventSide,
     getHotTags,
     getProfile,
     Group,
     inviteGuest,
     Profile,
     queryEvent,
+    RepeatEventInvite,
+    RepeatEventSetBadge,
+    RepeatEventUpdate,
     setEventBadge,
     updateEvent
 } from '../../service/solas'
@@ -37,6 +40,7 @@ import UploadWecatQrcode from "../../components/compose/UploadWecatQrcode/Upload
 import EventHomeContext from "../../components/provider/EventHomeProvider/EventHomeContext";
 import LocationInput from "../../components/compose/LocationInput/LocationInput";
 import AppFlexTextArea from "../../components/base/AppFlexTextArea/AppFlexTextArea";
+import AppEventTimeInput from "../../components/base/AppEventTimeInput/AppEventTimeInput";
 
 interface Draft {
     cover: string,
@@ -82,14 +86,22 @@ const getNearestTime = () => {
 
 const initTime = getNearestTime()
 
+const repeatEventEditOptions = [
+    {label: 'Only this event', value: 'one'},
+    {label: 'This and following events', value: 'after'},
+    {label: 'All events', value: 'all'},
+]
+
 function CreateEvent(props: CreateEventPageProps) {
     const navigate = useNavigate()
     const {user} = useContext(UserContext)
-    const {showLoading, showToast, openDialog} = useContext(DialogsContext)
+    const {showLoading, showToast, openDialog, openConfirmDialog} = useContext(DialogsContext)
     const [searchParams, _] = useSearchParams()
     const [creator, setCreator] = useState<Group | Profile | null>(null)
     const {lang, langType} = useContext(LangContext)
     const {eventGroup, joined} = useContext(EventHomeContext)
+
+    const [currEvent, setCurrEvent] = useState<Event | null>(null)
 
     const [cover, setCover] = useState('')
     const [title, setTitle] = useState('')
@@ -126,6 +138,9 @@ function CreateEvent(props: CreateEventPageProps) {
     const [formReady, setFormReady] = useState(false)
     const location = useLocation()
     const [creating, setCreating] = useState(false)
+    const [repeat, setRepeat] = useState<'day' | 'week' | 'month' | null>(null)
+    const [repeatEnd, setRepeatEnd] = useState<string | null>(null)
+    const repeatEventSelectorRef = useRef<'one' | 'after' | 'all'>('one')
 
     const toNumber = (value: string, set: any) => {
         if (!value) {
@@ -140,16 +155,100 @@ function CreateEvent(props: CreateEventPageProps) {
     }
 
     const cancel = async () => {
-        const unloading = showLoading()
-        try {
-            const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
-            unloading()
-            showToast('Cancel success')
-            navigate(`/`)
-        } catch (e) {
-            unloading()
-            console.error(e)
-            showToast('Cancel failed')
+        if (!currEvent?.repeat_event_id) {
+            await cancelOne()
+        } else {
+            const dialog = openConfirmDialog({
+                confirmLabel: 'Cancel event',
+                cancelLabel: 'Not now',
+                title: `Cancel repeat event 「${currEvent!.title}」`,
+                content: () => {
+                    const [repeatEventSelector, setRepeatEventSelector] = useState<'one' | 'after' | 'all'>('one')
+                    return <div className={'repeat-event-edit-option'}>
+                        {
+                            repeatEventEditOptions.map(item => {
+                                const isSelected = repeatEventSelector === item.value
+                                return <div className={'option'} onClick={() => {
+                                    setRepeatEventSelector(item.value as any)
+                                    repeatEventSelectorRef.current = item.value as any
+                                }} key={item.value}>
+                                    {
+                                        isSelected ?
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 viewBox="0 0 20 20" fill="none">
+                                                <g clipPath="url(#clip0_2149_24559)">
+                                                    <path fillRule="evenodd" clipRule="evenodd"
+                                                          d="M10 0.833252C4.93743 0.833252 0.833374 4.93731 0.833374 9.99992C0.833374 15.0625 4.93743 19.1666 10 19.1666C15.0626 19.1666 19.1667 15.0625 19.1667 9.99992C19.1667 4.93731 15.0626 0.833252 10 0.833252ZM10 6.56242C8.10156 6.56242 6.56254 8.10144 6.56254 9.99992C6.56254 11.8984 8.10156 13.4374 10 13.4374C11.8985 13.4374 13.4375 11.8984 13.4375 9.99992C13.4375 8.10144 11.8985 6.56242 10 6.56242Z"
+                                                          fill="#6CD7B2"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_2149_24559">
+                                                        <rect width="20" height="20" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg> :
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 viewBox="0 0 20 20" fill="none">
+                                                <g clipPath="url(#clip0_2150_24722)">
+                                                    <path
+                                                        d="M1.58331 9.99992C1.58331 5.35152 5.35158 1.58325 9.99998 1.58325C14.6484 1.58325 18.4166 5.35152 18.4166 9.99992C18.4166 14.6483 14.6484 18.4166 9.99998 18.4166C5.35158 18.4166 1.58331 14.6483 1.58331 9.99992Z"
+                                                        fill="white" stroke="#CECED3" strokeWidth="1.5"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_2150_24722">
+                                                        <rect width="20" height="20" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg>
+                                    }
+                                    <div className={'label'}>{item.label}</div>
+                                </div>
+                            })
+                        }
+                    </div>
+                },
+                onConfirm: async (close: any) => {
+                    await cancelRepeat().finally(close())
+                }
+            })
+        }
+
+        async function cancelOne () {
+            const unloading = showLoading()
+            try {
+                const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
+                unloading()
+                showToast('Cancel success')
+                navigate(`/`)
+            } catch (e) {
+                unloading()
+                console.error(e)
+                showToast('Cancel failed')
+            }
+        }
+
+        async function cancelRepeat() {
+            await cancelOne()
+
+            if (repeatEventSelectorRef.current === 'one') return
+
+            const unloading = showLoading()
+            try {
+                const cancel = await RepeatEventUpdate({
+                    event_id: props.eventId!,
+                    auth_token: user.authToken || '',
+                    repeat_event_id: currEvent?.repeat_event_id,
+                    selector: repeatEventSelectorRef.current,
+                    status: 'cancel'
+                })
+                unloading()
+                showToast('Cancel success')
+                navigate(`/${eventGroup?.username}`)
+            } catch (e) {
+                unloading()
+                console.error(e)
+                showToast('Cancel failed')
+            }
         }
     }
 
@@ -275,12 +374,14 @@ function CreateEvent(props: CreateEventPageProps) {
 
     useEffect(() => {
         async function prefillEventDetail(event: Event) {
+            setCurrEvent(event)
             setCover(event.cover)
             setTitle(event.title)
             setContent(event.content)
             if (event.start_time) {
                 setStart(event.start_time)
             }
+
             if (event.ending_time) {
                 setEnding(event.ending_time)
                 setHasDuration(true)
@@ -502,7 +603,7 @@ function CreateEvent(props: CreateEventPageProps) {
             return
         }
 
-        const props: CreateEventProps = {
+        const props: CreateRepeatEventProps = {
             title: title.trim(),
             cover,
             content,
@@ -524,35 +625,65 @@ function CreateEvent(props: CreateEventPageProps) {
             telegram_contact_group: telegram || null,
             location_details: locationDetail,
             host_info: creator && creator.is_group ? creator.id + '' : undefined,
+            interval: repeat || undefined,
+            repeat_ending_time: repeatEnd || undefined,
         }
 
         setCreating(true)
         const unloading = showLoading(true)
-
         try {
-            const newEvent = await solas.createEvent(props)
-            if (guests.length) {
-                const domains = guests.filter((g) => !!g)
-                if (domains.length) {
-                    const invite = await inviteGuest({
-                        id: newEvent.id,
-                        domains,
+            if (props.interval) {
+                const newEvents = await solas.createRepeatEvent(props)
+
+                if (guests.length) {
+                    const domains = guests.filter((g) => !!g)
+                    if (domains.length) {
+                        const invite = await RepeatEventInvite({
+                            repeat_event_id: newEvents[0].repeat_event_id!,
+                            domains,
+                            auth_token: user.authToken || ''
+                        })
+                    }
+                }
+
+                if (badgeId) {
+                    const setBadge = await RepeatEventSetBadge({
+                        repeat_event_id: newEvents[0].repeat_event_id!,
+                        badge_id: badgeId,
                         auth_token: user.authToken || ''
                     })
                 }
+
+                unloading()
+                showToast('create success')
+                window.localStorage.removeItem('event_draft')
+                navigate(`/success/${newEvents[0].id}`, {replace: true})
+                setCreating(false)
+            } else {
+                const newEvent = await solas.createEvent(props)
+                if (guests.length) {
+                    const domains = guests.filter((g) => !!g)
+                    if (domains.length) {
+                        const invite = await inviteGuest({
+                            id: newEvent.id,
+                            domains,
+                            auth_token: user.authToken || ''
+                        })
+                    }
+                }
+                if (badgeId) {
+                    const setBadge = await setEventBadge({
+                        id: newEvent.id,
+                        badge_id: badgeId,
+                        auth_token: user.authToken || ''
+                    })
+                }
+                unloading()
+                showToast('create success')
+                window.localStorage.removeItem('event_draft')
+                navigate(`/success/${newEvent.id}`, {replace: true})
+                setCreating(false)
             }
-            if (badgeId) {
-                const setBadge = await setEventBadge({
-                    id: newEvent.id,
-                    badge_id: badgeId,
-                    auth_token: user.authToken || ''
-                })
-            }
-            unloading()
-            showToast('create success')
-            window.localStorage.removeItem('event_draft')
-            navigate(`/success/${newEvent.id}`, {replace: true})
-            setCreating(false)
         } catch (e: any) {
             unloading()
             console.error(e)
@@ -614,33 +745,130 @@ function CreateEvent(props: CreateEventPageProps) {
             online_location: onlineUrl || null,
             auth_token: user.authToken || '',
             event_type: eventType,
+            host_info: creator && creator.is_group ? creator.id + '' : undefined,
             wechat_contact_group: wechatImage || undefined,
             wechat_contact_person: wechatAccount || undefined,
             location: customLocation,
             telegram_contact_group: telegram || null,
-            location_details: locationDetail
+            location_details: locationDetail,
+            repeat_event_id: currEvent!.repeat_event_id || undefined,
         }
 
-        const unloading = showLoading(true)
-        try {
-            const newEvent = await updateEvent(saveProps)
-            if (guests.length) {
-                const domains = guests.filter((g) => !!g)
-                if (domains.length) {
-                    const invite = await inviteGuest({
-                        id: newEvent.id,
-                        domains,
-                        auth_token: user.authToken || ''
-                    })
+        if (currEvent?.repeat_event_id) {
+            const dialog = openConfirmDialog({
+                confirmLabel: 'Save',
+                cancelLabel: 'Cancel',
+                title: `Edit repeat event 「${currEvent!.title}」`,
+                content: () => {
+                    const [repeatEventSelector, setRepeatEventSelector] = useState<'one' | 'after' | 'all'>('one')
+                    return <div className={'repeat-event-edit-option'}>
+                        {
+                            repeatEventEditOptions.map(item => {
+                                const isSelected = repeatEventSelector === item.value
+                                return <div className={'option'} onClick={() => {
+                                    setRepeatEventSelector(item.value as any)
+                                    repeatEventSelectorRef.current = item.value as any
+                                }} key={item.value}>
+                                    {
+                                        isSelected ?
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 viewBox="0 0 20 20" fill="none">
+                                                <g clipPath="url(#clip0_2149_24559)">
+                                                    <path fillRule="evenodd" clipRule="evenodd"
+                                                          d="M10 0.833252C4.93743 0.833252 0.833374 4.93731 0.833374 9.99992C0.833374 15.0625 4.93743 19.1666 10 19.1666C15.0626 19.1666 19.1667 15.0625 19.1667 9.99992C19.1667 4.93731 15.0626 0.833252 10 0.833252ZM10 6.56242C8.10156 6.56242 6.56254 8.10144 6.56254 9.99992C6.56254 11.8984 8.10156 13.4374 10 13.4374C11.8985 13.4374 13.4375 11.8984 13.4375 9.99992C13.4375 8.10144 11.8985 6.56242 10 6.56242Z"
+                                                          fill="#6CD7B2"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_2149_24559">
+                                                        <rect width="20" height="20" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg> :
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 viewBox="0 0 20 20" fill="none">
+                                                <g clipPath="url(#clip0_2150_24722)">
+                                                    <path
+                                                        d="M1.58331 9.99992C1.58331 5.35152 5.35158 1.58325 9.99998 1.58325C14.6484 1.58325 18.4166 5.35152 18.4166 9.99992C18.4166 14.6483 14.6484 18.4166 9.99998 18.4166C5.35158 18.4166 1.58331 14.6483 1.58331 9.99992Z"
+                                                        fill="white" stroke="#CECED3" strokeWidth="1.5"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_2150_24722">
+                                                        <rect width="20" height="20" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg>
+                                    }
+                                    <div className={'label'}>{item.label}</div>
+                                </div>
+                            })
+                        }
+                    </div>
+                },
+                onConfirm: async (close: any) => {
+                    await repeatSave().finally(close())
                 }
+            })
+        } else {
+            await singleSave()
+        }
+
+        async function singleSave() {
+            const unloading = showLoading(true)
+            try {
+                const newEvent = await updateEvent(saveProps)
+                if (guests.length) {
+                    const domains = guests.filter((g) => !!g)
+                    if (domains.length) {
+                        const invite = await inviteGuest({
+                            id: newEvent.id,
+                            domains,
+                            auth_token: user.authToken || ''
+                        })
+                    }
+                }
+                unloading()
+                showToast('update success')
+                navigate(`/event/${newEvent.id}`, {replace: true})
+            } catch (e: any) {
+                unloading()
+                console.error(e)
+                showToast(e.message)
             }
-            unloading()
-            showToast('update success')
-            navigate(`/event/${newEvent.id}`, {replace: true})
-        } catch (e: any) {
-            unloading()
-            console.error(e)
-            showToast(e.message)
+        }
+
+        async function repeatSave() {
+            await singleSave()
+
+            if (repeatEventSelectorRef.current === 'one') return
+
+            const unloading = showLoading(true)
+            try {
+                const newEvents = await RepeatEventUpdate({
+                    ...saveProps,
+                    event_id: currEvent!.id,
+                    selector: repeatEventSelectorRef.current
+                })
+
+                if (guests.length) {
+                    const domains = guests.filter((g) => !!g)
+                    if (domains.length) {
+                        const invite = await RepeatEventInvite({
+                            repeat_event_id: currEvent!.repeat_event_id!,
+                            domains,
+                            selector: repeatEventSelectorRef.current,
+                            auth_token: user.authToken || ''
+                        })
+                    }
+                }
+
+                unloading()
+                showToast('update success')
+                navigate(`/event/${newEvents[0].id}`, {replace: true})
+            } catch (e: any) {
+                unloading()
+                console.error(e)
+                showToast(e.message)
+            }
         }
     }
 
@@ -696,13 +924,25 @@ function CreateEvent(props: CreateEventPageProps) {
 
                         <div className='input-area'>
                             <div className='input-area-title'>{lang['Activity_Form_Starttime']}</div>
-                            <AppDateInput value={start} onChange={(data) => {
-                                console.log('start', data)
-                                setStart(data as string)
+                            <AppEventTimeInput from={start} to={ending} arrowRepeat={!currEvent} onChange={e => {
+                                setStart(e.from)
+                                setEnding(e.to)
+                                setRepeat(e.repeat as any || null)
+                                setRepeatEnd(e.repeatEndingTime as any || null)
                             }}/>
                         </div>
 
-                        {hasDuration &&
+                        {false &&
+                            <div className='input-area'>
+                                <div className='input-area-title'>{lang['Activity_Form_Starttime']}</div>
+                                <AppDateInput value={start} onChange={(data) => {
+                                    console.log('start', data)
+                                    setStart(data as string)
+                                }}/>
+                            </div>
+                        }
+
+                        {hasDuration && false &&
                             <div className='input-area'>
                                 <div className='input-area-title'>{lang['Activity_Form_Ending']}</div>
                                 <AppDateInput value={ending} onChange={(data) => {
@@ -823,9 +1063,9 @@ function CreateEvent(props: CreateEventPageProps) {
                                 <div className='input-area-title'>{lang['Activity_originators']}</div>
                                 <SelectCreator
                                     autoSet={!creator}
-                                    groupFirst
                                     value={creator}
                                     onChange={(res) => {
+                                        console.log('switch creator', res)
                                         setCreator(res)
                                     }}/>
                             </div>

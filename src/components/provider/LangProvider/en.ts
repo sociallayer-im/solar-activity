@@ -501,6 +501,17 @@ const langEN = {
   Meeting_Google_Title: 'Google Meeting',
   Meeting_Tencent_Title: 'Tencent Meeting',
   Meeting_Others_Title: 'Online meeting',
+
+  Month_Name: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  Day_Name: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+  Days: 'Days',
+  Minute: 'Mins',
+
+  Form_All_Day: 'All day',
+  Form_Repeat_Not: 'Does not Repeat',
+  Form_Repeat_Day: 'Every day',
+  Form_Repeat_Week: 'Every week',
+  Form_Repeat_Month: 'Every Month',
 }
 
 export type LangConfig = typeof langEN

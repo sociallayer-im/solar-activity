@@ -498,6 +498,17 @@ const langCN: LangConfig = {
   Meeting_Google_Title: 'Google会议',
   Meeting_Tencent_Title: '腾讯会议',
   Meeting_Others_Title: '线上会议',
+
+  Month_Name: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+  Day_Name: ['周日','周一','周二','周三','周四','周五','周六'],
+  Days: '天',
+  Minute: '分',
+
+  Form_All_Day: '全天',
+  Form_Repeat_Not: '非重复事件',
+  Form_Repeat_Day: '每天',
+  Form_Repeat_Week: '每周',
+  Form_Repeat_Month: '每月',
 }
 
 export default langCN

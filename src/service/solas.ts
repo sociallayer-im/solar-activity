@@ -1,6 +1,5 @@
 import {signInWithEthereum} from './SIWE'
 import fetch from '../utils/fetch'
-import {n} from "msw/lib/glossary-de6278a9";
 
 const api = import.meta.env.VITE_SOLAS_API
 
@@ -1533,6 +1532,9 @@ export interface Event {
     group_id?: null | number,
     location_details: null | any,
     event_owner: ProfileSimple,
+    interval: 'day' | 'week' | 'month' | null
+    repeat_event_id: number | null,
+
 
     owner_id: number,
     created_at: string,
@@ -2015,8 +2017,106 @@ export async function getDateList (props: GetDateListProps) {
     }) as Date[]
 }
 
+export interface CreateRepeatEventProps extends  CreateEventProps {
+    interval?: 'day' | 'week' | 'month',
+    repeat_ending_time?: string,
+    event_count?: number,
+}
+
+export async function createRepeatEvent (props: CreateRepeatEventProps) {
+    checkAuth(props)
+    const res = await fetch.post({
+        url: `${api}/repeat_event/create`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.events as Event[]
+}
+
+export interface RepeatEventInviteProps {
+    auth_token: string,
+    repeat_event_id: number,
+    selector?: 'one' | 'after' | 'all'
+    domains: string[],
+}
+
+export async function RepeatEventInvite (props: RepeatEventInviteProps) {
+    checkAuth(props)
+
+    const task = props.domains.map(item => {
+        return getProfile({domain: item})
+    })
+
+    const profiles = await Promise.all(task).catch(e => {
+        throw e
+    })
+
+    const ids = profiles.map((item, index) => {
+        if (!item) throw new Error('Profile not found: ' + props.domains[index])
+
+        return item.id
+    })
+
+    const res = await fetch.post({
+        url: `${api}/repeat_event/invite_guest`,
+        data: {...props, target_id: ids.join(',')}
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.events as Event[]
+}
+
+export interface RepeatEventSetBadgeProps {
+    auth_token: string,
+    badge_id: number,
+    repeat_event_id: number,
+}
+
+export async function RepeatEventSetBadge(props: RepeatEventSetBadgeProps) {
+    checkAuth(props)
+    const res = await fetch.post({
+        url: `${api}/repeat_event/set_badge`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.events as Event[]
+}
+
+export interface RepeatEventUpdateProps extends CreateEventProps {
+    selector: 'one' | 'after' | 'all',
+    event_id?: number,
+}
+
+export async function RepeatEventUpdate(props: RepeatEventUpdateProps) {
+    checkAuth(props)
+    const res = await fetch.post({
+        url: `${api}/repeat_event/update`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.events as Event[]
+}
+
 
 export default {
+    RepeatEventUpdate,
+    RepeatEventSetBadge,
+    RepeatEventInvite,
     getDateList,
     getEventGroup,
     punchIn,
@@ -2030,6 +2130,7 @@ export default {
     getEventSide,
     cancelEvent,
     queryMyEvent,
+    createRepeatEvent,
     queryEventDetail,
     createEvent,
     login,
