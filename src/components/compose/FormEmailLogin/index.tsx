@@ -58,7 +58,7 @@ function EmailLoginForm (props: EmailLoginFormProps) {
             clearable={ true }
             errorMsg={ error }
             value={account}
-            onChange={ (e) => { handleChange(e.target.value) } }
+            onChange={ (e) => { handleChange(e.target.value.toLowerCase()) } }
             placeholder={ props.inputType === 'phone' ? lang['Login_Phone_Placeholder'] : lang['Login_Placeholder'] }></AppInput>
         <div className={css({ marginTop: '34px' })}>
             <AppButton
