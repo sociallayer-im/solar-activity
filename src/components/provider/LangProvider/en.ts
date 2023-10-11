@@ -526,7 +526,11 @@ const langEN = {
   Setting_Banner: 'Banner',
   Setting_Location: 'Default location',
   Setting_Banner_Link: 'Link (Optional)',
-  Setting_Permission: 'Permission to create and apply'
+  Setting_Permission: 'Permission to create and apply',
+
+  Event_Today: 'Today',
+  Event_Tomorrow: 'Tomorrow',
+  Event_Label_All: 'All',
 }
 
 export type LangConfig = typeof langEN

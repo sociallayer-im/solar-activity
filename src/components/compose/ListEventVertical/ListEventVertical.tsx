@@ -370,9 +370,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
                 <div className={'center'}>
                         <div className={'tag-list'}>
                             <EventLabels
+                                showAll={true}
                                 single
                                 onChange={(value) => {
-                                    if (selectTag[0] === value[0]) {
+                                    if (value.length === 0 && selectTag.length === 0) {
+                                        return
+                                    } else if (selectTag[0] === value[0]) {
                                         setSelectTag([])
                                     } else {
                                         setSelectTag(value)
@@ -409,9 +412,12 @@ function ListEventVertical(props: {participants: Participants[]}) {
             { !!eventGroup && eventGroup.group_event_tags && mode == 'list' &&
                 <div className={'tag-list'}>
                     <EventLabels
+                        showAll={true}
                         single
                         onChange={(value) => {
-                            if (selectTag[0] === value[0]) {
+                            if (value.length === 0 && selectTag.length === 0) {
+                               return
+                            } else if (selectTag[0] === value[0]) {
                                 setSelectTag([])
                             } else {
                                 setSelectTag(value)
