@@ -19,7 +19,7 @@ import LocationInput from "../../components/compose/LocationInput/LocationInput"
 function Dashboard() {
     const [css] = useStyletron()
     const navigate = useNavigate()
-    const {eventGroup, availableList, findGroup, setEventGroup} = useContext(EventHomeContext)
+    const {eventGroup, availableList, findGroup, setEventGroup, reload} = useContext(EventHomeContext)
     const {groupname} = useParams()
     const {lang} = useContext(LangContext)
     const {showToast, showLoading} = useContext(DialogsContext)
@@ -101,6 +101,7 @@ function Dashboard() {
                         }
                     })
                 await Promise.all(task)
+                await reload()
                 unload()
                 showToast('Save event site success')
             } catch (e) {
@@ -129,11 +130,13 @@ function Dashboard() {
     const setBannerImage = async function () {
         const unload = showLoading()
         const update = await updateGroup({
+            ...eventGroup,
             auth_token: user.authToken || '',
             id: eventGroup?.id || 1516,
             banner_image_url: banner,
             banner_link_url: bannerUrl,
         })
+        await reload()
         unload()
         showToast('Update banner success')
     }
@@ -141,10 +144,12 @@ function Dashboard() {
     const setLocation = async function () {
         const unload = showLoading()
         const update = await updateGroup({
+            ...eventGroup,
             auth_token: user.authToken || '',
             id: eventGroup?.id || 1516,
             group_location_details: defaultLocation,
         })
+        await reload()
         unload()
         showToast('Update success')
     }

@@ -22,37 +22,37 @@ function EventHomeProvider(props: { children: any }) {
     const {user} = useContext(UserContext)
     const {showToast, showLoading} = useContext(DialogsContext)
 
-
-    useEffect(() => {
-        const getEventGroupList = async () => {
-            const unload = showLoading()
-            const eventGroup = await getEventGroup()
-            const leadingEventGroupId = import.meta.env.VITE_LEADING_EVENT_GROUP_ID
-            const leadingEventGroupLogo = import.meta.env.VITE_LEADING_EVENT_GROUP_LOGO
-            console.log('leadingEventGroupIdleadingEventGroupId', leadingEventGroupId)
-            if (leadingEventGroupId) {
-                const leading = eventGroup.find(g => g.id === Number(leadingEventGroupId))
-                console.log('leadingleadingleading', leading)
-                if (leading) {
-                    setLeadingEvent({
-                        id: Number(leadingEventGroupId),
-                        username: leading.username || '',
-                        logo: leadingEventGroupLogo
-                    })
-                    const listWithoutLeading = eventGroup.filter(g => g.id !== Number(leadingEventGroupId))
-                    const toTop = [leading, ...listWithoutLeading]
-                    setEventGroups(toTop as Profile[])
-                } else {
-                    setEventGroups(eventGroup as Profile[])
-                }
+    const getEventGroupList = async () => {
+        const unload = showLoading()
+        const eventGroup = await getEventGroup()
+        const leadingEventGroupId = import.meta.env.VITE_LEADING_EVENT_GROUP_ID
+        const leadingEventGroupLogo = import.meta.env.VITE_LEADING_EVENT_GROUP_LOGO
+        console.log('leadingEventGroupIdleadingEventGroupId', leadingEventGroupId)
+        if (leadingEventGroupId) {
+            const leading = eventGroup.find(g => g.id === Number(leadingEventGroupId))
+            console.log('leadingleadingleading', leading)
+            if (leading) {
+                setLeadingEvent({
+                    id: Number(leadingEventGroupId),
+                    username: leading.username || '',
+                    logo: leadingEventGroupLogo
+                })
+                const listWithoutLeading = eventGroup.filter(g => g.id !== Number(leadingEventGroupId))
+                const toTop = [leading, ...listWithoutLeading]
+                setEventGroups(toTop as Profile[])
             } else {
                 setEventGroups(eventGroup as Profile[])
             }
-
-
-            unload()
-            setReady(true)
+        } else {
+            setEventGroups(eventGroup as Profile[])
         }
+
+
+        unload()
+        setReady(true)
+    }
+
+    useEffect(() => {
         getEventGroupList()
     }, [])
 
@@ -115,7 +115,8 @@ function EventHomeProvider(props: { children: any }) {
             ready,
             joined,
             isManager,
-            leadingEvent
+            leadingEvent,
+            reload: getEventGroupList
         }}>
             {props.children}
         </EventHomeContext.Provider>
