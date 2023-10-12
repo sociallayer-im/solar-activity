@@ -214,13 +214,15 @@ function CreateEvent(props: CreateEventPageProps) {
             })
         }
 
-        async function cancelOne () {
+        async function cancelOne (redirect = true) {
             const unloading = showLoading()
             try {
                 const cancel = await cancelEvent({id: props.eventId!, auth_token: user.authToken || ''})
                 unloading()
-                showToast('Cancel success')
-                navigate(`/`)
+                if (redirect) {
+                    showToast('Cancel success')
+                    navigate(`/`)
+                }
             } catch (e) {
                 unloading()
                 console.error(e)
@@ -229,26 +231,29 @@ function CreateEvent(props: CreateEventPageProps) {
         }
 
         async function cancelRepeat() {
-            await cancelOne()
 
-            if (repeatEventSelectorRef.current === 'one') return
-
-            const unloading = showLoading()
-            try {
-                const cancel = await RepeatEventUpdate({
-                    event_id: props.eventId!,
-                    auth_token: user.authToken || '',
-                    repeat_event_id: currEvent?.repeat_event_id,
-                    selector: repeatEventSelectorRef.current,
-                    status: 'cancel'
-                })
-                unloading()
-                showToast('Cancel success')
-                navigate(`/${eventGroup?.username}`)
-            } catch (e) {
-                unloading()
-                console.error(e)
-                showToast('Cancel failed')
+            if (repeatEventSelectorRef.current === 'one') {
+                await cancelOne()
+                return
+            } else {
+                await cancelOne(false)
+                const unloading = showLoading()
+                try {
+                    const cancel = await RepeatEventUpdate({
+                        event_id: props.eventId!,
+                        auth_token: user.authToken || '',
+                        repeat_event_id: currEvent?.repeat_event_id,
+                        selector: repeatEventSelectorRef.current,
+                        status: 'cancel'
+                    })
+                    unloading()
+                    showToast('Cancel success')
+                    navigate(`/${eventGroup?.username}`)
+                } catch (e) {
+                    unloading()
+                    console.error(e)
+                    showToast('Cancel failed')
+                }
             }
         }
     }
@@ -812,7 +817,7 @@ function CreateEvent(props: CreateEventPageProps) {
             await singleSave()
         }
 
-        async function singleSave() {
+        async function singleSave(redirect=true) {
             const unloading = showLoading(true)
             try {
                 const newEvent = await updateEvent(saveProps)
@@ -827,8 +832,10 @@ function CreateEvent(props: CreateEventPageProps) {
                     }
                 }
                 unloading()
-                showToast('update success')
-                navigate(`/event/${newEvent.id}`, {replace: true})
+                if (redirect) {
+                    showToast('update success')
+                    navigate(`/event/${newEvent.id}`, {replace: true})
+                }
             } catch (e: any) {
                 unloading()
                 console.error(e)
@@ -837,37 +844,39 @@ function CreateEvent(props: CreateEventPageProps) {
         }
 
         async function repeatSave() {
-            await singleSave()
+            if (repeatEventSelectorRef.current === 'one') {
+                await singleSave()
+                return
+            } else {
+                await singleSave(false)
+                const unloading = showLoading(true)
+                try {
+                    const newEvents = await RepeatEventUpdate({
+                        ...saveProps,
+                        event_id: currEvent!.id,
+                        selector: repeatEventSelectorRef.current
+                    })
 
-            if (repeatEventSelectorRef.current === 'one') return
-
-            const unloading = showLoading(true)
-            try {
-                const newEvents = await RepeatEventUpdate({
-                    ...saveProps,
-                    event_id: currEvent!.id,
-                    selector: repeatEventSelectorRef.current
-                })
-
-                if (guests.length) {
-                    const domains = guests.filter((g) => !!g)
-                    if (domains.length) {
-                        const invite = await RepeatEventInvite({
-                            repeat_event_id: currEvent!.repeat_event_id!,
-                            domains,
-                            selector: repeatEventSelectorRef.current,
-                            auth_token: user.authToken || ''
-                        })
+                    if (guests.length) {
+                        const domains = guests.filter((g) => !!g)
+                        if (domains.length) {
+                            const invite = await RepeatEventInvite({
+                                repeat_event_id: currEvent!.repeat_event_id!,
+                                domains,
+                                selector: repeatEventSelectorRef.current,
+                                auth_token: user.authToken || ''
+                            })
+                        }
                     }
-                }
 
-                unloading()
-                showToast('update success')
-                navigate(`/event/${newEvents[0].id}`, {replace: true})
-            } catch (e: any) {
-                unloading()
-                console.error(e)
-                showToast(e.message)
+                    unloading()
+                    showToast('update success')
+                    navigate(`/event/${newEvents[0].id}`, {replace: true})
+                } catch (e: any) {
+                    unloading()
+                    console.error(e)
+                    showToast(e.message)
+                }
             }
         }
     }
