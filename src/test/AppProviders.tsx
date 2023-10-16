@@ -1,11 +1,9 @@
 import LangProvider from '../components/provider/LangProvider/LangProvider'
 import DialogProvider from  '../components/provider/DialogProvider/DialogProvider'
 import UserProvider from '../components/provider/UserProvider/UserProvider'
-import { mainnet, moonbeam } from 'wagmi/chains'
-import { InjectedConnector } from 'wagmi/connectors/injected'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import {mainnet, moonbeam} from 'wagmi/chains'
+import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { configureChains, createClient, WagmiConfig } from 'wagmi'
 import { Client as Styletron } from 'styletron-engine-atomic'
 import { Provider as StyletronProvider } from 'styletron-react'
 import { BaseProvider } from 'baseui'
@@ -15,24 +13,15 @@ import { useLocation } from "react-router-dom";
 
 const engine = new Styletron();
 
-const walletconnect = new WalletConnectConnector({
-    chains: [mainnet, moonbeam],
-    options: {},
-})
-
-const inject = new InjectedConnector({
-    chains: [mainnet, moonbeam],
-})
-
-const { chains, provider } = configureChains(
+const {chains, publicClient, webSocketPublicClient} = configureChains(
     [mainnet, moonbeam],
     [publicProvider()],
 )
 
-const wagmiClient = createClient({
+const config = createConfig({
     autoConnect: true,
-    connectors: [inject, walletconnect],
-    provider,
+    publicClient,
+    webSocketPublicClient,
 })
 
 interface AppProvidersProps {
@@ -50,7 +39,7 @@ function TestContent (props: {component: any}) {
 function AppProviders (props: AppProvidersProps) {
     return (
         <MemoryRouter>
-            <WagmiConfig client={ wagmiClient }>
+            <WagmiConfig config={ config as any }>
                 <StyletronProvider value={ engine }>
                     <BaseProvider theme={ theme }>
                         <DialogProvider>
