@@ -54,10 +54,7 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
             console.error('connector error: ' + error)
         }
 
-        if (!isDisconnected) {
-            disconnect()
-        }
-
+        disconnect()
         window.localStorage.removeItem('isSolarLogin')
         window.localStorage.removeItem('wagmi.wallet')
         window.localStorage.removeItem('wagmi.store')
