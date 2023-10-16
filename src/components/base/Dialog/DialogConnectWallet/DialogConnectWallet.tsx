@@ -58,7 +58,11 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
             disconnect()
         }
 
+        window.localStorage.removeItem('isSolarLogin')
+        window.localStorage.removeItem('wagmi.wallet')
+        window.localStorage.removeItem('wagmi.store')
         window.localStorage.removeItem('wagmi.cache')
+        window.localStorage.removeItem('wagmi.connected')
 
        setTimeout(() => {
            setLastLoginType('wallet')
