@@ -22,6 +22,8 @@ const langCN: LangConfig = {
   Wallet_Title_WalletConnect: 'WalletConnect',
   Wallet_Intro_WalletConnect: '连接你的 WalletConnect 钱包',
 
+  Wallet_Intro: '连接你的钱包',
+
   UserAction_MyProfile: '查看主页',
   UserAction_Disconnect: '登出',
 

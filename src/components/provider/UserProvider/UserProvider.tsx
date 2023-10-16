@@ -1,5 +1,5 @@
 import {ReactNode, useContext, useEffect, useState} from 'react'
-import {useAccount, useDisconnect, useSigner} from 'wagmi'
+import {useAccount, useDisconnect, useWalletClient} from 'wagmi'
 import UserContext from './UserContext'
 import DialogsContext from '../DialogProvider/DialogsContext'
 import * as AuthStorage from '../../../utils/authStorage'
@@ -50,10 +50,10 @@ function UserProvider (props: UserProviderProps) {
     const [userInfo, setUserInfo] = useState<User>(emptyUser)
     const { address, isConnecting, isDisconnected } = useAccount()
     const { disconnect } = useDisconnect()
-    const { data } = useSigner()
     const { showToast, clean, showLoading } = useContext(DialogsContext)
     const navigate = useNavigate()
     const [newProfile, _] = useEvent(EVENT.profileUpdate)
+    const {data, } = useWalletClient()
 
     const setUser = (data: Partial<Record<keyof User, any>>) => {
         const copyUserInfo = { ...userInfo , ...data }
@@ -181,8 +181,6 @@ function UserProvider (props: UserProviderProps) {
             return
         }
 
-
-        if (!data) return
 
         console.log('Login ...')
         console.log('Login type: ', loginType)

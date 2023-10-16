@@ -1,4 +1,4 @@
-import {Connector, useAccount, useConnect, useSigner, useDisconnect } from 'wagmi'
+import {Connector, useAccount, useConnect, useDisconnect } from 'wagmi'
 import './DialogConnectWallet.less'
 import {useContext, useEffect, useRef} from 'react'
 import LangContext from '../../../provider/LangProvider/LangContext'
@@ -96,7 +96,7 @@ function DialogConnectWallet (props: DialogConnectWalletProps) {
                     <img src={ `/images/${connector.name.toLowerCase()}.png` } alt={connector.name} />
                     <div className='connect-name'>{connector.name}</div>
                     <div className='connect-des'>
-                        {connector.name === 'MetaMask' ? lang['Wallet_Intro_MetaMask'] : lang['Wallet_Intro_WalletConnect']}
+                        {lang['Wallet_Intro']}
                     </div>
                 </div>
             ))}

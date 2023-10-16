@@ -3,7 +3,7 @@ import {mainnet, moonbeam} from 'wagmi/chains'
 import {InjectedConnector} from 'wagmi/connectors/injected'
 import {WalletConnectConnector} from 'wagmi/connectors/walletConnect'
 import {publicProvider} from 'wagmi/providers/public'
-import {configureChains, createClient, WagmiConfig} from 'wagmi'
+import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import UserProvider from './components/provider/UserProvider/UserProvider'
 import DialogProvider from './components/provider/DialogProvider/DialogProvider'
 import LangProvider from './components/provider/LangProvider/LangProvider'
@@ -31,19 +31,15 @@ const engine = new Styletron();
 //     },
 // })
 
-const inject = new InjectedConnector({
-    chains: [mainnet, moonbeam],
-})
-
-const {chains, provider} = configureChains(
+const {chains, publicClient, webSocketPublicClient} = configureChains(
     [mainnet, moonbeam],
     [publicProvider()],
 )
 
-const wagmiClient = createClient({
+const config = createConfig({
     autoConnect: true,
-    connectors: [inject],
-    provider,
+    publicClient,
+    webSocketPublicClient,
 })
 
 function App() {
@@ -51,7 +47,7 @@ function App() {
         <BrowserRouter>
             <div id="solas">
                 <PageBacProvider>
-                    <WagmiConfig client={wagmiClient}>
+                    <WagmiConfig config={config}>
                         <StyletronProvider value={engine}>
                             <BaseProvider theme={theme}>
                                 <DialogProvider>
