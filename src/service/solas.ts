@@ -2235,8 +2235,31 @@ export async function getEventStats(props: { id: number, days: number }) {
     return res.data as EventStats
 }
 
+export interface CancelRepeatProps {
+    auth_token: string,
+    selector: 'one' | 'after' | 'all',
+    repeat_event_id: number,
+    event_id?: number,
+}
+
+export async function cancelRepeatEvent(props: CancelRepeatProps) {
+    checkAuth(props)
+
+    const res = await fetch.post({
+        url: `${api}/repeat_event/cancel_event`,
+        data: props
+    })
+
+    if (res.data.result === 'error') {
+        throw new Error(res.data.message)
+    }
+
+    return res.data.events as Event[]
+}
+
 
 export default {
+    cancelRepeatEvent,
     RepeatEventUpdate,
     RepeatEventSetBadge,
     RepeatEventInvite,

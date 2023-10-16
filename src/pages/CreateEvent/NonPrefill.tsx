@@ -10,11 +10,10 @@ import UserContext from '../../components/provider/UserProvider/UserContext'
 import AppButton, {BTN_KIND} from '../../components/base/AppButton/AppButton'
 import solas, {
     Badge,
-    cancelEvent,
+    cancelEvent, cancelRepeatEvent,
     CreateEventProps,
     CreateRepeatEventProps,
     Event, EventSites,
-    getEventSide,
     getHotTags,
     getProfile,
     Group,
@@ -239,12 +238,11 @@ function CreateEvent(props: CreateEventPageProps) {
                 await cancelOne(false)
                 const unloading = showLoading()
                 try {
-                    const cancel = await RepeatEventUpdate({
-                        event_id: props.eventId!,
+                    const cancel = await cancelRepeatEvent({
                         auth_token: user.authToken || '',
-                        repeat_event_id: currEvent?.repeat_event_id,
+                        repeat_event_id: currEvent?.repeat_event_id!,
+                        event_id: props.eventId!,
                         selector: repeatEventSelectorRef.current,
-                        status: 'cancel'
                     })
                     unloading()
                     showToast('Cancel success')
