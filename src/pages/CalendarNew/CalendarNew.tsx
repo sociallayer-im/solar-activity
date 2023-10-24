@@ -23,7 +23,7 @@ const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const mouthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const cache = new Map<string, EventWithProfile[]>()
 const cacheProfile = new Map<number, Profile>()
-const cacheDateHasEvent= new Map<number, Date[]>()
+const cacheDateHasEvent = new Map<number, Date[]>()
 
 function Calendar() {
     const navigate = useNavigate()
@@ -110,13 +110,22 @@ function Calendar() {
             setCurrMonthEventList(getCache)
         } else {
             const events = await fetchData(target)
-            const eventWithProfile = events.map((event, index) => {
-                return {
-                    ...event,
-                    profile: event.event_owner
+            const eventWithProfileTask = events.map(async (event, index) => {
+                if (!event.host_info) {
+                    return {
+                        ...event,
+                        profile: event.event_owner
+                    }
+                } else {
+                    const profile = await await getProfile({id: Number(event.host_info!)})
+                    return {
+                        ...event,
+                        profile: profile
+                    }
                 }
             })
 
+            const eventWithProfile = await Promise.all(eventWithProfileTask)
             setCurrMonthEventList(eventWithProfile)
             cache.set(dateStart.toISOString() + eventGroup?.username, eventWithProfile)
         }
@@ -215,11 +224,11 @@ function Calendar() {
             <div className={'calender-new'}>
                 <div className={'calendar-head'}>
                     <div className={'center'}>
-                      <div className={'page-back'}>
-                          <PageBack onClose={() => {
-                              navigate(`/${eventGroup?.username || ''}`)
-                          }} />
-                      </div>
+                        <div className={'page-back'}>
+                            <PageBack onClose={() => {
+                                navigate(`/${eventGroup?.username || ''}`)
+                            }}/>
+                        </div>
                         <div className={'calendar-head-title'}>
                             <div className={'left'}>
                                 <div
@@ -236,7 +245,7 @@ function Calendar() {
                         </div>
                         <div className={'calendar-wrapper'}>
                             <EventCalendar
-                                onMonthChange={async (date) =>{
+                                onMonthChange={async (date) => {
                                     if (eventGroup) {
                                         await getDateHasEvent(date)
                                     }
