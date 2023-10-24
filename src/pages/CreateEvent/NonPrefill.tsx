@@ -617,7 +617,8 @@ function CreateEvent(props: CreateEventPageProps) {
             wechat_contact_person: wechatAccount || undefined,
             location: customLocation,
             telegram_contact_group: telegram || null,
-            location_details: locationDetail
+            location_details: locationDetail,
+            host_info: creator && creator.is_group ? creator.id + '' : undefined,
         }
 
         const unloading = showLoading(true)
